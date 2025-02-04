@@ -6,20 +6,34 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../Store/Slices/authSlice";
 import { removeUser } from "../../Store/Slices/userSlice";
 import { useDispatch } from "react-redux";
+import axiosInstance from "../../Connection/Axios"
+import { toast } from "sonner"
 
-function Navbar() {
+function Admin_Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isCRMOpen, setIsCRMOpen] = useState(false);
   const [isAssetsOpen, setIsAssetsOpen] = useState(false);
   const [isSalesOpen, setIsSalesOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    dispatch(logout());
-    dispatch(removeUser());
-    localStorage.clear();
-    navigate("/");
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await axiosInstance.post("/logout")
+        if (response.status === 200) {
+            localStorage.removeItem("accessToken");
+            dispatch(logout());
+            dispatch(removeUser());
+            localStorage.clear();
+            toast.success("Logged out successfully!");
+            navigate("/");
+        } else {
+            toast.error("Failed to logout. Try again.");
+        }
+    } catch (error) {
+        toast.error("Internal server error: ", error)
+    }
+   
   };
   return (
     <div>
@@ -172,4 +186,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default Admin_Navbar;

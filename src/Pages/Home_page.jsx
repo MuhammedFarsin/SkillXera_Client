@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../Store/Slices/authSlice";
 import { removeUser } from "../Store/Slices/userSlice";
 import { useDispatch } from "react-redux";
-
+import axiosInstance from "../Connection/Axios"
+import { toast } from "sonner"
 
 // Register the chart components
 
@@ -13,14 +14,24 @@ function HomePage() {
 
   
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    dispatch(logout());
-    dispatch(removeUser());
-    localStorage.clear();
-    navigate("/");
-  };
-
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await axiosInstance.post("/logout")
+        if (response.status === 200) {
+            localStorage.removeItem("accessToken");
+            dispatch(logout());
+            dispatch(removeUser());
+            localStorage.clear();
+            toast.success("Logged out successfully!");
+            navigate("/");
+        } else {
+            toast.error("Failed to logout. Try again.");
+        }
+    } catch (error) {
+        toast.error("Internal server error: ", error)
+    }
+  }
   // Chart data
   
 
