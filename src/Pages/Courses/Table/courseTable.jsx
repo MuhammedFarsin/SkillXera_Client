@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
-import EmptyPage from "../../assets/Empty.jpg";
+import EmptyPage from "../../../assets/Empty.jpg";
 import Swal from "sweetalert2";
-import axiosInstance from "../../Connection/Axios";
+import axiosInstance from "../../../Connection/Axios";
 import { toast } from "sonner";
 import AddCourseModel from "../PopUpMessage/AddCourseModel";
 import EditCourseModel from "../PopUpMessage/EditCourseModel";
@@ -156,28 +157,28 @@ const CourseTable = () => {
         </button>
       </div>
       <div className="relative overflow-visible rounded-lg shadow-lg">
-        <table className="w-full border-collapse bg-white">
+        <table className="w-full border-collapse bg-white rounded-lg">
           <thead className="bg-gradient-to-b from-gray-800 to-green-700 text-white">
             <tr>
               <th
-                className="p-4 cursor-pointer"
+                className="p-4 cursor-pointer rounded-lg"
                 onClick={() => requestSort("title")}
               >
                 Course Name
               </th>
               <th
-                className="p-4 cursor-pointer"
+                className="p-4 cursor-pointer rounded-lg"
                 onClick={() => requestSort("price")}
               >
                 Price
               </th>
               <th
-                className="p-4 cursor-pointer"
+                className="p-4 cursor-pointer rounded-lg"
                 onClick={() => requestSort("status")}
               >
                 Status
               </th>
-              <th className="p-4">Actions</th>
+              <th className="p-4 rounded-lg">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -200,19 +201,28 @@ const CourseTable = () => {
             ) : (
               sortedCourses().map((course) => (
                 <tr key={course._id} className="hover:bg-gray-100">
-                  <td className="p-4 text-center">{course.title}</td>
+                  <td className="p-4 text-center">
+                    <Link
+                      to={`/admin/assets/courses/module/${course._id}`}
+                      className="text-green-600 hover:text-green-800 transition duration-200"
+                    >
+                      {course.title}
+                    </Link>
+                  </td>
+
                   <td className="p-4 text-center">{course.price}</td>
                   <td className="p-4 text-center">
                     <span
                       className={
                         course.status === "active"
-                          ? "bg-green-600 text-white px-3 py-1 rounded-full"
-                          : "bg-gray-400 text-white px-3 py-1 rounded-full"
+                          ? "bg-green-100 text-green-700 px-4 py-1.5 rounded-full font-semibold"
+                          : "bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full font-semibold"
                       }
                     >
                       {course.status}
                     </span>
                   </td>
+
                   <td className="p-4 text-center relative">
                     <button
                       onClick={() => setOpenMenu(course._id)}

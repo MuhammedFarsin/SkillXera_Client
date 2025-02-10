@@ -1,5 +1,5 @@
 import React from 'react'
-import Courses_page from "../../Pages/Admin_Assets_Course"
+import Courses_page from "../../Pages/Courses/Admin_Assets_Course"
 
 function Courses() {
   return (

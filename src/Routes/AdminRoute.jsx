@@ -9,6 +9,7 @@ const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() => import("../Components/Admin/Transactions"));
 const UserProfile_Page = React.lazy(() => import("../Components/Admin/UserProfile"));
+const Module_Page = React.lazy(() => import("../Components/Admin/Module"));
 function AdminRoute() {
   return (
     <Routes>
@@ -41,6 +42,14 @@ function AdminRoute() {
         element={
           <ProtectedRoute>
             <Courses_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/courses/module/:courseId"
+        element={
+          <ProtectedRoute>
+            <Module_Page />
           </ProtectedRoute>
         }
       />

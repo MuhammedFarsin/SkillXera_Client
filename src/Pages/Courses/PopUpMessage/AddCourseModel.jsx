@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { FaCopy } from "react-icons/fa";
 import { toast } from "sonner";
-import axiosInstance from "../../Connection/Axios";
+import axiosInstance from "../../../Connection/Axios";
 import { motion } from "framer-motion";
 
 // eslint-disable-next-line react/prop-types
-const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
+const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
+  const fileInputRef = useRef(null);
   const [courseName, setCourseName] = useState("");
   const [courseRoute, setCourseRoute] = useState("");
   const [price, setPrice] = useState("");
@@ -14,61 +15,37 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const baseURL = axiosInstance.defaults.baseURL;
+  // Function to reset form fields
+  const resetForm = () => {
+    setCourseName("");
+    setCourseRoute("");
+    setPrice("");
+    setDescription("");
+    setImages([]);
+    setImagePreviews([]);
+  };
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
 
-  useEffect(() => {
-    if (isOpen && course) {
-      const fetchCourseDetails = async () => {
-        try {
-          const response = await axiosInstance.get(
-            `/admin/assets/edit-course/${course}`
-          );
-          if (response.status === 200) {
-            const { title, route, price, description, images } = response.data;
-            setCourseName(title);
-            setCourseRoute(route?.replace(`${baseURL}/course/`, "") || "");
-            setPrice(price);
-            setDescription(description);
-
-            const existingImagePaths = images.map((img) => `${img}`);
-            setImagePreviews(
-              existingImagePaths.map((img) => `${baseURL}${img}`)
-            );
-            setImages(existingImagePaths);
-          }
-        } catch (error) {
-          toast.error("Failed to fetch course details");
-          console.error("Error fetching course details:", error);
-        }
-      };
-      fetchCourseDetails();
-    }
-  }, [isOpen, course, baseURL]);
-
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    if (files.length + imagePreviews.length > 3) {
-      toast.error("You can upload up to 3 images only.");
+  // Handle file change for images
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length !== 3) {
+      toast.error("Please upload exactly 3 images.");
       return;
     }
-
-    setImages((prev) => [...prev, ...files]);
-
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
+    setImages(files);
+    setImagePreviews(files.map((file) => URL.createObjectURL(file)));
   };
 
-  const handleRemoveImage = (index) => {
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
+  // Submit course to API
   const handleSubmit = async () => {
     if (!courseName || !courseRoute || !price || !description) {
       toast.error("All fields are required!");
       return;
     }
-    if (imagePreviews.length !== 3) {
+    if (images.length !== 3) {
       toast.error("Please upload exactly 3 images.");
       return;
     }
@@ -78,26 +55,20 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
     }
 
     setLoading(true);
-    const fullRoute = `${baseURL}/course/${courseRoute}`;
+    const fullRoute = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
     formData.append("route", fullRoute);
     formData.append("price", price);
     formData.append("description", description);
-
-    const existingImages = images.filter((img) => typeof img === "string");
-    const newImages = images.filter((img) => img instanceof File);
-
-    newImages.forEach((file) => {
-      formData.append("images", file);
+    images.forEach((image) => {
+      formData.append("images", image);
     });
 
-    formData.append("existingImages", JSON.stringify(existingImages));
-
     try {
-      const response = await axiosInstance.put(
-        `/admin/assets/update-course/${course}`,
+      const response = await axiosInstance.post(
+        "/admin/assets/add-course",
         formData,
         {
           headers: {
@@ -105,23 +76,26 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
           },
         }
       );
-      if (response.status === 200) {
-        toast.success("Course updated successfully!");
-        onCourseUpdated(response.data.course);
+
+      if (response.status === 201) {
+        onCourseAdded(response.data.course);
+        toast.success("Course added successfully!");
+        resetForm(); // Reset form after successful submission
         onClose();
       } else {
-        toast.error("Failed to update course!");
+        toast.error("Failed to add course!");
       }
     } catch (error) {
-      toast.error("Error updating course!");
-      console.error(error);
+      toast.error("Error adding course!");
+      console.log("Error", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Handle copying the link
   const handleCopyLink = () => {
-    const fullLink = `${baseURL}/course/${courseRoute}`;
+    const fullLink = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
@@ -137,17 +111,20 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
           transition={{ duration: 0.3 }}
         >
           <h2 className="text-xl font-semibold mb-4 text-center">
-            Edit Course
+            Add New Course
           </h2>
 
+          {/* Course Name */}
           <label className="block font-medium text-gray-700">Course Name</label>
           <input
             type="text"
             value={courseName}
             onChange={(e) => setCourseName(e.target.value)}
             className="w-full p-2 border rounded-md mb-4"
+            placeholder="Enter course name"
           />
 
+          {/* Course Route */}
           <label className="block font-medium text-gray-700">
             Course Route
           </label>
@@ -158,6 +135,7 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
               value={courseRoute}
               onChange={(e) => setCourseRoute(e.target.value)}
               className="flex-grow p-2 border rounded-md"
+              placeholder="Enter route"
             />
             <button
               onClick={handleCopyLink}
@@ -167,52 +145,54 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
             </button>
           </div>
 
+          {/* Description */}
           <label className="block font-medium text-gray-700">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full p-2 border rounded-md mb-4"
+            placeholder="Enter course description"
           />
 
+          {/* Price */}
           <label className="block font-medium text-gray-700">Price</label>
           <input
             type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             className="w-full p-2 border rounded-md mb-4"
+            placeholder="Enter price"
             min="0"
           />
 
+          {/* Image Upload */}
           <label className="block font-medium text-gray-700">
             Upload Images (3 required)
           </label>
           <input
             type="file"
+            ref={fileInputRef}
             multiple
             accept="image/*"
             onChange={handleFileChange}
             className="w-full p-2 border rounded-md mb-4"
           />
+
+          {/* Image Previews */}
           {imagePreviews.length > 0 && (
             <div className="flex gap-2 mb-4">
               {imagePreviews.map((preview, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={preview}
-                    alt={`Preview ${index}`}
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-                  <button
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                    onClick={() => handleRemoveImage(index)}
-                  >
-                    ❌
-                  </button>
-                </div>
+                <img
+                  key={index}
+                  src={preview}
+                  alt={`Preview ${index}`}
+                  className="w-20 h-20 object-cover rounded-md"
+                />
               ))}
             </div>
           )}
 
+          {/* Buttons */}
           <div className="flex justify-between">
             <button
               onClick={onClose}
@@ -225,7 +205,7 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
               className="bg-gradient-to-b from-[#1a1a1a] to-[#57c2b0] text-white p-2 rounded-md"
               disabled={loading}
             >
-              {loading ? "Updating..." : "Update Course"}
+              {loading ? "Adding..." : "Add Course"}
             </button>
           </div>
         </motion.div>
@@ -234,4 +214,4 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
   );
 };
 
-export default EditCourseModal;
+export default AddCourseModal;

@@ -1,5 +1,5 @@
-import Admin_Navbar from "./Common/AdminNavbar";
-import ToastHot from "./Common/ToasterHot";
+import Admin_Navbar from "../Common/AdminNavbar";
+import ToastHot from "../Common/ToasterHot";
 import CourseTable from "./Table/courseTable";
 
 function Admin_Assets_Course() {
