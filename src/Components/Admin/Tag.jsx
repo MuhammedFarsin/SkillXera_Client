@@ -1,5 +1,5 @@
 import React from 'react'
-import Tag_page from "../../Pages/Admin_Crm_Tags"
+import Tag_page from "../../Pages/CRM/Admin_Crm_Tags"
 
 function Tag() {
   return (

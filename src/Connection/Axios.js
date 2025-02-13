@@ -4,9 +4,6 @@ import axios from "axios";
 // Create Axios instance
 const axiosInstance = axios.create({
   baseURL: "http://localhost:5000",  // Adjust based on your backend
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,  // Required for cookies (refresh token)
 });
 

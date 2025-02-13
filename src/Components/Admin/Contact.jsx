@@ -1,5 +1,5 @@
 import React from 'react'
-import Contact_page from "../../Pages/Admin_Crm_Contact"
+import Contact_page from "../../Pages/CRM/Admin_Crm_Contact"
 
 function Contact() {
   return (
