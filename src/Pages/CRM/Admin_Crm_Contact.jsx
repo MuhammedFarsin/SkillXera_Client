@@ -4,7 +4,7 @@ import ToastHot from "../Common/ToasterHot"
 function Admin_Crm_Contact() {
   return (
     <div>
-      <Admin_Navbar/>
+      {/* <Admin_Navbar/> */}
       <Contact_Table/>
       <ToastHot/>
     </div>
