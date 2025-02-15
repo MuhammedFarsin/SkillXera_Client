@@ -1,8 +1,10 @@
-import Admin_Navbar from "../Common/AdminNavbar"
+import Tag_Table from "./Table/TagTable"
+import ToastHot from "../Common/ToasterHot"
 function Admin_Crm_Tags() {
   return (
     <div>
-      <Admin_Navbar/>
+      <Tag_Table/>
+      <ToastHot/>
     </div>
   )
 }

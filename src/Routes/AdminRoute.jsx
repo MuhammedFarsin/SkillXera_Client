@@ -2,15 +2,21 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 // import PageNotFound from "../Pages/Common/PageNotFound";
-const Dashboard_Page = React.lazy(() => import("../Components/Admin/Dashboard"));
+const Dashboard_Page = React.lazy(() =>
+  import("../Components/Admin/Dashboard")
+);
 const Contact_Page = React.lazy(() => import("../Components/Admin/Contact"));
 const Courses_Page = React.lazy(() => import("../Components/Admin/Courses"));
 const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
-const Transaction_Page = React.lazy(() => import("../Components/Admin/Transactions"));
-const UserProfile_Page = React.lazy(() => import("../Components/Admin/UserProfile"));
+const Transaction_Page = React.lazy(() =>
+  import("../Components/Admin/Transactions")
+);
+const UserProfile_Page = React.lazy(() =>
+  import("../Components/Admin/UserProfile")
+);
 const Module_Page = React.lazy(() => import("../Components/Admin/Module"));
-const Lecture_Page = React.lazy(() => import("../Components/Admin/Lectures"))
+const Lecture_Page = React.lazy(() => import("../Components/Admin/Lectures"));
 function AdminRoute() {
   return (
     <Routes>
@@ -54,14 +60,14 @@ function AdminRoute() {
           </ProtectedRoute>
         }
       />
-     <Route
-  path="/assets/courses/watch-lecture/:courseId/:moduleId/:lectureIndex"
-  element={
-    <ProtectedRoute>
-      <Lecture_Page />
-    </ProtectedRoute>
-  }
-/>
+      <Route
+        path="/assets/courses/watch-lecture/:courseId/:moduleId/:lectureIndex"
+        element={
+          <ProtectedRoute>
+            <Lecture_Page />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/assets/files"
