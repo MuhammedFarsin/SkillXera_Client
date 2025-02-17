@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../Common/AdminNavbar";
 import axiosInstance from "../../../Connection/Axios";
 import AddContact_Modal from "../Modal/AddContactModal";
+import AddTagDropDown_Modal from "../Modal/AddTagDropDownModal";
+import RemoveTagContact_Modal from "../Modal/RemovTagContactModal";
+import EditContact_Modal from "../Modal/EditContactModal";
 import EmptyImage from "../../../assets/Empty.jpg";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -14,7 +17,12 @@ function ContactTable() {
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [searchFilter, setSearchFilter] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [selectedContactId, setSelectedContactId] = useState(null);
+
   // const contactsPerPage = 5;
   const navigate = useNavigate();
 
@@ -53,14 +61,60 @@ function ContactTable() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  const handleContactAdded = (newContact) => {
-    console.log("New Contact Added:", newContact);
-    if (!newContact || !newContact._id) {
-      console.error("Invalid contact data received:", newContact);
+  const handleAddTagOpenModal = () => {
+    if (selectedContacts.length === 0) {
+      toast.error("No contacts selected.");
       return;
     }
-    setContactsData([newContact, ...contactsData]);
+    setSelectedContactId(selectedContacts); // Store the selected contact IDs
+    setIsTagModalOpen(true);
+  };
+  const handleRemoveTagOpenModal = () => {
+    if (selectedContacts.length === 0) {
+      toast.error("No contacts selected.");
+      return;
+    }
+    setSelectedContactId(selectedContacts); // Store the selected contact IDs
+    setIsRemoveModalOpen(true);
+  };
+
+  const handleAddTagCloseModal = () => {
+    setIsTagModalOpen(false);
+  };
+  const handleEditTagCloseModal = () => {
+    setIsRemoveModalOpen(false);
+  };
+  const handleEditContactOpenModal = () => {
+    // console.log("this is the id I need:", contactId);
+    // console.log(contactsData);
+    setSelectedContactId(selectedContacts);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditContactCloseModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // Functional Component Example
+  const handleTagAdded = (contactIds, newTag) => {
+    setContactsData((prevContacts) =>
+      prevContacts.map((contact) =>
+        contactIds.includes(contact._id) // Check if contact ID is in the array
+          ? { ...contact, tags: [...(contact.tags || []), newTag] }
+          : contact
+      )
+    );
+  };
+  const handleUpdateContact = (updatedContact) => {
+    setContactsData((prevContacts) =>
+      prevContacts.map((contact) =>
+        contact._id === updatedContact._id ? updatedContact : contact
+      )
+    );
+  };
+
+  const handleContactAdded = (newContact) => {
+    setContactsData([...contactsData, newContact]);
   };
 
   const handleSelectAll = () => {
@@ -70,6 +124,19 @@ function ContactTable() {
         : filteredContacts.map((contact) => contact._id)
     );
   };
+  const handleTagRemoved = (removedTag) => {
+    setContactsData((prevContacts) =>
+      prevContacts.map((contact) =>
+        selectedContactId.includes(String(contact._id)) // Check if ID is in the array
+          ? {
+              ...contact,
+              tags: contact.tags.filter((tag) => tag._id !== removedTag._id),
+            }
+          : contact
+      )
+    );
+  };
+
   const handleDelete = async () => {
     if (selectedContacts.length === 0) {
       toast.error("No contacts selected.");
@@ -246,12 +313,24 @@ function ContactTable() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="absolute bottom-full left-0 mb-2 bg-white shadow-md rounded-md p-3"
+                    className="absolute bottom-full left-0 mb-2 bg-gray-100 shadow-md rounded-md p-3"
                   >
-                    <button className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-gray-100">
+                    <button
+                      onClick={handleAddTagOpenModal}
+                      className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-white"
+                    >
                       Add Tag
                     </button>
-                    <button className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-gray-100">
+                    <button
+                      onClick={handleRemoveTagOpenModal}
+                      className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-white"
+                    >
+                      Remove Tag
+                    </button>
+                    <button
+                      onClick={handleEditContactOpenModal}
+                      className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-white"
+                    >
                       Edit
                     </button>
                   </motion.div>
@@ -265,6 +344,24 @@ function ContactTable() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onContactAdded={handleContactAdded}
+      />
+      <AddTagDropDown_Modal
+        isOpen={isTagModalOpen} // Corrected
+        onClose={handleAddTagCloseModal}
+        onTagDropDownAdded={handleTagAdded}
+        selectedContactId={selectedContactId}
+      />
+      <RemoveTagContact_Modal
+        isOpen={isRemoveModalOpen}
+        onClose={handleEditTagCloseModal}
+        onTagDropDownRemove={handleTagRemoved}
+        selectedContactId={selectedContactId}
+      />
+      <EditContact_Modal
+        isOpen={isEditModalOpen}
+        onClose={handleEditContactCloseModal}
+        contactId={selectedContactId}
+        onContactEdited={handleUpdateContact}
       />
     </div>
   );
