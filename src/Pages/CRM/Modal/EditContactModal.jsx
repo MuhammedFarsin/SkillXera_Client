@@ -7,39 +7,39 @@ import { X } from "lucide-react";
 // eslint-disable-next-line react/prop-types
 function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
     console.log(contactId)
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    phone: "",
-    tags: "",
-  });
+    const [formData, setFormData] = useState({
+      username: "",
+      email: "",
+      phone: "",
+      tags: null, // Set null initially to avoid inconsistencies
+    });
+    
 
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Fetch existing contact details when modal opens
   useEffect(() => {
-    if (contactId) {
-      const fetchContact = async () => {
-        try {
-          const response = await axiosInstance.get(
-            `/admin/crm/contact/get-contact/${contactId}`
-          );
-          setFormData({
-            username: response.data.username,
-            email: response.data.email,
-            phone: response.data.phone,
-            tags: response.data.tags || "", // Handle single tag
-          });
-        } catch (error) {
-          console.error("Error fetching contact:", error);
-          toast.error("Failed to fetch contact details.");
-        }
-      };
-
-      fetchContact();
-    }
+    if (!contactId) return; // Avoid unnecessary API calls
+  
+    const fetchContact = async () => {
+      try {
+        const response = await axiosInstance.get(`/admin/crm/contact/get-contact/${contactId}`);
+        setFormData({
+          username: response.data.username || "",
+          email: response.data.email || "",
+          phone: response.data.phone || "",
+          tags: response.data.tags?.length ? response.data.tags[0] : "",
+        });
+      } catch (error) {
+        console.error("Error fetching contact:", error);
+        toast.error("Failed to fetch contact details.");
+      }
+    };
+  
+    fetchContact();
   }, [contactId]);
+  
 
   // Fetch tags
   useEffect(() => {
@@ -73,7 +73,8 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
         `/admin/crm/contact/update-contact/${contactId}`,
         {
           ...formData,
-          tags: [formData.tags], // Ensure tags are sent as an array
+          tags: formData.tags ? (Array.isArray(formData.tags) ? formData.tags : [formData.tags]) : [],
+          // Ensure tags are sent as an array
         }
       );
 
@@ -171,7 +172,7 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
                       type="radio"
                       name="tags"
                       value={tag._id}
-                      checked={formData.tags === tag._id}
+                      checked={Array.isArray(formData.tags) ? formData.tags.includes(tag._id) : formData.tags === tag._id}
                       onChange={handleTagChange}
                       className="hidden"
                     />

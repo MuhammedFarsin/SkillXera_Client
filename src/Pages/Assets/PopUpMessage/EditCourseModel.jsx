@@ -9,9 +9,12 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
   const [courseName, setCourseName] = useState("");
   const [courseRoute, setCourseRoute] = useState("");
   const [price, setPrice] = useState("");
+  const [buyCourse, setBuyCourse] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [video, setVideo] = useState([]);
+  const [videoPreviews, setVideoPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const baseURL = axiosInstance.defaults.baseURL;
@@ -24,17 +27,32 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
             `/admin/assets/edit-course/${course}`
           );
           if (response.status === 200) {
-            const { title, route, price, description, images } = response.data;
+            const {
+              title,
+              route,
+              buyCourse,
+              price,
+              description,
+              images,
+              video,
+            } = response.data;
             setCourseName(title);
             setCourseRoute(route?.replace(`${baseURL}/course/`, "") || "");
             setPrice(price);
             setDescription(description);
-
+            setBuyCourse(
+              buyCourse.replace(`${baseURL}/sale/buy-course/course/`, "") || ""
+            );
+            console.log(response.data);
             const existingImagePaths = images.map((img) => `${img}`);
             setImagePreviews(
               existingImagePaths.map((img) => `${baseURL}${img}`)
             );
             setImages(existingImagePaths);
+            if (video) {
+              setVideo(video);
+              setVideoPreviews([`${baseURL}${video}`]);
+            }
           }
         } catch (error) {
           toast.error("Failed to fetch course details");
@@ -57,6 +75,14 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews((prev) => [...prev, ...newPreviews]);
   };
+  const handleVideoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setVideo([file]); // Overwrites previous video selection
+      setVideoPreviews([URL.createObjectURL(file)]); // Shows preview of new video
+    }
+  };
+  
 
   const handleRemoveImage = (index) => {
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
@@ -79,14 +105,17 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
 
     setLoading(true);
     const fullRoute = `${baseURL}/course/${courseRoute}`;
+    const buyCourseLink = `${baseURL}/sale/buy-course/course/${buyCourse}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
     formData.append("route", fullRoute);
     formData.append("price", price);
     formData.append("description", description);
+    formData.append("buyCourse", buyCourseLink);
 
-    const existingImages = images.filter((img) => typeof img === "string");
+    const existingImages = (images || []).filter((img) => typeof img === "string");
+
     const newImages = images.filter((img) => img instanceof File);
 
     newImages.forEach((file) => {
@@ -94,6 +123,15 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
     });
 
     formData.append("existingImages", JSON.stringify(existingImages));
+    if (video.length > 0) {
+      if (video[0] instanceof File) {
+        formData.append("video", video[0]); // Uploading a new video
+      } else {
+        formData.append("existingVideo", video[0]); // Ensure it's a string, not an array
+      }
+    }
+    
+    
 
     try {
       const response = await axiosInstance.put(
@@ -122,6 +160,11 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
 
   const handleCopyLink = () => {
     const fullLink = `${baseURL}/course/${courseRoute}`;
+    navigator.clipboard.writeText(fullLink);
+    toast.success("Link copied!");
+  };
+  const handleBuyCourseCopyLink = () => {
+    const fullLink = `${baseURL}/sale/buy-course/course/${buyCourse}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
@@ -161,7 +204,22 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
             />
             <button
               onClick={handleCopyLink}
-              className="ml-2 bg-blue-500 text-white p-2 rounded-md"
+              className="ml-2 bg-slate-600 text-white p-2 rounded-md"
+            >
+              <FaCopy />
+            </button>
+          </div>
+          <div className="flex items-center border p-2 rounded-md mb-4">
+            <span className="mr-2 text-gray-700">/buy-course/</span>
+            <input
+              type="text"
+              value={buyCourse}
+              onChange={(e) => setBuyCourse(e.target.value)}
+              className="flex-grow p-2 border rounded-md"
+            />
+            <button
+              onClick={handleBuyCourseCopyLink}
+              className="ml-2 bg-slate-600 text-white p-2 rounded-md"
             >
               <FaCopy />
             </button>
@@ -182,6 +240,24 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
             className="w-full p-2 border rounded-md mb-4"
             min="0"
           />
+          <label className="block font-medium text-gray-700">
+            Upload Video
+          </label>
+          <input
+            type="file"
+            accept="video/*"
+            onChange={handleVideoChange}
+            className="w-full p-2 border rounded-md mb-4"
+          />
+
+          {videoPreviews.length > 0 && (
+            <div className="flex flex-col items-center mb-4">
+              <video controls className="w-full rounded-md">
+                <source src={videoPreviews[0]} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
 
           <label className="block font-medium text-gray-700">
             Upload Images (3 required)

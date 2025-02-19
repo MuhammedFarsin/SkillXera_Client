@@ -1,5 +1,5 @@
 import React from 'react'
-import Lecture_page from "../../Pages/Courses/WatchLecture"
+import Lecture_page from "../../Pages/Assets/WatchLecture"
 
 function Lectures() {
   return (

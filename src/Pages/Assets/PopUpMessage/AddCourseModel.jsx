@@ -7,26 +7,33 @@ import { motion } from "framer-motion";
 // eslint-disable-next-line react/prop-types
 const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
   const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
   const [courseName, setCourseName] = useState("");
   const [courseRoute, setCourseRoute] = useState("");
+  const [buyingCourseRoute, setBuyingCourseRoute] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [video, setVideo] = useState(null); // ✅ State for video
+  const [videoPreview, setVideoPreview] = useState(null); 
   const [loading, setLoading] = useState(false);
+
 
   // Function to reset form fields
   const resetForm = () => {
     setCourseName("");
     setCourseRoute("");
+    setBuyingCourseRoute("");
     setPrice("");
     setDescription("");
     setImages([]);
     setImagePreviews([]);
+    setVideo(null);
+    setVideoPreview(null);
   };
-  if (fileInputRef.current) {
-    fileInputRef.current.value = "";
-  }
+  if (fileInputRef.current) fileInputRef.current.value = "";
+  if (videoInputRef.current) videoInputRef.current.value = "";
 
   // Handle file change for images
   const handleFileChange = (e) => {
@@ -38,15 +45,32 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
     setImages(files);
     setImagePreviews(files.map((file) => URL.createObjectURL(file)));
   };
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("video/")) {
+      toast.error("Please upload a valid video file.");
+      return;
+    }
+
+    setVideo(file);
+    setVideoPreview(URL.createObjectURL(file)); // Generate preview
+  };
 
   // Submit course to API
   const handleSubmit = async () => {
-    if (!courseName || !courseRoute || !price || !description) {
+    if (!courseName || !courseRoute || !buyingCourseRoute || !price || !description) {
       toast.error("All fields are required!");
       return;
     }
     if (images.length !== 3) {
       toast.error("Please upload exactly 3 images.");
+      return;
+    }
+    if (!video) {
+      toast.error("Please upload a video.");
       return;
     }
     if (isNaN(price) || Number(price) <= 0) {
@@ -55,16 +79,25 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
     }
 
     setLoading(true);
-    const fullRoute = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
+    const fullCourseRoute = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
+    const fullBuyingCourseRoute = `${axiosInstance.defaults.baseURL}/sale/buy-course/course/${buyingCourseRoute}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
-    formData.append("route", fullRoute);
+    formData.append("route", fullCourseRoute);
+    formData.append("buyCourse", fullBuyingCourseRoute);
     formData.append("price", price);
     formData.append("description", description);
     images.forEach((image) => {
       formData.append("images", image);
     });
+    formData.append("video", video); // ✅ Add video to form data
+    console.log("Video Type:", typeof video); // Should be 'object'
+console.log("Video Instance:", video instanceof File); // Should be true
+
+    // for(let [key,values] of formData) {
+    //   console.log(key, values)
+    // }
 
     try {
       const response = await axiosInstance.post(
@@ -80,7 +113,7 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
       if (response.status === 201) {
         onCourseAdded(response.data.course);
         toast.success("Course added successfully!");
-        resetForm(); // Reset form after successful submission
+        resetForm();
         onClose();
       } else {
         toast.error("Failed to add course!");
@@ -93,9 +126,15 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
     }
   };
 
+
   // Handle copying the link
   const handleCopyLink = () => {
     const fullLink = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
+    navigator.clipboard.writeText(fullLink);
+    toast.success("Link copied!");
+  };
+  const handleBuyCourseCopyLink = () => {
+    const fullLink = `${axiosInstance.defaults.baseURL}/sale/buy-course/course/${buyingCourseRoute}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
@@ -144,6 +183,14 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
               <FaCopy />
             </button>
           </div>
+          <label className="block font-medium text-gray-700">Buying Course Route</label>
+          <div className="flex items-center border p-2 rounded-md mb-4">
+            <span className="mr-2 text-gray-700">/sale/buy-course/course/</span>
+            <input type="text" value={buyingCourseRoute} onChange={(e) => setBuyingCourseRoute(e.target.value)} className="flex-grow p-2 border rounded-md" placeholder="Enter buying route" />
+            <button onClick={handleBuyCourseCopyLink} className="ml-2 bg-blue-500 text-white p-2 rounded-md">
+              <FaCopy />
+            </button>
+          </div>
 
           {/* Description */}
           <label className="block font-medium text-gray-700">Description</label>
@@ -164,6 +211,24 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
             placeholder="Enter price"
             min="0"
           />
+
+
+          {/* video upload */}
+          <label className="block font-medium text-gray-700">Upload Video</label>
+          <input
+            type="file"
+            ref={videoInputRef}
+            accept="video/*"
+            onChange={handleVideoChange}
+            className="w-full p-2 border rounded-md mb-4"
+          />
+
+          {/* Video Preview */}
+          {videoPreview && (
+            <div className="mb-4">
+              <video controls src={videoPreview} className="w-full rounded-md" />
+            </div>
+          )}
 
           {/* Image Upload */}
           <label className="block font-medium text-gray-700">

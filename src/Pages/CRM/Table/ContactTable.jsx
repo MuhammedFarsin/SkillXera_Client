@@ -108,7 +108,17 @@ function ContactTable() {
   const handleUpdateContact = (updatedContact) => {
     setContactsData((prevContacts) =>
       prevContacts.map((contact) =>
-        contact._id === updatedContact._id ? updatedContact : contact
+        contact._id === updatedContact._id
+          ? {
+              ...updatedContact,
+              tags: updatedContact.tags.map(
+                (tag) =>
+                  typeof tag === "string"
+                    ? { _id: tag, name: "" } 
+                    : tag 
+              ),
+            }
+          : contact
       )
     );
   };

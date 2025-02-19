@@ -1,4 +1,4 @@
-import Admin_Navbar from "./Common/AdminNavbar"
+import Admin_Navbar from "../Common/AdminNavbar"
 function Admin_Assets_File() {
   return (
     <div>

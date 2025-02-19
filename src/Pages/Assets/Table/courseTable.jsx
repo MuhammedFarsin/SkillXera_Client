@@ -236,7 +236,10 @@ const CourseTable = () => {
                         className="absolute right-0 mt-2 z-50 w-32 bg-white shadow-xl rounded-xl border p-2"
                       >
                         <button className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md">
-                          View
+                          Buy Link
+                        </button>
+                        <button className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md">
+                          Get Course
                         </button>
                         <button
                           className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md"

@@ -1,5 +1,5 @@
 import React from 'react'
-import Module_page from "../../Pages/Courses/Admin_Assets_Course_module"
+import Module_page from "../../Pages/Assets/Admin_Assets_Course_module"
 
 function Module() {
   return (
