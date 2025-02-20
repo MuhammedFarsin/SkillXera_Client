@@ -1,0 +1,1 @@
+export const frontendRoute = "http://localhost:5173"

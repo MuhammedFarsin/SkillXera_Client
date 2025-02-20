@@ -8,13 +8,17 @@ import axiosInstance from "../../../Connection/Axios";
 import { toast } from "sonner";
 import AddCourseModel from "../PopUpMessage/AddCourseModel";
 import EditCourseModel from "../PopUpMessage/EditCourseModel";
+import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal"
+import { frontendRoute } from "../../../Utils/utils"
 
 const CourseTable = () => {
   const menuRef = useRef(null);
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
+  const [buyLink, setBuyLink] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [openMenu, setOpenMenu] = useState(null);
+  const [openShareModal, setOpenShareModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,6 +27,8 @@ const CourseTable = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  const fullBuyingCourseRoute = `${frontendRoute}/sale/buy-course/course`;
 
   const fetchCourses = async () => {
     try {
@@ -92,6 +98,15 @@ const CourseTable = () => {
         }
       }
     });
+  };
+  const handleShare = (courseId) => {
+    const fullLink = `${fullBuyingCourseRoute}/${courseId}`;
+    setBuyLink(fullLink);
+    console.log(fullLink);
+    setOpenShareModal(true);
+  };
+  const handleShareClose = () => {
+    setOpenShareModal(false);
   };
 
   const handleEdit = (courseId) => {
@@ -233,22 +248,23 @@ const CourseTable = () => {
                     {openMenu === course._id && (
                       <motion.div
                         ref={menuRef}
-                        className="absolute right-0 mt-2 z-50 w-32 bg-white shadow-xl rounded-xl border p-2"
+                        className="absolute right-0 mt-2 z-50 w-24 bg-white shadow-xl rounded-xl p-2"
                       >
-                        <button className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md">
-                          Buy Link
-                        </button>
-                        <button className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md">
-                          Get Course
-                        </button>
                         <button
-                          className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md"
+                          className="block w-full py-2 text-sm hover:bg-blue-50 rounded-md"
+                          onClick={() => handleShare(course._id)}
+                        >
+                          Share
+                        </button>
+
+                        <button
+                          className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md text-sm"
                           onClick={() => handleEdit(course._id)}
                         >
                           Edit
                         </button>
                         <button
-                          className="block w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-md"
+                          className="block w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-md text-sm"
                           onClick={() => handleDelete(course._id)}
                         >
                           Delete
@@ -274,6 +290,12 @@ const CourseTable = () => {
         course={selectedCourse}
         onCourseUpdated={handleCourseUpdated}
       />
+      <ShareLinkModal
+  isOpen={openShareModal}
+  onClose={handleShareClose}
+  buyLink={buyLink}  // ✅ Correct
+/>
+
     </main>
   );
 };
