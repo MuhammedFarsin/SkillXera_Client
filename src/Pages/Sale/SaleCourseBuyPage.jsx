@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../Connection/Axios";
 
 function SaleCourseBuyPage() {
+  const navigate = useNavigate()
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,10 @@ function SaleCourseBuyPage() {
 
     fetchCourseDetails();
   }, [courseId]);
+ 
+  const handleNavigate = () => {
+    navigate(`/sale/buy-course/course/payment/${courseId}`);
+  };
 
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
@@ -34,20 +39,24 @@ function SaleCourseBuyPage() {
   if (!course) return <p className="text-white text-center">No course found</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-black text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-b from-[#1a1a1a] to-[#004d40] text-center">
       <h1 className="text-3xl font-bold text-white mb-4">
         Experience the Power of
       </h1>
       <h2 className="text-4xl font-extrabold text-red-600">
-        &quot;AUTOMATED YOUTUBE SEO WITH FOZATO SEO&quot;
+        &quot;{course.title}&quot;
       </h2>
       <p className="text-lg text-gray-300 mt-4">
         <span className="font-bold text-blue-400">
           &quot;DOUBLE YOUR YOUTUBE VIEWS & REVENUE&quot;
         </span>{" "}
+  
+      
+      </p>
+        <span className="text-start">
         with Our Revolutionary YouTube SEO App, by Performing YouTube SEO
         Automatically!
-      </p>
+        </span>
       <p className="mt-2 text-gray-400">
         (Join 5857+ satisfied users who have optimized their YouTube videos
         using Fozato SEO)
@@ -81,8 +90,8 @@ function SaleCourseBuyPage() {
       )}
 
       {/* After Video Content */}
-      <div className=" text-white text-center rounded-lg shadow-lg w-full max-w-3xl">
-        <button className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mb-6">
+      <div className="text-white mt-10 text-center rounded-lg shadow-lg w-full max-w-3xl">
+        <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mb-6">
           &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
           <span className="text-sm">(ONLY ₹1999/3 Months)</span>
         </button>
@@ -134,7 +143,7 @@ function SaleCourseBuyPage() {
           ))}
         </div>
 
-        <button className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mt-6">
+        <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mt-6">
           &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
           <span className="text-sm">(ONLY ₹1999/3 Months)</span>
         </button>
@@ -151,7 +160,7 @@ function SaleCourseBuyPage() {
           ***Hurry! Limited spots available for this offer!***
         </p>
 
-        <div className="mt-6 bg-black text-white p-6 rounded-lg">
+        <div className="mt-6 text-white p-6 rounded-lg">
           <p className="font-bold text-yellow-400 text-center">
             Please Check All Boxes Where Your Answer Is{" "}
             <span className="text-yellow-500">YES!</span>
@@ -189,7 +198,7 @@ function SaleCourseBuyPage() {
           </p>
 
           <div className="flex justify-center mt-4">
-            <button className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+            <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg">
               &raquo; YES, I WANT TO AUTOMATE MY YOUTUBE SEO (ONLY ₹1999/3
               Months)
             </button>
@@ -240,69 +249,90 @@ function SaleCourseBuyPage() {
               />
             </div>
             <div className="flex justify-center mt-4">
-              <button className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+              <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg">
                 &raquo; YES, I WANT TO AUTOMATE MY YOUTUBE SEO (ONLY ₹1999/3
                 Months)
               </button>
             </div>
             <div className="mt-10 text-white">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white">
-  {/* Left Side */}
-  <div>
-    <p className="flex items-start">
-      <span className="text-green-500 text-xl">✅</span>
-      <span className="ml-2 font-bold text-yellow-400">
-        Stop Waiting and{" "}
-        <span className="text-orange-500">
-          Start Optimising Your YouTube Videos
-        </span>{" "}
-        in Less Than 3 Minutes ~ GUARANTEED!
-      </span>
-    </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white">
+                {/* Left Side */}
+                <div>
+                  <p className="flex items-start">
+                    <span className="text-green-500 text-xl">✅</span>
+                    <span className="ml-2 text-start font-bold text-yellow-400">
+                      Stop Waiting and{" "}
+                      <span className="text-orange-500">
+                        Start Optimising Your YouTube Videos
+                      </span>{" "}
+                      in Less Than 3 Minutes ~ GUARANTEED!
+                    </span>
+                  </p>
 
-    <p className="flex items-start mt-4">
-      <span className="text-green-500 text-xl">✅</span>
-      <span className="ml-2 font-bold text-yellow-400">
-        Craft Seamless{" "}
-        <span className="text-orange-500">Sales Pitches:</span>
-      </span>
-      <span className="ml-1"> Tailored to your industry and business needs.</span>
-    </p>
+                  <p className="flex items-start mt-4">
+                    <span className="text-green-500 text-xl">✅</span>
+                    <span className="ml-2 text-start font-bold text-yellow-400">
+                      Craft Seamless{" "}
+                      <span className="text-orange-500 text-end">
+                        Sales Pitches:
+                      </span>
+                      <span className="text-start text-white">
+                        {" "}
+                        Tailored to your industry and business needs.
+                      </span>
+                    </span>
+                  </p>
 
-    <p className="flex items-start mt-4">
-      <span className="text-green-500 text-xl">✅</span>
-      <span className="ml-2 font-bold text-orange-500">
-        No More Reliance on Outdated Sales Tactics:
-      </span>
-      <span className="ml-1"> Embrace the power of modern sales strategies.</span>
-    </p>
-  </div>
+                  <p className="flex items-start mt-4">
+                    <span className="text-green-500 text-xl">✅</span>
+                    <span className="ml-2 text-start font-bold text-orange-500">
+                      No More Reliance on Outdated Sales Tactics:
+                    <span className="ml-1 text-white">
+                      {" "}
+                      Embrace the power of modern sales strategies.
+                    </span>
+                    </span>
 
-  {/* Right Side */}
-  <div>
-    <p className="flex items-start">
-      <span className="text-green-500 text-xl">✅</span>
-      <span className="ml-2 font-bold text-yellow-400">
-        Step-by-Step <span className="text-orange-500">Automated SEO</span> to Optimize Your YouTube Videos & Boost Channel&apos;s Growth
-      </span>
-    </p>
+                  </p>
+                </div>
 
-    <p className="flex items-start mt-4">
-      <span className="text-green-500 text-xl">✅</span>
-      <span className="ml-2 font-bold text-yellow-400">
-        Learn to <span className="text-orange-500">Leverage Tools for YouTube SEO</span> and Experience Freedom from Tedious Tasks
-      </span>
-    </p>
+                {/* Right Side */}
+                <div>
+                  <p className="flex items-start">
+                    <span className="text-green-500 text-xl">✅</span>
+                    <span className="ml-2  text-start font-bold text-orange-500">
+                      Step-by-Step{" "}
+                      <span className="text-orange-500">Automated SEO </span> 
+                    <span className="font-bold text-white">
+                    to
+                      Optimize Your YouTube Videos & Boost Channel&apos;s Growth
+                      </span>
+                    </span>
+                  </p>
 
-    <p className="flex items-start mt-4">
-      <span className="text-green-500 text-xl">✅</span>
-      <span className="ml-2 font-bold text-yellow-400">
-        Witness a <span className="text-orange-500">Boost in Your Revenue</span> with High-Ranking SEO-Optimized Videos
-      </span>
-    </p>
-  </div>
-</div>
+                  <p className="flex items-start mt-4">
+                    <span className="text-green-500 text-xl">✅</span>
+                    <span className="ml-2 text-start font-bold text-white">
+                      Learn to{" "}
+                      <span className="text-orange-500">
+                        Leverage Tools for YouTube SEO
+                      </span>{" "}
+                      and Experience Freedom from Tedious Tasks
+                    </span>
+                  </p>
 
+                  <p className="flex items-start mt-4">
+                    <span className="text-green-500 text-xl">✅</span>
+                    <span className="ml-2 text-start font-bold text-white">
+                      Witness a{" "}
+                      <span className="text-orange-500">
+                        Boost in Your Revenue
+                      </span>{" "}
+                      with High-Ranking SEO-Optimized Videos
+                    </span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
