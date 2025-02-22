@@ -4,6 +4,9 @@ import axiosInstance from "../../Connection/Axios";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ToasterHot from "../Common/ToasterHot";
+import phonePe from "../../assets/phonepe-logo.png"
+import razorPay from "../../assets/razorpay-logo.png"
+import LogoImg from "../../assets/logo.jpg"
 
 const PaymentPage = () => {
   const { courseId } = useParams();
@@ -118,7 +121,7 @@ const PaymentPage = () => {
           )}
         </div>
         <div className="md:w-1/2 mt-6 md:mt-0 md:pl-10">
-          <h3 className="text-yellow-400 text-lg font-semibold">Contact information</h3>
+          <h3 className="text-yellow-400 text-lg font-semibold">Contact Information</h3>
           <form className="mt-4 space-y-4" onSubmit={handlePayment}>
             <input
               name="username"
@@ -144,9 +147,34 @@ const PaymentPage = () => {
               className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-100 text-black"
               required
             />
+            <h3 className="text-yellow-400 text-lg font-semibold">Choose Payment Method</h3>
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center space-x-2 border p-2 rounded-lg cursor-pointer w-1/2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="razorpay"
+                  onChange={handleChange}
+                  className="w-5 h-5"
+                  required
+                />
+                <img src={razorPay} alt="Razorpay" className="w-32 h-10 rounded-lg object-cover" />
+              </label>
+              <label className="flex items-center space-x-2 border p-2 rounded-lg cursor-pointer w-1/2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="phonepe"
+                  onChange={handleChange}
+                  className="w-5 h-5"
+                  required
+                />
+                <img src={phonePe} alt="PhonePe" className="w-32 h-10 object-cover rounded-lg" />
+              </label>
+            </div>
             <button
               type="submit"
-              className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold"
+              className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
             >
               Pay Now
             </button>
@@ -155,7 +183,7 @@ const PaymentPage = () => {
       </div>
       <div className="text-right p-4">
         <img
-          src="/systeme-io-logo.png"
+          src={LogoImg}
           alt="Powered by Systeme.io"
           className="w-32 mx-auto"
         />
@@ -163,6 +191,7 @@ const PaymentPage = () => {
       <ToasterHot />
     </div>
   );
+  
 };
 
 export default PaymentPage;
