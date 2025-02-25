@@ -1,28 +1,28 @@
 import { useState, useEffect } from "react";
-import { loadScript } from "../../Utils/LoadScript";
+import { load } from "@cashfreepayments/cashfree-js"; // Import correctly
 import axiosInstance from "../../Connection/Axios";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ToasterHot from "../Common/ToasterHot";
-import phonePe from "../../assets/phonepe-logo.png"
-import razorPay from "../../assets/razorpay-logo.png"
-import LogoImg from "../../assets/logo.jpg"
 
 const PaymentPage = () => {
   const { courseId } = useParams();
+  // const navigate = useNavigate();
   const BASE_URL = axiosInstance.defaults.baseURL;
+
   const [course, setCourse] = useState(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     phone: "",
-    paymentMethod: "razorpay",
   });
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const response = await axiosInstance.get(`/sale/buy-course/course/${courseId}`);
+        const response = await axiosInstance.get(
+          `/sale/buy-course/course/${courseId}`
+        );
         setCourse(response.data);
       } catch (error) {
         toast.error("Failed to fetch course details");
@@ -37,64 +37,45 @@ const PaymentPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePayment = async (e) => {
+  const handleCashfreePayment = async (e) => {
     e.preventDefault();
 
-    if (!course) {
-      toast.error("Course details not available");
-      return;
+    if (!course || !course.price) {
+      return toast.error("Invalid course price");
     }
 
-    const isScriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
-    if (!isScriptLoaded) {
-      toast.error("Razorpay SDK failed to load. Check your internet connection.");
-      return;
+    const amount = Number(course.price);
+    if (isNaN(amount) || amount <= 0) {
+      return toast.error("Invalid course pricing");
     }
 
     try {
-      const response = await axiosInstance.post("/payment/create-order", {
-        amount: course.price * 100, // Convert to paise
+      const cashfree = await load({ mode: "sandbox" }); // Load Cashfree SDK
+
+      const response = await axiosInstance.post("/sale/create-cashfree-order", {
+        amount: amount,
         currency: "INR",
+        customer_details: {
+          customer_id: `CF_${Date.now()}`,
+          customer_email: formData.email,
+          customer_phone: formData.phone,
+        },
       });
 
-      const { amount, id: order_id, currency } = response.data;
+      console.log("Cashfree Response:", response.data);
 
-      const options = {
-        // eslint-disable-next-line no-undef
-        key: process.env.REACT_APP_RAZORPAY_KEY || "YOUR_RAZORPAY_KEY", // Use environment variable
-        amount,
-        currency,
-        name: "Your Company",
-        description: course.title,
-        image: "https://yourlogo.com/logo.png",
-        order_id,
-        handler: async function (response) {
-          try {
-            await axiosInstance.post("/payment/verify", {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            toast.success("Payment Successful!");
-          } catch (error) {
-            toast.error("Payment verification failed.",error);
-          }
-        },
-        prefill: {
-          name: formData.username,
-          email: formData.email,
-          contact: formData.phone,
-        },
-        theme: {
-          color: "#3182ce",
-        },
-      };
+      if (!response.data.payment_session_id) {
+        throw new Error("Invalid Payment Session ID");
+      }
 
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
+      // Corrected: Using checkout instead of redirect
+      cashfree.checkout({
+        paymentSessionId: response.data.payment_session_id, // Ensure backend returns this
+        returnUrl: window.location.origin + "/sale/payment-success", // Redirect after payment
+      });
     } catch (error) {
-      toast.error("Payment initiation failed");
-      console.error("Payment initiation failed", error);
+      toast.error("Cashfree Payment failed");
+      console.error("Error:", error.response?.data || error);
     }
   };
 
@@ -110,7 +91,9 @@ const PaymentPage = () => {
         <div className="md:w-1/2">
           <h2 className="text-xl font-semibold">
             Register before the deadline to unlock <br />
-            <span className="text-yellow-400">bonuses worth Rs. 97,000 for FREE!</span>
+            <span className="text-yellow-400">
+              bonuses worth Rs. 97,000 for FREE!
+            </span>
           </h2>
           {course?.images?.length > 0 && (
             <img
@@ -121,8 +104,10 @@ const PaymentPage = () => {
           )}
         </div>
         <div className="md:w-1/2 mt-6 md:mt-0 md:pl-10">
-          <h3 className="text-yellow-400 text-lg font-semibold">Contact Information</h3>
-          <form className="mt-4 space-y-4" onSubmit={handlePayment}>
+          <h3 className="text-yellow-400 text-lg font-semibold">
+            Contact Information
+          </h3>
+          <form className="mt-4 space-y-4" onSubmit={handleCashfreePayment}>
             <input
               name="username"
               type="text"
@@ -147,51 +132,18 @@ const PaymentPage = () => {
               className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-100 text-black"
               required
             />
-            <h3 className="text-yellow-400 text-lg font-semibold">Choose Payment Method</h3>
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2 border p-2 rounded-lg cursor-pointer w-1/2">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="razorpay"
-                  onChange={handleChange}
-                  className="w-5 h-5"
-                  required
-                />
-                <img src={razorPay} alt="Razorpay" className="w-32 h-10 rounded-lg object-cover" />
-              </label>
-              <label className="flex items-center space-x-2 border p-2 rounded-lg cursor-pointer w-1/2">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="phonepe"
-                  onChange={handleChange}
-                  className="w-5 h-5"
-                  required
-                />
-                <img src={phonePe} alt="PhonePe" className="w-32 h-10 object-cover rounded-lg" />
-              </label>
-            </div>
             <button
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
             >
-              Pay Now
+              Pay Now ₹{course?.price}
             </button>
           </form>
         </div>
       </div>
-      <div className="text-right p-4">
-        <img
-          src={LogoImg}
-          alt="Powered by Systeme.io"
-          className="w-32 mx-auto"
-        />
-      </div>
       <ToasterHot />
     </div>
   );
-  
 };
 
 export default PaymentPage;

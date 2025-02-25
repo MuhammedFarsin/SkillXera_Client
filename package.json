@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.5",
     "@headlessui/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.5.1",
     "@shadcn/ui": "^0.0.4",
