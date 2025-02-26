@@ -55,10 +55,12 @@ const PaymentPage = () => {
       const response = await axiosInstance.post("/sale/create-cashfree-order", {
         amount: amount,
         currency: "INR",
+        courseId : course._id,
         customer_details: {
-          customer_id: `CF_${Date.now()}`,
-          customer_email: formData.email,
-          customer_phone: formData.phone,
+          _id: `CF_${Date.now()}`,
+          username : formData.username,
+          email: formData.email,
+          phone: formData.phone,
         },
       });
 
@@ -68,11 +70,12 @@ const PaymentPage = () => {
         throw new Error("Invalid Payment Session ID");
       }
 
-      // Corrected: Using checkout instead of redirect
       cashfree.checkout({
-        paymentSessionId: response.data.payment_session_id, // Ensure backend returns this
-        returnUrl: window.location.origin + "/sale/payment-success", // Redirect after payment
+        paymentSessionId: response.data.payment_session_id,
+        returnUrl: `http://localhost:5173/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}`,
       });
+      
+      
     } catch (error) {
       toast.error("Cashfree Payment failed");
       console.error("Error:", error.response?.data || error);
