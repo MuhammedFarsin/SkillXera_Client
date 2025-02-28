@@ -1,5 +1,5 @@
 import React from 'react'
-import Transaction_page from "../../Pages/Admin_Sales_Transaction"
+import Transaction_page from "../../Pages/Sale/Admin_Sales_Transaction"
 
 function Transactions() {
   return (

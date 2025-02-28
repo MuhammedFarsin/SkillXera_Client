@@ -8,8 +8,8 @@ import axiosInstance from "../../../Connection/Axios";
 import { toast } from "sonner";
 import AddCourseModel from "../PopUpMessage/AddCourseModel";
 import EditCourseModel from "../PopUpMessage/EditCourseModel";
-import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal"
-import { frontendRoute } from "../../../Utils/utils"
+import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal";
+import { frontendRoute } from "../../../Utils/utils";
 
 const CourseTable = () => {
   const menuRef = useRef(null);
@@ -291,11 +291,10 @@ const CourseTable = () => {
         onCourseUpdated={handleCourseUpdated}
       />
       <ShareLinkModal
-  isOpen={openShareModal}
-  onClose={handleShareClose}
-  buyLink={buyLink}  // ✅ Correct
-/>
-
+        isOpen={openShareModal}
+        onClose={handleShareClose}
+        buyLink={buyLink} // ✅ Correct
+      />
     </main>
   );
 };

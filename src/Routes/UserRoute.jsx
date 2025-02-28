@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedAuth from "./ProtectedAuth";
 import ProtectedRoute from "./ProtectedRoute";
+import Set_Password from "../Components/User/SetPassword"
 // import PageNotFound from "../Pages/Common/PageNotFound";
 
 const Signin = React.lazy(() => import("../Components/User/Signin"));
@@ -12,6 +13,8 @@ const Email_password = React.lazy(() => import("../Components/User/ForgetPasswor
 const Otp_password = React.lazy(() => import("../Components/User/ForgetPassword_Otp"));
 const Reset_password = React.lazy(() => import("../Components/User/Resetpassword"));
 const HomePage = React.lazy(() => import("../Components/User/Home"));
+const ExplorePage = React.lazy(() => import("../Components/User/ExplorePage"));
+
 function UserRoute() {
   return (
     <Routes>
@@ -72,6 +75,14 @@ function UserRoute() {
         }
       />
       <Route
+        path="/set-password"
+        element={
+          <ProtectedAuth>
+            <Set_Password />
+          </ProtectedAuth>
+        }
+      />
+      <Route
         path="/home"
         element={
           <ProtectedRoute>
@@ -79,6 +90,15 @@ function UserRoute() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/explore/:courseId/module/:moduleId/lecture/:lectureIndex"
+  element={
+    <ProtectedRoute>
+      <ExplorePage />
+    </ProtectedRoute>
+  }
+/>
+
     </Routes>
   );
 }

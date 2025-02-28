@@ -3,6 +3,7 @@ import { FaCopy } from "react-icons/fa";
 import { toast } from "sonner";
 import axiosInstance from "../../../Connection/Axios";
 import { motion } from "framer-motion";
+import { frontendRoute } from "../../../Utils/utils"
 
 // eslint-disable-next-line react/prop-types
 const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
@@ -37,11 +38,11 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
               video,
             } = response.data;
             setCourseName(title);
-            setCourseRoute(route?.replace(`${baseURL}/course/`, "") || "");
+            setCourseRoute(route?.replace(`${frontendRoute}/course/`, "") || "");
             setPrice(price);
             setDescription(description);
             setBuyCourse(
-              buyCourse.replace(`${baseURL}/sale/buy-course/course/`, "") || ""
+              buyCourse.replace(`${frontendRoute}/sale/buy-course/course/`, "") || ""
             );
             console.log(response.data);
             const existingImagePaths = images.map((img) => `${img}`);
@@ -104,8 +105,8 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
     }
 
     setLoading(true);
-    const fullRoute = `${baseURL}/course/${courseRoute}`;
-    const buyCourseLink = `${baseURL}/sale/buy-course/course/${buyCourse}`;
+    const fullRoute = `${frontendRoute}/course/${courseRoute}`;
+    const buyCourseLink = `${frontendRoute}/sale/buy-course/course/${buyCourse}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
@@ -159,12 +160,12 @@ const EditCourseModal = ({ isOpen, onClose, course, onCourseUpdated }) => {
   };
 
   const handleCopyLink = () => {
-    const fullLink = `${baseURL}/course/${courseRoute}`;
+    const fullLink = `${frontendRoute}/course/${courseRoute}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
   const handleBuyCourseCopyLink = () => {
-    const fullLink = `${baseURL}/sale/buy-course/course/${buyCourse}`;
+    const fullLink = `${frontendRoute}/sale/buy-course/course/${buyCourse}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };

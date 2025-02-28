@@ -3,6 +3,7 @@ import { FaCopy } from "react-icons/fa";
 import { toast } from "sonner";
 import axiosInstance from "../../../Connection/Axios";
 import { motion } from "framer-motion";
+import { frontendRoute } from "../../../Utils/utils"
 
 // eslint-disable-next-line react/prop-types
 const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
@@ -79,8 +80,8 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
     }
 
     setLoading(true);
-    const fullCourseRoute = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
-    const fullBuyingCourseRoute = `${axiosInstance.defaults.baseURL}/sale/buy-course/course/${buyingCourseRoute}`;
+    const fullCourseRoute = `${frontendRoute}/course/${courseRoute}`;
+    const fullBuyingCourseRoute = `${frontendRoute}/sale/buy-course/course/${buyingCourseRoute}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
@@ -91,13 +92,7 @@ const AddCourseModal = ({ isOpen, onClose, onCourseAdded }) => {
     images.forEach((image) => {
       formData.append("images", image);
     });
-    formData.append("video", video); // ✅ Add video to form data
-    console.log("Video Type:", typeof video); // Should be 'object'
-console.log("Video Instance:", video instanceof File); // Should be true
-
-    // for(let [key,values] of formData) {
-    //   console.log(key, values)
-    // }
+    formData.append("video", video);
 
     try {
       const response = await axiosInstance.post(
@@ -129,12 +124,12 @@ console.log("Video Instance:", video instanceof File); // Should be true
 
   // Handle copying the link
   const handleCopyLink = () => {
-    const fullLink = `${axiosInstance.defaults.baseURL}/course/${courseRoute}`;
+    const fullLink = `${frontendRoute}/course/${courseRoute}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
   const handleBuyCourseCopyLink = () => {
-    const fullLink = `${axiosInstance.defaults.baseURL}/sale/buy-course/course/${buyingCourseRoute}`;
+    const fullLink = `${frontendRoute}/sale/buy-course/course/${buyingCourseRoute}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
