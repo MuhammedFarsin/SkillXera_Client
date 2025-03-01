@@ -77,11 +77,32 @@ function Admin_Sales_Transaction() {
       }
     });
   };
+  const handleResendPaymentMail = async (orderId) => {
+    try {
+      if (!orderId) {
+        toast.error("Order ID is missing");
+        return;
+      }
+
+      const response = await axiosInstance.post(
+        "/admin/sales/transaction/resend-transaction-mail",
+        {
+          order_id: orderId,
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Resend Email Successfully Sent");
+      }
+    } catch (error) {
+      toast.error("Error while resending Email");
+      console.log(error);
+    }
+  };
 
   const filteredPayments = payments.filter((payment) =>
     payment.email.toLowerCase().includes(searchFilter.toLowerCase())
   );
-  console.log(selectedPayment);
   return (
     <div className="relative bg-gray-100 min-h-screen">
       <Admin_Navbar />
@@ -211,12 +232,17 @@ function Admin_Sales_Transaction() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="absolute bottom-full left-0 mb-2 bg-gray-100 shadow-md rounded-md p-3"
                   >
-                    <button
-                      onClick={() => console.log("Add Tag Clicked")}
-                      className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-white"
-                    >
-                      Resend Email
-                    </button>
+                    {payments.map((payment) => (
+                      <button
+                        key={payment._id}
+                        onClick={() =>
+                          handleResendPaymentMail(payment.cashfree_order_id)
+                        }
+                        className="block w-full text-left rounded-lg text-black px-4 py-2 hover:bg-white"
+                      >
+                        Resend Email
+                      </button>
+                    ))}
                   </motion.div>
                 )}
               </div>
