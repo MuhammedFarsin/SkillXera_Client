@@ -4,6 +4,8 @@ import axiosInstance from "../../Connection/Axios";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ToasterHot from "../Common/ToasterHot";
+import ReactPixel from "react-facebook-pixel";
+
 
 const PaymentPage = () => {
   const { courseId } = useParams();
@@ -37,50 +39,78 @@ const PaymentPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCashfreePayment = async (e) => {
-    e.preventDefault();
 
-    if (!course || !course.price) {
-      return toast.error("Invalid course price");
+const handleCashfreePayment = async (e) => {
+  e.preventDefault();
+
+  if (!course || !course.price) {
+    return toast.error("Invalid course price");
+  }
+
+  const amount = Number(course.price);
+  if (isNaN(amount) || amount <= 0) {
+    return toast.error("Invalid course pricing");
+  }
+
+  try {
+    // Initialize Facebook Pixel if not already initialized
+    ReactPixel.track("InitiateCheckout", {
+      content_name: course.title,
+      content_ids: [course._id],
+      value: amount,
+      currency: "INR",
+    });
+
+    const cashfree = await load({ mode: "sandbox" }); // Load Cashfree SDK
+
+    const response = await axiosInstance.post("/sale/create-cashfree-order", {
+      amount: amount,
+      currency: "INR",
+      courseId: course._id,
+      customer_details: {
+        _id: `CF_${Date.now()}`,
+        username: formData.username,
+        email: formData.email,
+        phone: formData.phone,
+      },
+    });
+
+    console.log("Cashfree Response:", response.data);
+
+    if (!response.data.payment_session_id) {
+      throw new Error("Invalid Payment Session ID");
     }
 
-    const amount = Number(course.price);
-    if (isNaN(amount) || amount <= 0) {
-      return toast.error("Invalid course pricing");
-    }
+    // Track payment processing
+    ReactPixel.track("AddPaymentInfo", {
+      content_name: course.title,
+      content_ids: [course._id],
+      value: amount,
+      currency: "INR",
+      payment_method: "Cashfree",
+    });
 
-    try {
-      const cashfree = await load({ mode: "sandbox" }); // Load Cashfree SDK
+    // Redirect to Cashfree checkout
+    cashfree.checkout({
+      paymentSessionId: response.data.payment_session_id,
+      returnUrl: `http://localhost:5173/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}`,
+    });
 
-      const response = await axiosInstance.post("/sale/create-cashfree-order", {
-        amount: amount,
-        currency: "INR",
-        courseId : course._id,
-        customer_details: {
-          _id: `CF_${Date.now()}`,
-          username : formData.username,
-          email: formData.email,
-          phone: formData.phone,
-        },
-      });
+  } catch (error) {
+    toast.error("Cashfree Payment failed");
+    console.error("Error:", error.response?.data || error);
 
-      console.log("Cashfree Response:", response.data);
+    // Track failed payments
+    ReactPixel.track("PurchaseFailed", {
+      content_name: course.title,
+      content_ids: [course._id],
+      value: amount,
+      currency: "INR",
+      error_message: error.message || "Payment Failed",
+    });
+  }
+};
 
-      if (!response.data.payment_session_id) {
-        throw new Error("Invalid Payment Session ID");
-      }
-
-      cashfree.checkout({
-        paymentSessionId: response.data.payment_session_id,
-        returnUrl: `http://localhost:5173/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}`,
-      });
-      
-      
-    } catch (error) {
-      toast.error("Cashfree Payment failed");
-      console.error("Error:", error.response?.data || error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black text-white">
