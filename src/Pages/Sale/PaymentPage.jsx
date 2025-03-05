@@ -32,7 +32,7 @@ const PaymentPage = () => {
 
     fetchCourseDetails();
   }, [courseId]);
-
+  console.log(course)
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

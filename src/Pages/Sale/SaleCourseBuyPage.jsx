@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../Connection/Axios";
+import ReactPixel from "react-facebook-pixel"
 
 function SaleCourseBuyPage() {
   const navigate = useNavigate()
@@ -29,9 +30,27 @@ function SaleCourseBuyPage() {
     fetchCourseDetails();
   }, [courseId]);
  
-  const handleNavigate = () => {
+  const handleNavigate = (courseId) => {
+    console.log("Navigating with Course ID:", courseId);
+    if (!courseId) {
+      console.warn("Course ID is missing");
+      return;
+    }
+    ReactPixel.track("Purchase", {
+      value: course.price,
+      currency: "INR",
+      content_name: "SkillXera",
+      content_category: "Online Course",
+      content_ids: courseId,
+      content_type: "product",
+    });
+
     navigate(`/sale/buy-course/course/payment/${courseId}`);
-  };
+};
+
+console.log(courseId)
+
+  
 
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
@@ -91,7 +110,7 @@ function SaleCourseBuyPage() {
 
       {/* After Video Content */}
       <div className="text-white mt-10 text-center rounded-lg shadow-lg w-full max-w-3xl">
-        <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mb-6">
+        <button onClick={() => handleNavigate(courseId)} className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mb-6">
           &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
           <span className="text-sm">(ONLY ₹1999/3 Months)</span>
         </button>

@@ -67,8 +67,10 @@ function TagTable() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  console.log(tags)
 
   const handleDelete = async (tagId) => {
+    console.log('this is clicking')
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -96,7 +98,7 @@ function TagTable() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-200 text-sm">
       <Admin_Navbar />
       <div className="p-10 mx-auto py-10 mt-12">
         <div className="flex justify-between items-center mb-6">
@@ -109,41 +111,41 @@ function TagTable() {
           </button>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          {tags.length > 0 ? (
-            <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 p-3 rounded-md">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          {tags.length > 0 && (
+            <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 dark:bg-gray-700 p-3 rounded-md">
               <div>Tag Name</div>
               <div>Date Registration</div>
               <div>Actions</div>
             </div>
-          ) : null}
+          )}
 
           {tags.length > 0 ? (
             <div>
               {tags.map((tag, index) => (
                 <div
                   key={tag._id}
-                  className="grid grid-cols-3 text-center p-3 border-b items-center hover:bg-gray-100 relative"
+                  className="grid grid-cols-3 text-center p-3 border-b border-gray-300 dark:border-gray-600 items-center hover:bg-gray-100 dark:hover:bg-gray-700 relative"
                 >
                   <div>{tag.name}</div>
                   <div>{format(new Date(tag.createdAt), "PPpp")}</div>
                   <div className="relative" ref={menuRef}>
                     <button
                       onClick={() => toggleMenu(index)}
-                      className="p-2 rounded-full hover:bg-gray-200"
+                      className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
                     >
                       <HiOutlineDotsHorizontal className="text-lg" />
                     </button>
                     {openMenuIndex === index && (
-                      <div className="absolute right-0 mt-2 w-32 bg-white border rounded-lg shadow-md z-10 dropdown-menu">
+                      <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md z-10">
                         <button
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                           onClick={() => handleEditTagModalOpen(tag._id)}
                         >
                           Edit
                         </button>
                         <button
-                          className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                          className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600"
                           onClick={() => handleDelete(tag._id)}
                         >
                           Delete
@@ -161,7 +163,7 @@ function TagTable() {
                 alt="No Tags"
                 className="w-40 h-40 rounded-full"
               />
-              <p className="text-gray-500 mt-4">No tags found.</p>
+              <p className="text-gray-500 dark:text-gray-400 mt-4">No tags found.</p>
             </div>
           )}
         </div>
@@ -176,12 +178,7 @@ function TagTable() {
         isOpen={isOpenEditTagModal}
         onClose={handleEditTagModalClose}
         tagId={editingTagId}
-      />
-      <EditTag_Modal
-        isOpen={isOpenEditTagModal}
-        onClose={handleEditTagModalClose}
-        tagId={editingTagId}
-        onTagEdited={handleTagEdited} // Add this prop
+        onTagEdited={handleTagEdited}
       />
     </div>
   );

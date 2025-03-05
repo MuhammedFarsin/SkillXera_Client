@@ -10,6 +10,7 @@ import AddCourseModel from "../PopUpMessage/AddCourseModel";
 import EditCourseModel from "../PopUpMessage/EditCourseModel";
 import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal";
 import { frontendRoute } from "../../../Utils/utils";
+import Admin_Navbar from "../../Common/AdminNavbar";
 
 const CourseTable = () => {
   const menuRef = useRef(null);
@@ -146,17 +147,19 @@ const CourseTable = () => {
   };
 
   return (
-    <main className="p-8 pt-24">
-      <div className="flex justify-end mb-8 space-x-6">
+    <main className="p-8 pt-24 bg-gray-900 text-white min-h-screen text-sm">
+      <Admin_Navbar />
+
+      <div className="flex justify-end mb-8 space-x-6 text-sm">
         <input
           type="text"
           placeholder="Search by course title..."
-          className="p-3 rounded-lg shadow-md border focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 rounded-lg shadow-md bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="p-3 w-52 rounded-lg shadow-md bg-white border focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 w-52 rounded-lg shadow-md bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -165,35 +168,27 @@ const CourseTable = () => {
           <option value="inactive">Inactive</option>
         </select>
         <button
-          className="bg-gradient-to-b from-[#1a1a1a] to-[#004d40] text-white px-6 py-3 rounded-lg transition duration-300"
+          className="bg-gray-700 text-white px-6 py-3 rounded-lg transition duration-300 hover:opacity-80"
           onClick={() => setModalOpen(true)}
         >
           Add Course
         </button>
       </div>
+  
       <div className="relative overflow-visible rounded-lg shadow-lg">
-        <table className="w-full border-collapse bg-white rounded-lg">
-          <thead className="bg-gradient-to-b from-gray-800 to-green-700 text-white">
+        <table className="w-full border-collapse bg-gray-800 rounded-lg">
+          <thead className="bg-gradient-to-b from-gray-700 to-gray-600 text-white">
             <tr>
-              <th
-                className="p-4 cursor-pointer rounded-lg"
-                onClick={() => requestSort("title")}
-              >
+              <th className="p-4 cursor-pointer" onClick={() => requestSort("title")}>
                 Course Name
               </th>
-              <th
-                className="p-4 cursor-pointer rounded-lg"
-                onClick={() => requestSort("price")}
-              >
+              <th className="p-4 cursor-pointer" onClick={() => requestSort("price")}>
                 Price
               </th>
-              <th
-                className="p-4 cursor-pointer rounded-lg"
-                onClick={() => requestSort("status")}
-              >
+              <th className="p-4 cursor-pointer" onClick={() => requestSort("status")}>
                 Status
               </th>
-              <th className="p-4 rounded-lg">Actions</th>
+              <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -206,65 +201,58 @@ const CourseTable = () => {
             ) : sortedCourses().length === 0 ? (
               <tr>
                 <td colSpan="4" className="p-4 text-center">
-                  <img
-                    src={EmptyPage}
-                    alt="No courses available"
-                    className="w-40 mx-auto"
-                  />
+                  <img src={EmptyPage} alt="No courses available" className="w-40 mx-auto" />
                 </td>
               </tr>
             ) : (
               sortedCourses().map((course) => (
-                <tr key={course._id} className="hover:bg-gray-100">
+                <tr key={course._id} className="hover:bg-gray-700">
                   <td className="p-4 text-center">
                     <Link
                       to={`/admin/assets/courses/module/${course._id}`}
-                      className="text-green-600 hover:text-green-800 transition duration-200"
+                      className="text-blue-400 hover:text-blue-600 transition duration-200"
                     >
                       {course.title}
                     </Link>
                   </td>
-
                   <td className="p-4 text-center">{course.price}</td>
                   <td className="p-4 text-center">
                     <span
                       className={
                         course.status === "active"
-                          ? "bg-green-100 text-green-700 px-4 py-1.5 rounded-full font-semibold"
-                          : "bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full font-semibold"
+                          ? "bg-green-600 text-white px-4 py-1.5 rounded-full font-semibold"
+                          : "bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-semibold"
                       }
                     >
                       {course.status}
                     </span>
                   </td>
-
                   <td className="p-4 text-center relative">
                     <button
                       onClick={() => setOpenMenu(course._id)}
-                      className="p-2 hover:bg-gray-200 rounded-full"
+                      className="p-2 hover:bg-gray-600 rounded-full"
                     >
                       <HiOutlineDotsHorizontal />
                     </button>
                     {openMenu === course._id && (
                       <motion.div
                         ref={menuRef}
-                        className="absolute right-0 mt-2 z-50 w-24 bg-white shadow-xl rounded-xl p-2"
+                        className="absolute right-0 mt-2 z-50 w-24 bg-gray-800 shadow-xl rounded-xl p-2"
                       >
                         <button
-                          className="block w-full py-2 text-sm hover:bg-blue-50 rounded-md"
+                          className="block w-full py-2 text-sm hover:bg-blue-700 rounded-md text-white"
                           onClick={() => handleShare(course._id)}
                         >
                           Share
                         </button>
-
                         <button
-                          className="block w-full px-4 py-2 hover:bg-blue-50 rounded-md text-sm"
+                          className="block w-full px-4 py-2 hover:bg-blue-700 rounded-md text-sm text-white"
                           onClick={() => handleEdit(course._id)}
                         >
                           Edit
                         </button>
                         <button
-                          className="block w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-md text-sm"
+                          className="block w-full px-4 py-2 text-red-500 hover:bg-red-700 hover:text-white rounded-md text-sm"
                           onClick={() => handleDelete(course._id)}
                         >
                           Delete
@@ -278,25 +266,14 @@ const CourseTable = () => {
           </tbody>
         </table>
       </div>
+  
       <AnimatePresence />
-      <AddCourseModel
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onCourseAdded={handleCourseAdded}
-      />
-      <EditCourseModel
-        isOpen={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        course={selectedCourse}
-        onCourseUpdated={handleCourseUpdated}
-      />
-      <ShareLinkModal
-        isOpen={openShareModal}
-        onClose={handleShareClose}
-        buyLink={buyLink} // ✅ Correct
-      />
+      <AddCourseModel isOpen={modalOpen} onClose={() => setModalOpen(false)} onCourseAdded={handleCourseAdded} />
+      <EditCourseModel isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} course={selectedCourse} onCourseUpdated={handleCourseUpdated} />
+      <ShareLinkModal isOpen={openShareModal} onClose={handleShareClose} buyLink={buyLink} />
     </main>
   );
+  
 };
 
 export default CourseTable;
