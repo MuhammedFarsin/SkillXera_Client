@@ -4,12 +4,13 @@ import { persistReducer, persistStore } from "redux-persist";
 import authReducer from "./Slices/authSlice";
 import userReducer from "./Slices/userSlice";
 import courseReducer from "./Slices/courseSlice";
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
+  whitelist: ["auth", "user"], // Only persist necessary reducers
 };
 
 const rootReducer = combineReducers({
@@ -30,6 +31,8 @@ const store = configureStore({
     }),
 });
 
-export const persistor = persistStore(store);
+export const persistor = persistStore(store, {}, () => {
+  store.dispatch({ type: "persist/rehydrate" }); // Ensure persistence state is updated
+});
 
 export default store;
