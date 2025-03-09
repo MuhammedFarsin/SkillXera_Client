@@ -133,7 +133,6 @@ function DashBoard() {
               <h3 className="text-md font-semibold text-gray-200 mb-2">
                 Orders & Revenue Over Time
               </h3>
-
               {loading ? (
                 <p className="text-gray-400 animate-pulse">Fetching data...</p>
               ) : salesData.length > 0 ? (

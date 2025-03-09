@@ -1,171 +1,83 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../Connection/Axios";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import Navbar from "./Common/Navbar";
+import axiosInstance from "../Connection/Axios";
+import { Link } from "react-router-dom";
 
 function ExplorePage() {
-  const BASE_URL = axiosInstance.defaults.baseURL;
-  const { courseId, moduleId, lectureIndex } = useParams();
-  const navigate = useNavigate();
-
-  const [currentLectureIndex, setCurrentLectureIndex] = useState(
-    parseInt(lectureIndex) || 0
-  );
-  const [currentLecture, setCurrentLecture] = useState(null);
-  const [moduleLectures, setModuleLectures] = useState([]);
+  const user = useSelector((state) => state.user); 
+  const userId = user?._id; 
+  const [courses, setCourses] = useState([]); 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const BASE_URL = axiosInstance.defaults.baseURL;
 
   useEffect(() => {
-    const fetchUserOrderDetails = async () => {
+    const fetchCourses = async () => {
       try {
-        const response = await axiosInstance.get(`/explore/${courseId}`);
-        if (response.status === 200 && response.data.course) {
-          const firstModule = response.data.course.modules?.[0];
-          const firstLectureIndex = 0;
-
-          if (!moduleId && firstModule) {
-            navigate(
-              `/course/${courseId}/module/${firstModule._id}/lecture/${firstLectureIndex}`
-            );
-          } else if (moduleId) {
-            const selectedModule = response.data.course.modules.find(
-              (m) => m._id === moduleId
-            );
-            setModuleLectures(selectedModule?.lectures || []);
-          }
+        const response = await axiosInstance.get(`/explore/${userId}`);
+        console.log("Courses Response:", response.data);
+        
+        if (response.status === 200 && response.data.courses) {
+          setCourses(response.data.courses);
         }
       } catch (error) {
-        setError("Failed to load data.");
-        console.log(error);
+        console.error("Error fetching courses:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserOrderDetails();
-  }, [courseId, moduleId]);
-
-  useEffect(() => {
-    const index = parseInt(lectureIndex);
-    if (
-      !isNaN(index) &&
-      moduleLectures.length > 0 &&
-      index < moduleLectures.length
-    ) {
-      setCurrentLecture(moduleLectures[index]);
-      setCurrentLectureIndex(index);
-    }
-  }, [lectureIndex, moduleLectures]); // ✅ Add `lectureIndex` as a dependency
-
-  const handleNext = () => {
-    if (currentLectureIndex < moduleLectures.length - 1) {
-      const nextIndex = currentLectureIndex + 1;
-      navigate(`/explore/${courseId}/module/${moduleId}/lecture/${nextIndex}`);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentLectureIndex > 0) {
-      const prevIndex = currentLectureIndex - 1;
-      navigate(`/explore/${courseId}/module/${moduleId}/lecture/${prevIndex}`);
-    }
-  };
-
-  if (loading)
-    return (
-      <p className="text-center text-lg font-semibold">Loading lecture...</p>
-    );
-  if (error)
-    return (
-      <p className="text-center text-red-600 font-semibold">Error: {error}</p>
-    );
+    fetchCourses();
+  }, []);
 
   return (
-    <div className="relative">
-      {/* Navbar */}
-      <Navbar className="fixed top-0 left-0 right-0 z-50 w-full" />
+    <div>
+      <Navbar />
+      <div className="p-10">
+        <h2 className="text-2xl font-bold mb-4 text-center">Courses</h2>
 
-      {/* Main Content */}
-      <div className="flex flex-col h-screen bg-gray-100 pt-16">
-        <div className="flex flex-grow">
-          {/* Sidebar for Lecture List */}
-          <aside className="w-1/4 bg-white p-4 shadow-lg overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-3">Lectures</h2>
-            <ul>
-              {moduleLectures.map((lecture, index) => (
-                <Link
-                  to={`/explore/${courseId}/module/${moduleId}/lecture/${index}`}
-                  key={index}
-                  onClick={() => setCurrentLectureIndex(index)}
-                  className={`block p-3 cursor-pointer rounded-md mb-2 transition-all duration-200 ${
-                    index === currentLectureIndex
-                      ? "bg-gradient-to-b from-[#1a1a1a] to-[#004d40] text-white"
-                      : "bg-gray-200 hover:bg-gray-300 text-black"
-                  }`}
-                >
-                  {lecture.title}
-                </Link>
-              ))}
-            </ul>
-          </aside>
-
-          {/* Main Video Section */}
-          <div className="flex-1 p-6 flex flex-col items-center">
-            {/* Navigation Buttons */}
-            <div className="flex justify-between mb-4 w-3/4">
-              <button
-                onClick={handlePrev}
-                disabled={currentLectureIndex === 0}
-                className={`px-6 py-2 font-semibold text-white rounded-lg transition-all duration-200 ${
-                  currentLectureIndex === 0
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
-              >
-                Previous
-              </button>
-
-              <button
-                onClick={handleNext}
-                disabled={currentLectureIndex === moduleLectures.length - 1}
-                className={`px-6 py-2 font-semibold text-white rounded-lg transition-all duration-200 ${
-                  currentLectureIndex === moduleLectures.length - 1
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
-              >
-                Next
-              </button>
-            </div>
-
-            <h2 className="text-2xl font-bold mb-4 text-center">
-              {currentLecture?.title}
-            </h2>
-            {/* Video Player */}
-            <div className="flex justify-center w-full">
-              <video
-                key={currentLecture?.videoUrl}
-                controls
-                className="w-3/4 shadow-lg rounded-lg"
-              >
-                <source
-                  src={`${BASE_URL}${currentLecture?.videoUrl}`}
-                  type="video/mp4"
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : courses.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {courses.map((course) => (
+              <div key={course._id} className="max-w-sm bg-white shadow-md rounded-lg overflow-hidden">
+                <img
+                  src={`${BASE_URL}${course.images[0]}`}
+                  alt={course.title}
+                  className="w-full h-40 object-cover"
                 />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-
-            {/* Lecture Description */}
-            <div className="mt-6 bg-white p-4 shadow-md rounded-lg w-3/4 text-center">
-              <h3 className="text-lg font-semibold">Lecture Description</h3>
-              <p className="text-gray-700">
-                {currentLecture?.description || "No description available."}
-              </p>
-            </div>
+                <div className="p-4 text-center">
+                  <h3 className="text-lg font-semibold">{course.title}</h3>
+                  <span className="block text-blue-600 font-bold mt-1">
+                    ₹{course.price}
+                  </span>
+                  <Link to={`/course-details/${userId}/${course._id}`}>
+                    <button className="mt-3 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                      Buy Now
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="text-center mt-10">
+            <h3 className="text-xl font-semibold text-gray-800">
+              Oops! Looks like you&apos;ve already explored everything.
+            </h3>
+            <p className="text-gray-600 mt-2">
+              We&apos;re always working on bringing you new and exciting courses. Stay tuned!
+            </p>
+           
+            <button
+              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              onClick={() => window.location.reload()}
+            >
+              Refresh & Check Again
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

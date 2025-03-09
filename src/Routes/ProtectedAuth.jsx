@@ -6,6 +6,7 @@ import { Navigate } from "react-router-dom";
 function ProtectedAuth({ children }) {
   const auth = useSelector((state) => state.auth.isAuthenticated);
   const user = useSelector((state) => state.user);
+  console.log(user.isAdmin)
   return auth ? (
     user.isAdmin ? (
       <Navigate to={"/admin/dashboard"} />

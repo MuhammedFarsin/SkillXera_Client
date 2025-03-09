@@ -1,14 +1,17 @@
 import ToasterHot from "../Common/ToasterHot";
 import logo from "../../assets/logo.jpg";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import axiosInstance from "../../Connection/Axios";
+import { login } from "../../Store/Slices/authSlice";
+import { setUser } from "../../Store/Slices/userSlice";
 
 function SetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
 
   const token = searchParams.get("token");
@@ -38,12 +41,21 @@ function SetPassword() {
         email,
         token,
       });
-      console.log(newPassword)
+      console.log(newPassword);
 
       if (response.status === 200) {
-        toast.success("Password reset successful.");
+        console.log(
+          "Access Token received from server:",
+          response.data.accessToken
+        );
+        localStorage.setItem("accessToken", response.data.accessToken);
+        const token = localStorage.getItem("accessToken");
+        console.log("Access Token retrieved from localStorage:", token);
+
+        toast.success("Login successful...");
         setTimeout(() => {
-          navigate("/signin");
+          dispatch(login());
+          dispatch(setUser(response.data.user));
         }, 2000);
       } else {
         toast.error(response.data.message || "Something went wrong.");

@@ -1,18 +1,17 @@
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaHome, FaCompass } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { removeUser } from "../../Store/Slices/userSlice";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
-import logo from "../../assets/logo.jpg";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../Store/Slices/authSlice";
 import { toast } from "sonner";
+import { logout } from "../../Store/Slices/authSlice";
+import { removeUser } from "../../Store/Slices/userSlice";
 import axiosInstance from "../../Connection/Axios";
+import logo from "../../assets/logo.jpg";
 
 function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
@@ -31,69 +30,51 @@ function Navbar() {
       toast.error("Internal server error: ", error);
     }
   };
+
   return (
-    <div>
-      {/* Header Section */}
-      <header className="w-full bg-gradient-to-b from-[#1a1a1a] to-[#004d40] py-4 px-6 fixed top-0 left-0 flex items-center justify-between z-50">
-        <div className="flex items-center space-x-2">
-          <img
-            src={logo}
-            alt="SkillXera Logo"
-            className="w-10 h-10 rounded-lg"
-          />
-          <h1 className="text-white text-xl font-bold">SkillXera</h1>
+    <header className="w-full bg-gradient-to-b from-[#1a1a1a] to-[#004d40] py-4 px-6 fixed top-0 left-0 flex items-center justify-between z-50">
+      {/* Left Section: Logo */}
+      <div className="flex items-center">
+        <img src={logo} alt="SkillXera Logo" className="w-10 h-10 rounded-lg" />
+        {/* Show text only on medium and larger screens */}
+        <h1 className="text-white text-xl font-bold hidden md:block ml-2">SkillXera</h1>
+      </div>
+
+      {/* Navigation Section */}
+      <nav className="flex items-center space-x-32">
+        {/* Mobile View (Icons Only) */}
+        <div className="flex md:hidden space-x-16">
+          <Link to="/home" className="text-white hover:text-gray-300">
+            <FaHome size={24} />
+          </Link>
+          <Link to="/explore" className="text-white hover:text-gray-300">
+            <FaCompass size={24} />
+          </Link>
+          <button onClick={handleLogout} className="text-white hover:text-gray-300">
+            <FaUserCircle size={24} />
+          </button>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex items-center space-x-10">
-          <Link
-            to="/admin/dashboard"
-            className="block py-2 px-4 text-white rounded-md hover:bg-gray-600 transition duration-200"
-          >
-            Home
+        {/* Tablet & Desktop View (Icons + Text Side by Side) */}
+        <div className="hidden md:flex space-x-32">
+          <Link to="/home" className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2">
+            <FaHome size={22} />
+            <span className="text-base">Home</span>
           </Link>
-          <Link
-            to="/admin/dashboard"
-            className="block py-2 px-4 text-white rounded-md hover:bg-gray-600 transition duration-200"
-          >
-            Explore
+          <Link to="/explore" className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2">
+            <FaCompass size={22} />
+            <span className="text-base">Explore</span>
           </Link>
-
-          <div
-            className="relative group"
-            onMouseEnter={() => setIsProfileOpen(true)}
-            onMouseLeave={() => setIsProfileOpen(false)}
+          <button
+            onClick={handleLogout}
+            className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2"
           >
-            <button className="text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-200 flex items-center">
-              <FaUserCircle className="text-white mr-2" size={20} /> Profile{" "}
-            </button>
-            {isProfileOpen && (
-              <div className="absolute right-0">
-                <ul className="bg-[#fff] rounded-lg shadow-md w-32 mt-1">
-                  <li>
-                    <Link
-                      to="/admin/user-profile"
-                      className="block py-2 px-4 text-black rounded-md hover:bg-gray-200 transition duration-200"
-                    >
-                      View Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left py-2 px-4 text-red-500 rounded-md hover:bg-gray-200 transition duration-200"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-                <div className="absolute right-4 bottom-full w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-[#fff]"></div>
-              </div>
-            )}
-          </div>
-        </nav>
-      </header>
-    </div>
+            <FaUserCircle size={22} />
+            <span className="text-base">Logout</span>
+          </button>
+        </div>
+      </nav>
+    </header>
   );
 }
 

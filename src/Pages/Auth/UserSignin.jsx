@@ -28,9 +28,7 @@ function SignInPage() {
         localStorage.setItem("accessToken", response.data.accessToken);
         const token = localStorage.getItem("accessToken");
         console.log("Access Token retrieved from localStorage:", token);
-        
-        // Log when the refreshToken endpoint is called
-        console.log("Calling refreshToken endpoint...");
+      
         toast.success("Login successful...");
         setTimeout(() => {
           dispatch(login());

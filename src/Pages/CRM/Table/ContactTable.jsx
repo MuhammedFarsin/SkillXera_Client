@@ -85,8 +85,6 @@ function ContactTable() {
     setIsRemoveModalOpen(false);
   };
   const handleEditContactOpenModal = () => {
-    // console.log("this is the id I need:", contactId);
-    // console.log(contactsData);
     setSelectedContactId(selectedContacts);
     setIsEditModalOpen(true);
   };

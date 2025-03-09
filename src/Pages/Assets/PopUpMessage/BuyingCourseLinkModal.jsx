@@ -18,7 +18,7 @@ function BuyingCourseLinkModal({ isOpen, onClose, buyLink }) {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
       <motion.div
-        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl"
+        className="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-2xl"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
@@ -28,7 +28,7 @@ function BuyingCourseLinkModal({ isOpen, onClose, buyLink }) {
           Copy Your Course Link
         </h2>
 
-        <label className="block font-medium text-gray-700">
+        <label className="block font-medium text-white">
           Buying Course Link
         </label>
         <div className="flex items-center">
@@ -36,7 +36,7 @@ function BuyingCourseLinkModal({ isOpen, onClose, buyLink }) {
             type="text"
             value={buyLink}
             readOnly
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-2 border rounded-md focus:outline-none bg-gray-700 focus:ring-2 focus:ring-green-500 text-white"
           />
         </div>
 

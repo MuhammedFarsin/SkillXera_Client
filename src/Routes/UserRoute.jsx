@@ -2,18 +2,25 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedAuth from "./ProtectedAuth";
 import ProtectedRoute from "./ProtectedRoute";
-import Set_Password from "../Components/User/SetPassword"
+import Set_Password from "../Components/User/SetPassword";
 // import PageNotFound from "../Pages/Common/PageNotFound";
 
 const Signin = React.lazy(() => import("../Components/User/Signin"));
 const Signup = React.lazy(() => import("../Components/User/Signup"));
 const OTP = React.lazy(() => import("../Components/User/Otp"));
 const LandingPage = React.lazy(() => import("../Components/User/LandingPage"));
-const Email_password = React.lazy(() => import("../Components/User/ForgetPassword_Email"));
-const Otp_password = React.lazy(() => import("../Components/User/ForgetPassword_Otp"));
-const Reset_password = React.lazy(() => import("../Components/User/Resetpassword"));
+const Email_password = React.lazy(() =>
+  import("../Components/User/ForgetPassword_Email")
+);
+const Otp_password = React.lazy(() =>
+  import("../Components/User/ForgetPassword_Otp")
+);
+const Reset_password = React.lazy(() =>
+  import("../Components/User/Resetpassword")
+);
 const HomePage = React.lazy(() => import("../Components/User/Home"));
-const ExplorePage = React.lazy(() => import("../Components/User/ExplorePage"));
+const LearningPage = React.lazy(() => import("../Components/User/LearnigPage"));
+const ExplorePage = React.lazy(() => import("../Components/User/Explore"));
 
 function UserRoute() {
   return (
@@ -91,14 +98,21 @@ function UserRoute() {
         }
       />
       <Route
-  path="/explore/:courseId/module/:moduleId/lecture/:lectureIndex"
-  element={
-    <ProtectedRoute>
-      <ExplorePage />
-    </ProtectedRoute>
-  }
-/>
-
+        path="/learn/:courseId/module/:moduleId/lecture/:lectureIndex"
+        element={
+          <ProtectedRoute>
+            <LearningPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/explore"
+        element={
+          <ProtectedRoute>
+            <ExplorePage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

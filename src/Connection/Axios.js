@@ -1,5 +1,7 @@
 import axios from "axios";
-// import localStorage from "redux-persist/lib/storage";
+import store from "../Store/store";  // Import the Redux store directly
+import { logout } from "../Store/Slices/authSlice";
+import { removeUser } from "../Store/Slices/userSlice";
 
 // Create Axios instance
 const axiosInstance = axios.create({
@@ -7,6 +9,7 @@ const axiosInstance = axios.create({
   withCredentials: true,  // Required for cookies (refresh token)
 });
 
+// Request interceptor: Add Authorization token
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -21,7 +24,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// **Response Interceptor: Handle Token Expiry & Refresh**
+// Response interceptor: Handle token expiration
 axiosInstance.interceptors.response.use(
   (response) => response,  // Return successful response
   async (error) => {
@@ -29,6 +32,7 @@ axiosInstance.interceptors.response.use(
 
     // **If token expired (401), try refreshing**
     if (error.response?.status === 401 && !originalRequest._retry) {
+      store.dispatch(logout())
       originalRequest._retry = true;
 
       try {
@@ -44,8 +48,11 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed:", refreshError);
-        localStorage.removeItem("accessToken");  // Clear invalid token
-        window.location.href = "/login";  // Redirect to login if refresh fails
+        
+        // Remove invalid token and log out user
+        localStorage.removeItem("accessToken");  
+        store.dispatch(removeUser());  // ✅ Use store.dispatch()
+        store.dispatch(logout());  // ✅ Use store.dispatch()
       }
     }
 

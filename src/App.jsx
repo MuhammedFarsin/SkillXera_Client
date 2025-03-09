@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import UserRoute from "./Routes/UserRoute"; 
 import AdminRoute from "./Routes/AdminRoute"; 
 import SaleRoute from "./Routes/SaleRoute"
-import {initFacebookPixel} from "./Utils/metaPixel"
 import { useEffect } from "react";
+import { initFacebookPixel } from "./utils/metaPixel";
 
 
 
