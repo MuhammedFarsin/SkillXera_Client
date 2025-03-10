@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import EmptyPage from "../../../assets/Empty.jpg";
 import Swal from "sweetalert2";
 import axiosInstance from "../../../Connection/Axios";
 import { toast } from "sonner";
-import AddCourseModel from "../PopUpMessage/AddCourseModel";
 import EditCourseModel from "../PopUpMessage/EditCourseModel";
 import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal";
 import { frontendRoute } from "../../../Utils/utils";
@@ -14,6 +13,7 @@ import Admin_Navbar from "../../Common/AdminNavbar";
 
 const CourseTable = () => {
   const menuRef = useRef(null);
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [buyLink, setBuyLink] = useState("");
@@ -22,7 +22,6 @@ const CourseTable = () => {
   const [openShareModal, setOpenShareModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -45,13 +44,6 @@ const CourseTable = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCourseAdded = (responseData) => {
-    const newCourse = responseData;
-    console.log("this is the new course :", newCourse);
-
-    setCourses((prevCourses) => [...prevCourses, newCourse]); // Add the new course to the state
   };
 
   useEffect(() => {
@@ -169,23 +161,38 @@ const CourseTable = () => {
         </select>
         <button
           className="bg-gray-700 text-white px-6 py-3 rounded-lg transition duration-300 hover:opacity-80"
-          onClick={() => setModalOpen(true)}
+          onClick={() => navigate("/admin/assets/course/add-course")}
         >
           Add Course
         </button>
       </div>
-  
+
       <div className="relative overflow-visible rounded-lg shadow-lg">
         <table className="w-full border-collapse bg-gray-800 rounded-lg">
           <thead className="bg-gradient-to-b from-gray-700 to-gray-600 text-white">
             <tr>
-              <th className="p-4 cursor-pointer" onClick={() => requestSort("title")}>
+              <th
+                className="p-4 cursor-pointer"
+                onClick={() => requestSort("title")}
+              >
                 Course Name
               </th>
-              <th className="p-4 cursor-pointer" onClick={() => requestSort("price")}>
-                Price
+              <th
+                className="p-4 cursor-pointer"
+                onClick={() => requestSort("price")}
+              >
+                Regular Price
               </th>
-              <th className="p-4 cursor-pointer" onClick={() => requestSort("status")}>
+              <th
+                className="p-4 cursor-pointer"
+                onClick={() => requestSort("price")}
+              >
+                Sales Price
+              </th>
+              <th
+                className="p-4 cursor-pointer"
+                onClick={() => requestSort("status")}
+              >
                 Status
               </th>
               <th className="p-4">Actions</th>
@@ -201,7 +208,11 @@ const CourseTable = () => {
             ) : sortedCourses().length === 0 ? (
               <tr>
                 <td colSpan="4" className="p-4 text-center">
-                  <img src={EmptyPage} alt="No courses available" className="w-40 mx-auto" />
+                  <img
+                    src={EmptyPage}
+                    alt="No courses available"
+                    className="w-40 mx-auto"
+                  />
                 </td>
               </tr>
             ) : (
@@ -215,6 +226,7 @@ const CourseTable = () => {
                       {course.title}
                     </Link>
                   </td>
+                  <td className="p-4 text-center">{course.price}</td>
                   <td className="p-4 text-center">{course.price}</td>
                   <td className="p-4 text-center">
                     <span
@@ -266,14 +278,22 @@ const CourseTable = () => {
           </tbody>
         </table>
       </div>
-  
+
       <AnimatePresence />
-      <AddCourseModel isOpen={modalOpen} onClose={() => setModalOpen(false)} onCourseAdded={handleCourseAdded} />
-      <EditCourseModel isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} course={selectedCourse} onCourseUpdated={handleCourseUpdated} />
-      <ShareLinkModal isOpen={openShareModal} onClose={handleShareClose} buyLink={buyLink} />
+
+      <EditCourseModel
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        course={selectedCourse}
+        onCourseUpdated={handleCourseUpdated}
+      />
+      <ShareLinkModal
+        isOpen={openShareModal}
+        onClose={handleShareClose}
+        buyLink={buyLink}
+      />
     </main>
   );
-  
 };
 
 export default CourseTable;

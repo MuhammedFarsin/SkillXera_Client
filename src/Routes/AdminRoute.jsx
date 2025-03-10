@@ -7,6 +7,7 @@ const Dashboard_Page = React.lazy(() =>
 );
 const Contact_Page = React.lazy(() => import("../Components/Admin/Contact"));
 const Courses_Page = React.lazy(() => import("../Components/Admin/Courses"));
+import AddCourse from "../Components/Admin/AddCourse"
 const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() =>
@@ -49,6 +50,14 @@ function AdminRoute() {
         element={
           <ProtectedRoute>
             <Courses_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/course/add-course"
+        element={
+          <ProtectedRoute>
+            <AddCourse />
           </ProtectedRoute>
         }
       />
