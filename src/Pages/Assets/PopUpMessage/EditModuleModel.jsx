@@ -56,24 +56,24 @@ function EditModuleModel({ isOpen, onClose, onModuleUpdated, moduleId }) {
 
   return (
     isOpen && (
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center z-50">
         <motion.div
-          className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
+          className="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.3 }}
         >
-          <h2 className="text-xl font-semibold mb-4 text-center">
+          <h2 className="text-xl text-white font-semibold mb-4 text-center">
             Edit Module
           </h2>
 
-          <label className="block font-medium text-gray-700">Module Name</label>
+          <label className="block font-medium text-gray-300">Module Name</label>
           <input
             type="text"
             value={moduleName}
             onChange={(e) => setModuleName(e.target.value)}
-            className="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-2 border bg-gray-800 rounded-md mb-4 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
             placeholder="Enter module name"
           />
 

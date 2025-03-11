@@ -8,6 +8,7 @@ import AddModuleModal from "../PopUpMessage/AddModuleModel";
 import EditModuleModal from "../PopUpMessage/EditModuleModel";
 import AddLectureModal from "../PopUpMessage/AddLectureModel";
 import EditLectureModal from "../PopUpMessage/EditLectureModel";
+import AdminNavbar from "../../Common/AdminNavbar"
 import EmptyPage from "../../../assets/Empty.jpg";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -75,18 +76,6 @@ function ModuleTable() {
   const toggleDropdownLecture = (lectureId) => {
     setDropdownOpen((prev) => (prev === lectureId ? null : lectureId));
   };
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setDropdownOpen(null);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
 
   const handleModuleAdded = (newModule) => {
     setModules([...modules, newModule]);
@@ -230,8 +219,9 @@ function ModuleTable() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen pt-20">
-      <h2 className="text-2xl font-bold text-green-700 text-center mb-6">
+    <div className="p-6 bg-gray-900 min-h-screen pt-20 text-sm">
+      <AdminNavbar/>
+      <h2 className="text-2xl font-bold text-white text-center mb-6">
         Modules
       </h2>
 
@@ -255,16 +245,16 @@ function ModuleTable() {
           {modules.map((module, index) => (
             <div
               key={module._id || index}
-              className="bg-white p-4 rounded-lg shadow-md relative"
+              className="bg-gray-800 p-4 rounded-lg shadow-md relative"
             >
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-semibold text-green-800">
+                <h2 className="text-2xl font-semibold text-blue-500">
                   {module.title}
                 </h2>
                 <div className="relative">
                   <button
                     onClick={() => toggleDropdown(module._id)}
-                    className="text-gray-900"
+                    className="w-10 text-white font-bold border rounded-full justify-items-center hover:bg-gray-700"
                   >
                     <HiOutlineDotsHorizontal />
                   </button>
@@ -308,10 +298,10 @@ function ModuleTable() {
                     {module.lectures.map((lecture) => (
                       <li
                         key={lecture._id}
-                        className="grid grid-cols-3 items-center p-3 border rounded-lg hover:bg-gray-100 transition duration-200"
+                        className="grid grid-cols-3 items-center p-3 border rounded-lg hover:bg-gray-700 transition duration-200"
                       >
                         {/* Lecture Title - Left Aligned */}
-                        <div className="text-green-600 font-medium hover:text-green-800 transition duration-200">
+                        <div className="text-zinc-100 font-medium transition duration-200">
                           {lecture.title}
                         </div>
 
@@ -326,12 +316,12 @@ function ModuleTable() {
                           ref={dropdownRef}
                         >
                           <button
-                            onMouseEnter={() =>
+                            onClick={() =>
                               toggleDropdownLecture(lecture._id)
                             }
-                            className="p-2 rounded-full hover:bg-gray-200 transition"
+                            className="text-white border rounded-full w-10"
                           >
-                            <HiOutlineDotsHorizontal className="text-gray-600" />
+                            <HiOutlineDotsHorizontal className="text-white border rounded-full w-10" />
                           </button>
 
                           {dropdownOpen === lecture._id && (

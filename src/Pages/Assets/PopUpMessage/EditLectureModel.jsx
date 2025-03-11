@@ -6,12 +6,12 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 // eslint-disable-next-line react/prop-types
-function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdated }) {
+function EditLectureModel({isOpen, onClose, moduleId, lectureId, onLectureUpdated,}) {
   const BASE_URL = axiosInstance.defaults.baseURL;
   const { courseId } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [file, setVideo] = useState(null); // For new uploads
+  const [video, setVideo] = useState(null); // For new uploads
   const [videoUrl, setVideoUrl] = useState("");
   const [duration, setDuration] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -21,10 +21,10 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
   useEffect(() => {
     if (isOpen && lectureId) {
       setTitle("");
-    setDescription("");
-    setDuration("");
-    setVideoUrl("");
-    setVideo(null); 
+      setDescription("");
+      setDuration("");
+      setVideoUrl("");
+      setVideo(null);
       const fetchLectureDetails = async () => {
         try {
           const response = await axiosInstance.get(
@@ -33,6 +33,7 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
           if (response.status === 200) {
             console.log(response.data);
             const { title, description, duration, videoUrl } = response.data;
+
             setTitle(title);
             setDescription(description);
             setDuration(duration);
@@ -46,6 +47,7 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
       fetchLectureDetails();
     }
   }, [courseId, isOpen, lectureId, moduleId]);
+  console.log('this si the ',videoUrl)
   const fullVideoUrl = videoUrl.startsWith("http")
     ? videoUrl
     : `${BASE_URL}${videoUrl}`;
@@ -58,9 +60,9 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
       setVideo(selectedFile);
       setVideoUrl(""); // ✅ Clear video URL since a new file is chosen
     }
-    
   };
   // Handle form submission (Update Lecture)
+  console.log('this is the file ',fullVideoUrl);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -71,10 +73,11 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
     formData.append("description", description.trim());
     formData.append("duration", Number(duration) || 0);
 
-    if (file) {
-      formData.append("video", file);
+    if (video) {
+      formData.append("video", video);
     }
-
+    console.log('this is the uploading file',video)
+ 
     try {
       const response = await axiosInstance.put(
         `/admin/assets/courses/edit-lecture/${courseId}/${moduleId}/${lectureId}`,
@@ -91,8 +94,11 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
       );
 
       if (response.status === 200) {
-        console.log(response.data)
-        onLectureUpdated({...response.data.lecture, moduleId : response.data.moduleId }); // Update UI
+        console.log(response.data);
+        onLectureUpdated({
+          ...response.data.lecture,
+          moduleId: response.data.moduleId,
+        }); // Update UI
         toast.success("Lecture updated successfully!");
         onClose();
       } else {
@@ -110,24 +116,21 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-64 z-[100]"
+      className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-white rounded-lg shadow-lg w-3/4 max-w-2xl max-h-[80vh] overflow-y-auto p-6"
+        className="bg-gray-800 rounded-lg shadow-lg w-3/4 max-w-2xl max-h-[80vh] overflow-y-auto p-6"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -50, opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
         <div className="flex justify-between items-center overflow-y-auto ">
-          <h2 className="text-lg font-semibold">Edit Lecture</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <h2 className="text-lg text-white font-semibold">Edit Lecture</h2>
+          <button onClick={onClose} className="text-red-500 hover:text-red-700">
             <FaTimes />
           </button>
         </div>
@@ -139,19 +142,19 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
           <textarea
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
           {/* Video Preview */}
-          {(videoUrl || file) && (
+          {(videoUrl || video) && (
             <video controls className="w-full rounded-md">
               <source
-                src={file ? URL.createObjectURL(file) : fullVideoUrl}
+                src={video ? URL.createObjectURL(video) : fullVideoUrl}
                 type="video/mp4"
               />
               Your browser does not support the video tag.
@@ -159,23 +162,23 @@ function EditLectureModel({ isOpen, onClose, moduleId, lectureId, onLectureUpdat
           )}
 
           {/* Show selected file name */}
-          {file && (
+          {video && (
             <p className="text-sm text-gray-500 mt-2">
-              Selected File: {file.name}
+              Selected File: {video.name}
             </p>
           )}
           <input
             type="file"
             accept="video/*"
             onChange={handleFileChange}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
           <input
             type="number"
             placeholder="Duration (in minutes)"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
 
           {isUploading && (

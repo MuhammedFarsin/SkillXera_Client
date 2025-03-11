@@ -6,7 +6,6 @@ import EmptyPage from "../../../assets/Empty.jpg";
 import Swal from "sweetalert2";
 import axiosInstance from "../../../Connection/Axios";
 import { toast } from "sonner";
-import EditCourseModel from "../PopUpMessage/EditCourseModel";
 import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal";
 import { frontendRoute } from "../../../Utils/utils";
 import Admin_Navbar from "../../Common/AdminNavbar";
@@ -20,8 +19,6 @@ const CourseTable = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [openMenu, setOpenMenu] = useState(null);
   const [openShareModal, setOpenShareModal] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -102,21 +99,6 @@ const CourseTable = () => {
     setOpenShareModal(false);
   };
 
-  const handleEdit = (courseId) => {
-    const courseSelectedId = courseId;
-    if (courseSelectedId) {
-      setSelectedCourse(courseSelectedId);
-      setEditModalOpen(true);
-    }
-  };
-  const handleCourseUpdated = (updatedCourse) => {
-    setCourses((prevCourses) =>
-      prevCourses.map((course) =>
-        course._id === updatedCourse._id ? updatedCourse : course
-      )
-    );
-  };
-
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -172,53 +154,53 @@ const CourseTable = () => {
           <thead className="bg-gradient-to-b from-gray-700 to-gray-600 text-white">
             <tr>
               <th
-                className="p-4 cursor-pointer"
+                className="p-5 cursor-pointer"
                 onClick={() => requestSort("title")}
               >
                 Course Name
               </th>
               <th
-                className="p-4 cursor-pointer"
+                className="p-5 cursor-pointer"
                 onClick={() => requestSort("price")}
               >
                 Regular Price
               </th>
               <th
-                className="p-4 cursor-pointer"
+                className="p-5 cursor-pointer"
                 onClick={() => requestSort("price")}
               >
                 Sales Price
               </th>
               <th
-                className="p-4 cursor-pointer"
+                className="p-5 cursor-pointer"
                 onClick={() => requestSort("status")}
               >
                 Status
               </th>
-              <th className="p-4">Actions</th>
+              <th className="p-5">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" className="p-4 text-center">
+                <td colSpan="5" className="p-5 text-center">
                   Loading courses...
                 </td>
               </tr>
             ) : sortedCourses().length === 0 ? (
               <tr>
-                <td colSpan="4" className="p-4 text-center">
+                <td colSpan="5" className="p-5 text-center">
                   <img
                     src={EmptyPage}
                     alt="No courses available"
-                    className="w-40 mx-auto"
+                    className="w-40 rounded-full mx-auto"
                   />
                 </td>
               </tr>
             ) : (
               sortedCourses().map((course) => (
                 <tr key={course._id} className="hover:bg-gray-700">
-                  <td className="p-4 text-center">
+                  <td className="p-5 text-center">
                     <Link
                       to={`/admin/assets/courses/module/${course._id}`}
                       className="text-blue-400 hover:text-blue-600 transition duration-200"
@@ -226,9 +208,9 @@ const CourseTable = () => {
                       {course.title}
                     </Link>
                   </td>
-                  <td className="p-4 text-center">{course.price}</td>
-                  <td className="p-4 text-center">{course.price}</td>
-                  <td className="p-4 text-center">
+                  <td className="p-5 text-center">{course.regularPrice}</td>
+                  <td className="p-5 text-center">{course.salesPrice}</td>
+                  <td className="p-5 text-center">
                     <span
                       className={
                         course.status === "active"
@@ -239,7 +221,7 @@ const CourseTable = () => {
                       {course.status}
                     </span>
                   </td>
-                  <td className="p-4 text-center relative">
+                  <td className="p-5 text-center relative">
                     <button
                       onClick={() => setOpenMenu(course._id)}
                       className="p-2 hover:bg-gray-600 rounded-full"
@@ -259,7 +241,7 @@ const CourseTable = () => {
                         </button>
                         <button
                           className="block w-full px-4 py-2 hover:bg-blue-700 rounded-md text-sm text-white"
-                          onClick={() => handleEdit(course._id)}
+                          onClick={() => navigate(`/admin/assets/course/edit-course/${course._id}`)}
                         >
                           Edit
                         </button>
@@ -280,13 +262,6 @@ const CourseTable = () => {
       </div>
 
       <AnimatePresence />
-
-      <EditCourseModel
-        isOpen={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        course={selectedCourse}
-        onCourseUpdated={handleCourseUpdated}
-      />
       <ShareLinkModal
         isOpen={openShareModal}
         onClose={handleShareClose}

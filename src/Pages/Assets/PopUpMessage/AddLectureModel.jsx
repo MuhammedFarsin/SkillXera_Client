@@ -82,23 +82,23 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full"
+        className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -50, opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Add Lecture</h2>
+          <h2 className="text-lg font-semibold text-white">Add Lecture</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-red-500 hover:text-red-700"
           >
             <FaTimes />
           </button>
@@ -111,26 +111,26 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
           <textarea
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
           <input
             type="file"
             accept="video/*"
             onChange={handleFileChange}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
           <input
             type="number"
             placeholder="Duration (in minutes)"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
 
           {isUploading && (
