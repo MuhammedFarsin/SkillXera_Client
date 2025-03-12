@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedAuth from "./ProtectedAuth";
 import ProtectedRoute from "./ProtectedRoute";
 import Set_Password from "../Components/User/SetPassword";
+import ExploreBuyPage from "../Components/User/ExploreBuyPage";
 // import PageNotFound from "../Pages/Common/PageNotFound";
 
 const Signin = React.lazy(() => import("../Components/User/Signin"));
@@ -110,6 +111,14 @@ function UserRoute() {
         element={
           <ProtectedRoute>
             <ExplorePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/course-buy-details/:userId/:courseId"
+        element={
+          <ProtectedRoute>
+            <ExploreBuyPage />
           </ProtectedRoute>
         }
       />

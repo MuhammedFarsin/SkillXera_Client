@@ -50,9 +50,9 @@ function ExplorePage() {
                 <div className="p-4 text-center">
                   <h3 className="text-lg font-semibold">{course.title}</h3>
                   <span className="block text-blue-600 font-bold mt-1">
-                    ₹{course.price}
+                    ₹{course.regularPrice}
                   </span>
-                  <Link to={`/course-details/${userId}/${course._id}`}>
+                  <Link to={`/course-buy-details/${userId}/${course._id}`}>
                     <button className="mt-3 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
                       Buy Now
                     </button>
