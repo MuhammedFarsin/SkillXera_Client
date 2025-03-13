@@ -79,9 +79,7 @@ function HomePage() {
 
                 <div className="p-4 text-center">
                   <h3 className="text-lg font-semibold">{course.title}</h3>
-                  <span className="block text-blue-600 font-bold mt-1">
-                    ₹{course.price}
-                  </span>
+                  
 
                   <Link to={`/learn/${course._id}/module/${course.modules[0]._id}/lecture/0`}>
                     <motion.button 

@@ -4,6 +4,8 @@ import ProtectedAuth from "./ProtectedAuth";
 import ProtectedRoute from "./ProtectedRoute";
 import Set_Password from "../Components/User/SetPassword";
 import ExploreBuyPage from "../Components/User/ExploreBuyPage";
+import ExploreCheckoutPage from "../Components/User/ExploreCheckout_page"
+import Success_Page from "../Components/User/SuccessPage"
 // import PageNotFound from "../Pages/Common/PageNotFound";
 
 const Signin = React.lazy(() => import("../Components/User/Signin"));
@@ -119,6 +121,22 @@ function UserRoute() {
         element={
           <ProtectedRoute>
             <ExploreBuyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/explore/checkout/:courseId"
+        element={
+          <ProtectedRoute>
+            <ExploreCheckoutPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment-success"
+        element={
+          <ProtectedRoute>
+            <Success_Page />
           </ProtectedRoute>
         }
       />

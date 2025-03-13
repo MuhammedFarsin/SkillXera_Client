@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { load } from "@cashfreepayments/cashfree-js"; // Import correctly
-import axiosInstance from "../../Connection/Axios";
+import axiosInstance from "../Connection/Axios";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import ToasterHot from "../Common/ToasterHot";
+import ToasterHot from "./Common/ToasterHot";
 import ReactPixel from "react-facebook-pixel";
 
 
 const PaymentPage = () => {
   const { courseId } = useParams();
+  console.log(courseId)
+  // const navigate = useNavigate();
   const BASE_URL = axiosInstance.defaults.baseURL;
 
   const [course, setCourse] = useState(null);
@@ -42,11 +44,11 @@ const PaymentPage = () => {
 const handleCashfreePayment = async (e) => {
   e.preventDefault();
 
-  if (!course || !course.price) {
-    return toast.error("Invalid course price");
+  if (!course || !course.regularPrice) {
+    return toast.error("Invalid course regularPrice");
   }
 
-  const amount = Number(course.price);
+  const amount = Number(course.regularPrice);
   if (isNaN(amount) || amount <= 0) {
     return toast.error("Invalid course pricing");
   }
@@ -62,7 +64,7 @@ const handleCashfreePayment = async (e) => {
 
     const cashfree = await load({ mode: "sandbox" }); // Load Cashfree SDK
 
-    const response = await axiosInstance.post("/sale/create-cashfree-order", {
+    const response = await axiosInstance.post("/create-cashfree-order", {
       amount: amount,
       currency: "INR",
       courseId: course._id,
@@ -92,7 +94,8 @@ const handleCashfreePayment = async (e) => {
     // Redirect to Cashfree checkout
     cashfree.checkout({
       paymentSessionId: response.data.payment_session_id,
-      returnUrl: `http://localhost:5173/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}`,
+      return_url: `http://localhost:5173/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}`,
+
     });
 
   } catch (error) {
@@ -168,7 +171,7 @@ const handleCashfreePayment = async (e) => {
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
             >
-              Pay Now ₹{course?.price}
+              Pay Now ₹{course?.regularPrice}
             </button>
           </form>
         </div>
