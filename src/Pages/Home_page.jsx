@@ -33,23 +33,35 @@ function HomePage() {
 
   useEffect(() => {
     if (!userId) return;
-
+  
     const fetchUserCourses = async () => {
+      setLoading(true); // Ensure loading starts when fetching begins
+  
       try {
         const response = await axiosInstance.get(`/user-orders/${userId}`);
         console.log(response.data);
+  
         if (response.status === 200) {
+          if (response.data.courses.length === 0) {
+            console.log("No courses found for this user.");
+          }
           setCourses(response.data.courses);
         }
       } catch (error) {
-        console.error("Error fetching user orders:", error);
+        if (error.response?.status === 404) {
+          console.log("No courses found for this user.");
+          setCourses([]); // Ensure courses state is empty when no orders are found
+        } else {
+          console.error("Error fetching user orders:", error);
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchUserCourses();
   }, [userId]);
+  
 
   return (
     <div>

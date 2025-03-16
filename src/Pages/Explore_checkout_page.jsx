@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { load } from "@cashfreepayments/cashfree-js"; // Import correctly
+import { load } from "@cashfreepayments/cashfree-js"; // Cashfree SDK
 import axiosInstance from "../Connection/Axios";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ToasterHot from "./Common/ToasterHot";
 import ReactPixel from "react-facebook-pixel";
-
+import { loadRazorpayScript } from "../Utils/RazorpayScript";
 
 const PaymentPage = () => {
   const { courseId } = useParams();
-  console.log(courseId)
   // const navigate = useNavigate();
   const BASE_URL = axiosInstance.defaults.baseURL;
 
@@ -19,6 +18,8 @@ const PaymentPage = () => {
     email: "",
     phone: "",
   });
+
+  const [paymentMethod, setPaymentMethod] = useState("cashfree"); // Default to Cashfree
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -32,87 +33,139 @@ const PaymentPage = () => {
         console.error(error);
       }
     };
-
     fetchCourseDetails();
   }, [courseId]);
-  console.log(course)
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handlePayment = async (e) => {
+    e.preventDefault();
 
-const handleCashfreePayment = async (e) => {
-  e.preventDefault();
-
-  if (!course || !course.regularPrice) {
-    return toast.error("Invalid course regularPrice");
-  }
-
-  const amount = Number(course.regularPrice);
-  if (isNaN(amount) || amount <= 0) {
-    return toast.error("Invalid course pricing");
-  }
-
-  try {
-    // Initialize Facebook Pixel if not already initialized
-    ReactPixel.track("InitiateCheckout", {
-      content_name: course.title,
-      content_ids: [course._id],
-      value: amount,
-      currency: "INR",
-    });
-
-    const cashfree = await load({ mode: "sandbox" }); // Load Cashfree SDK
-
-    const response = await axiosInstance.post("/create-cashfree-order", {
-      amount: amount,
-      currency: "INR",
-      courseId: course._id,
-      customer_details: {
-        _id: `CF_${Date.now()}`,
-        username: formData.username,
-        email: formData.email,
-        phone: formData.phone,
-      },
-    });
-
-    console.log("Cashfree Response:", response.data);
-
-    if (!response.data.payment_session_id) {
-      throw new Error("Invalid Payment Session ID");
+    if (!course || !course.regularPrice) {
+      return toast.error("Invalid course price");
     }
 
-    // Track payment processing
-    ReactPixel.track("AddPaymentInfo", {
-      content_name: course.title,
-      content_ids: [course._id],
-      value: amount,
-      currency: "INR",
-      payment_method: "Cashfree",
-    });
+    const amount = Number(course.regularPrice);
+    if (isNaN(amount) || amount <= 0) {
+      return toast.error("Invalid course pricing");
+    }
 
-    // Redirect to Cashfree checkout
-    cashfree.checkout({
-      paymentSessionId: response.data.payment_session_id,
-      return_url: `http://localhost:5173/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}`,
+    if (paymentMethod === "cashfree") {
+      handleCashfreePayment(amount);
+    } else if (paymentMethod === "razorpay") {
+      handleRazorpayPayment(amount);
+    }
+  };
 
-    });
+  const handleCashfreePayment = async (amount) => {
+    try {
+      ReactPixel.track("InitiateCheckout", {
+        content_name: course.title,
+        content_ids: [course._id],
+        value: amount,
+        currency: "INR",
+      });
 
-  } catch (error) {
-    toast.error("Cashfree Payment failed");
-    console.error("Error:", error.response?.data || error);
+      const cashfree = await load({ mode: "sandbox" });
 
-    // Track failed payments
-    ReactPixel.track("PurchaseFailed", {
-      content_name: course.title,
-      content_ids: [course._id],
-      value: amount,
-      currency: "INR",
-      error_message: error.message || "Payment Failed",
-    });
-  }
-};
+      const response = await axiosInstance.post("/create-cashfree-order", {
+        amount: amount,
+        currency: "INR",
+        courseId: course._id,
+        customer_details: {
+          _id: `CF_${Date.now()}`,
+          username: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+        },
+      });
 
+      if (!response.data.payment_session_id) {
+        throw new Error("Invalid Payment Session ID");
+      }
+
+      ReactPixel.track("AddPaymentInfo", {
+        content_name: course.title,
+        content_ids: [course._id],
+        value: amount,
+        currency: "INR",
+        payment_method: "Cashfree",
+      });
+
+      cashfree.checkout({
+        paymentSessionId: response.data.payment_session_id,
+        return_url: `http://localhost:5173/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}&gateway=cashfree`,
+      });
+    } catch (error) {
+      toast.error("Cashfree Payment failed");
+      console.error(error);
+    }
+  };
+
+  const handleRazorpayPayment = async (amount) => {
+    try {
+      const scriptLoaded = await loadRazorpayScript();
+      console.log(scriptLoaded);
+      if (!scriptLoaded) {
+        toast.error("Failed to load Razorpay. Check your internet connection.");
+        return;
+      }
+      let response;
+      try {
+        response = await axiosInstance.post("/create-razorpay-order", {
+          amount: amount,
+          currency: "INR",
+          courseId: course._id,
+          customer_details: {
+            username: formData.username,
+            email: formData.email,
+            phone: formData.phone,
+          },
+        });
+        console.log("✅ Razorpay API Response:", response);
+      } catch (error) {
+        console.error("❌ API Request Failed:", error);
+      }
+
+      console.log("🛠️ Razorpay API Response:", response);
+
+      const { id: order_id, currency } = response.data.data || {};
+
+      if (!order_id || !currency) {
+        toast.error("Invalid Razorpay response: Order ID or Currency missing");
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: amount,
+        currency: "INR",
+        order_id: order_id,
+        name: import.meta.env.VITE_SKILLXERA_COMPANY_NAME,
+        description: course.title,
+        handler: function (response) {
+         window.location.href = `/payment-success?order_id=${order_id}&courseId=${courseId}&gateway=razorpay&razorpay_order_id=${response.razorpay_order_id}&razorpay_payment_id=${response.razorpay_payment_id}&razorpay_signature=${response.razorpay_signature}`;
+
+          console.log("✅ Razorpay Payment Response:", response);
+        },
+        prefill: {
+          name: formData.username,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: { color: "#F37254" },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      console.log('this is the response',razorpay);
+
+      razorpay.open();
+    } catch (error) {
+      toast.error("Razorpay Payment failed");
+      console.error("❌ Razorpay Error:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -142,7 +195,7 @@ const handleCashfreePayment = async (e) => {
           <h3 className="text-yellow-400 text-lg font-semibold">
             Contact Information
           </h3>
-          <form className="mt-4 space-y-4" onSubmit={handleCashfreePayment}>
+          <form className="mt-4 space-y-4" onSubmit={handlePayment}>
             <input
               name="username"
               type="text"
@@ -167,6 +220,33 @@ const handleCashfreePayment = async (e) => {
               className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-100 text-black"
               required
             />
+
+            {/* Payment Method Selection */}
+            <div className="flex gap-4 mt-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cashfree"
+                  checked={paymentMethod === "cashfree"}
+                  onChange={() => setPaymentMethod("cashfree")}
+                  className="accent-yellow-400"
+                />
+                Cashfree
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="razorpay"
+                  checked={paymentMethod === "razorpay"}
+                  onChange={() => setPaymentMethod("razorpay")}
+                  className="accent-yellow-400"
+                />
+                Razorpay
+              </label>
+            </div>
+
             <button
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
