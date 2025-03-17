@@ -3,18 +3,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Lottie from "lottie-react";
 import successAnimation from "../../assets/SuccessAnimation";
-import TosterHot from "../Common/ToasterHot";
 import axiosInstance from "../../Connection/Axios";
 import ReactPixel from "react-facebook-pixel";
 import { initFacebookPixel } from "../../utils/metaPixel";
+import ToasterHot from "../Common/ToasterHot";
 
 const PaymentSuccess = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
+
   const orderId = queryParams.get("order_id");
   const courseId = queryParams.get("courseId");
   const email = queryParams.get("email");
+  const gateway = queryParams.get("gateway"); // ✅ Identify payment gateway
+  const razorpay_order_id = queryParams.get("razorpay_order_id");
+  const razorpay_payment_id = queryParams.get("razorpay_payment_id");
+  const razorpay_signature = queryParams.get("razorpay_signature");
+
+  console.log("Course ID:", courseId);
+  console.log("Payment Gateway:", gateway);
 
   const [loading, setLoading] = useState(true);
   const [verified, setVerified] = useState(false);
@@ -25,13 +33,12 @@ const PaymentSuccess = () => {
   useEffect(() => {
     initFacebookPixel();
 
-    if (!orderId) {
-      toast.error("Invalid payment request! Order ID is missing.");
-      navigate("/sale/payment-failed");
+    if (!orderId || !gateway) {
+      toast.error("Invalid payment request! Order ID or Gateway is missing.");
+      navigate(`/sale/buy-course/course/payment/${courseId}`);
       return;
     }
 
-    // ✅ Check if payment is already verified
     const storedPayment = localStorage.getItem(`verifiedPayment_${orderId}`);
 
     if (storedPayment) {
@@ -44,17 +51,30 @@ const PaymentSuccess = () => {
 
     const verifyPayment = async () => {
       try {
-        const response = await axiosInstance.post("/sale/verify-cashfree-payment", {
-          order_id: orderId,
-          courseId,
-          email,
-        });
+        let response;
 
-        if (response.status === 200 && response.data.status === "success") {
+        if (gateway === "cashfree") {
+          response = await axiosInstance.post("/sale/salespage/verify-cashfree-payment", {
+            order_id: orderId,
+            courseId,
+            email,
+          });
+        } else if (gateway === "razorpay") {
+          response = await axiosInstance.post("/sale/salespage/verify-razorpay-payment", {
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature,
+            order_id: orderId,
+            courseId,
+            email,
+          });
+        }
+
+        if (response?.status === 200 && response.data.status === "success") {
           setVerified(true);
           setPaymentDetails(response.data.payment);
           setUserDetails(response.data.user);
-          setResetLink(response.data.resetLink || ""); // ✅ Store reset link
+          setResetLink(response.data.resetLink || "");
           toast.success("Payment Verified!");
 
           // ✅ Store the verified payment data
@@ -62,18 +82,13 @@ const PaymentSuccess = () => {
             `verifiedPayment_${orderId}`,
             JSON.stringify(response.data.payment)
           );
-
-          // ✅ Track Facebook Pixel Event
+          console.log('this is i need',response);
           ReactPixel.track("Purchase", {
             value: response.data.payment.amount,
             currency: "INR",
             orderId,
           });
-
-          // ✅ Prevent Back Navigation
-          window.history.pushState(null, "", window.location.href);
-          window.addEventListener("popstate", preventBackNavigation);
-        } else if (response.status === 201) {
+        } else if (response?.status === 201) {
           toast.success(response.data.message);
         } else {
           navigate(`/sale/buy-course/course/payment/${courseId}`);
@@ -88,26 +103,7 @@ const PaymentSuccess = () => {
     };
 
     verifyPayment();
-
-    return () => {
-      window.removeEventListener("popstate", preventBackNavigation);
-    };
-  }, []);
-
-  // ✅ Function to Prevent Back Navigation
-  const preventBackNavigation = () => {
-    window.history.pushState(null, "", window.location.href);
-  };
-
-  useEffect(() => {
-    if (verified) {
-      window.history.pushState(null, "", window.location.href);
-      window.addEventListener("popstate", preventBackNavigation);
-    }
-    return () => {
-      window.removeEventListener("popstate", preventBackNavigation);
-    };
-  }, [verified]);
+  }, [courseId, email, navigate, orderId, gateway]);
 
   return (
     <div
@@ -116,27 +112,47 @@ const PaymentSuccess = () => {
     >
       <div className="p-8 bg-white shadow-xl rounded-lg text-center w-[400px]">
         {loading ? (
-          <p className="text-gray-700 text-lg font-semibold">Verifying payment...</p>
+          <p className="text-gray-700 text-lg font-semibold">
+            Verifying payment...
+          </p>
         ) : verified ? (
           <>
-            <Lottie animationData={successAnimation} className="w-60 h-60 mx-auto" loop={false} />
-            <h2 className="text-2xl font-bold text-green-600 mt-4">Payment Successful!</h2>
+            <Lottie
+              animationData={successAnimation}
+              className="w-60 h-60 mx-auto"
+              loop={false}
+            />
+            <h2 className="text-2xl font-bold text-green-600 mt-4">
+              Payment Successful!
+            </h2>
             <p className="text-gray-700 mt-2">
-              Thank you for your payment. Your Order ID is: <strong>{orderId}</strong>
+              Thank you for your payment. Your Order ID is:{" "}
+              <strong>{orderId}</strong>
             </p>
             {paymentDetails && (
               <div className="mt-4 p-4 border border-green-300 rounded-md text-left bg-green-50">
-                <h3 className="text-lg font-semibold text-green-800">Payment Details:</h3>
-                <p className="text-green-700"><strong>Amount:</strong> ₹{paymentDetails.amount}</p>
-                <p className="text-green-700"><strong>Email:</strong> {paymentDetails.email}</p>
-                <p className="text-green-700"><strong>Phone:</strong> {paymentDetails.phone}</p>
+                <h3 className="text-lg font-semibold text-green-800">
+                  Payment Details:
+                </h3>
+                <p className="text-green-700">
+                  <strong>Amount:</strong> ₹{paymentDetails.amount}
+                </p>
+                <p className="text-green-700">
+                  <strong>Email:</strong> {paymentDetails.email}
+                </p>
+                <p className="text-green-700">
+                  <strong>Phone:</strong> {paymentDetails.phone}
+                </p>
+                <p className="text-green-700">
+                  <strong>Payment Gateway:</strong> {gateway}
+                </p>
               </div>
             )}
             {/* ✅ Button Based on Password Status */}
             {userDetails?.passwordResetToken ? (
               <button
                 className="mt-5 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
-                onClick={() => window.location.href = resetLink}
+                onClick={() => (window.location.href = resetLink)}
               >
                 Set Your Password
               </button>
@@ -150,10 +166,12 @@ const PaymentSuccess = () => {
             )}
           </>
         ) : (
-          <h2 className="text-2xl font-bold text-red-600">Payment Verification Failed</h2>
+          <h2 className="text-2xl font-bold text-red-600">
+            Payment Verification Failed
+          </h2>
         )}
       </div>
-      <TosterHot />
+      <ToasterHot />
     </div>
   );
 };

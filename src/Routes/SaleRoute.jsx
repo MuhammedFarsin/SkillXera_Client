@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./ProtectSaleRoute";
+// import ProtectedRoute from "./ProtectSaleRoute";
 
 const SaleCourse_Page = React.lazy(() => import("../Components/Sale/SaleCourse"));
 const CoursePayment_Page = React.lazy(() => import("../Components/Sale/CoursePayment"));
@@ -15,9 +15,9 @@ function SaleRoute() {
         <Route
           path="/payment-success"
           element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <Success_Page />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
       </Routes>
