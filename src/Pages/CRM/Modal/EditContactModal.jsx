@@ -6,14 +6,13 @@ import { X } from "lucide-react";
 
 // eslint-disable-next-line react/prop-types
 function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
-    console.log(contactId)
-    const [formData, setFormData] = useState({
-      username: "",
-      email: "",
-      phone: "",
-      tags: null, // Set null initially to avoid inconsistencies
-    });
-    
+  console.log(contactId);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    tags: null, // Set null initially to avoid inconsistencies
+  });
 
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,10 +20,12 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
   // Fetch existing contact details when modal opens
   useEffect(() => {
     if (!contactId) return; // Avoid unnecessary API calls
-  
+
     const fetchContact = async () => {
       try {
-        const response = await axiosInstance.get(`/admin/crm/contact/get-contact/${contactId}`);
+        const response = await axiosInstance.get(
+          `/admin/crm/contact/get-contact/${contactId}`
+        );
         setFormData({
           username: response.data.username || "",
           email: response.data.email || "",
@@ -36,10 +37,9 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
         toast.error("Failed to fetch contact details.");
       }
     };
-  
+
     fetchContact();
   }, [contactId]);
-  
 
   // Fetch tags
   useEffect(() => {
@@ -73,7 +73,11 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
         `/admin/crm/contact/update-contact/${contactId}`,
         {
           ...formData,
-          tags: formData.tags ? (Array.isArray(formData.tags) ? formData.tags : [formData.tags]) : [],
+          tags: formData.tags
+            ? Array.isArray(formData.tags)
+              ? formData.tags
+              : [formData.tags]
+            : [],
           // Ensure tags are sent as an array
         }
       );
@@ -93,21 +97,21 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-80 z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="bg-white rounded-xl shadow-lg p-6 w-[500px] md:w-[600px] max-h-[80vh] relative">
+      <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg p-6 w-[500px] md:w-[600px] max-h-[80vh] relative">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+          className="absolute top-3 right-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
           Edit Contact
         </h2>
 
@@ -117,44 +121,50 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
           className="space-y-4 max-h-[65vh] overflow-y-auto px-1"
         >
           <div>
-            <label className="block text-gray-700 font-medium">Username</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium">
+              Username
+            </label>
             <input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium">Email</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium">
+              Email
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium">Phone</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium">
+              Phone
+            </label>
             <input
               type="number"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white outline-none"
             />
           </div>
 
           {/* Tag Selection */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Select Tag
             </label>
             {tags.length > 0 ? (
@@ -165,14 +175,18 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
                     className={`px-3 py-2 rounded-lg cursor-pointer border ${
                       formData.tags === tag._id
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white"
                     }`}
                   >
                     <input
                       type="radio"
                       name="tags"
                       value={tag._id}
-                      checked={Array.isArray(formData.tags) ? formData.tags.includes(tag._id) : formData.tags === tag._id}
+                      checked={
+                        Array.isArray(formData.tags)
+                          ? formData.tags.includes(tag._id)
+                          : formData.tags === tag._id
+                      }
                       onChange={handleTagChange}
                       className="hidden"
                     />
@@ -181,7 +195,7 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">Loading tags...</p>
+              <p className="text-gray-500 dark:text-gray-400">Loading tags...</p>
             )}
           </div>
 
@@ -189,14 +203,14 @@ function EditContactModal({ isOpen, onClose, onContactEdited, contactId }) {
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+              className="px-4 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-500 transition"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
+              className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-400 transition disabled:bg-gray-400 dark:disabled:bg-gray-600"
               disabled={loading}
             >
               {loading ? "Updating..." : "Update Contact"}

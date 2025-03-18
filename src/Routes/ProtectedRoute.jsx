@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 function ProtectedRoute({ children }) {
   const auth = useSelector((state) => state.auth.isAuthenticated);
   const location = useLocation();
-
+  console.log(auth)
   useEffect(() => {
     if (auth) {
       window.history.replaceState(null, "", location.pathname);

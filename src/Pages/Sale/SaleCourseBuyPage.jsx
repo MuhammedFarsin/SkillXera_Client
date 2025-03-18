@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../Connection/Axios";
-import ReactPixel from "react-facebook-pixel"
+import ReactPixel from "react-facebook-pixel";
+import VidalyticsPlayer from "../../Utils/VidalyticsPlayer";
+import { Check } from "lucide-react";
 
 function SaleCourseBuyPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ function SaleCourseBuyPage() {
 
     fetchCourseDetails();
   }, [courseId]);
- 
+
   const handleNavigate = (courseId) => {
     console.log("Navigating with Course ID:", courseId);
     if (!courseId) {
@@ -46,11 +48,9 @@ function SaleCourseBuyPage() {
     });
 
     navigate(`/sale/buy-course/course/payment/${courseId}`);
-};
+  };
 
-console.log(courseId)
-
-  
+  console.log(courseId);
 
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
@@ -58,64 +58,69 @@ console.log(courseId)
   if (!course) return <p className="text-white text-center">No course found</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-b from-[#1a1a1a] to-[#004d40] text-center">
-      <h1 className="text-3xl font-bold text-white mb-4">
-        Experience the Power of
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-black text-center">
+      <h1 className="text-[50px] font-bold text-[#e69b2f] leading-[40px] mb-4">
+        Experience the <span className="text-white"> Power of </span>
       </h1>
-      <h2 className="text-4xl font-extrabold text-red-600">
-        &quot;{course.title}&quot;
+
+      <h2 className="text-[37px] font-extrabold text-[#e69b2f] leading-[40px]">
+        &quot;AUTOMATED YOUTUBE SEO WITH FOZATO SEO&quot;
       </h2>
       <p className="text-lg text-gray-300 mt-4">
-        <span className="font-bold text-blue-400">
-          &quot;DOUBLE YOUR YOUTUBE VIEWS & REVENUE&quot;
+        <span className="text-[27px] font-extrabold text-[#e69b2f] leading-[27px]">
+          &quot;DOUBLE YOUR YOUTUBE VIEWS & REVENUE&quot;{" "}
+          <span className="text-white"> with Our Revolutionary</span>
         </span>{" "}
-  
-      
       </p>
-        <span className="text-start">
+      <span className="text-white text-[27px] font-bold leading-[30px]">
+        YouTube SEO App, by Performing YouTube SEO Automatically!
+      </span>
+
+      <span className="text-start">
         with Our Revolutionary YouTube SEO App, by Performing YouTube SEO
         Automatically!
+      </span>
+      <p className="mt-2 text-[#9b9b9b] text-[22px] leading-[30px] font-semibold">
+        (Join 5857+ satisfied users who have optimized <br />
+        <span className="font-semibold">
+          their YouTube videos using Fozato SEO)
         </span>
-      <p className="mt-2 text-gray-400">
-        (Join 5857+ satisfied users who have optimized their YouTube videos
-        using Fozato SEO)
       </p>
-      <p className="mt-2 text-gray-400">
+
+      <p className="mt-2 text-gray-400 text-[19px] font-semibold">
         (Even if you’ve never done SEO for YouTube videos before)
       </p>
       <div className="mt-6">
-        <span className="px-4 py-2 bg-green-500 text-white rounded-lg text-lg font-semibold shadow-md">
+        <span className="px-4 py-2 text-[20px] text-[#e69b2f] leading-[25px] font-normal font-[Poppins]">
           Rank Higher | Reach more viewers | Get more Revenue
         </span>
       </div>
-      <p className="mt-6 text-xl font-bold text-white">
-        Fozato SEO: The World&apos;s First Most Powerful YouTube Ranking System
-      </p>
+      <div className="border-4 border-[#e69b2f] rounded-2xl px-6 py-3 inline-block mt-6">
+        <p className="text-white text-lg font-bold">
+          <span className="text-[#ffffff]">fozato SEO:</span>
+          <span className="text-[#e69b2f]">
+            {" "}
+            The World’s First Most Powerful YouTube Ranking System
+          </span>
+        </p>
+      </div>
 
-      {/* Render the fetched video with autoplay */}
-      {course.video && (
-        <div className="mt-8 w-full max-w-2xl">
-          <iframe
-            width="100%"
-            height="400"
-            src={`${BASE_URL}${course.video}?autoplay=1&mute=1`}
-            title="Course Video"
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-            className="rounded-lg shadow-lg"
-          ></iframe>
-        </div>
-      )}
+      <div className="w-3/4 mt-6 ">
+        <VidalyticsPlayer />
+      </div>
 
       {/* After Video Content */}
-      <div className="text-white mt-10 text-center rounded-lg shadow-lg w-full max-w-3xl">
-        <button onClick={() => handleNavigate(courseId)} className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mb-6">
-          &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
-          <span className="text-sm">(ONLY ₹1999/3 Months)</span>
-        </button>
-
-        <h3 className="text-2xl font-bold mb-4">
+      <button
+        onClick={() => handleNavigate(courseId)}
+        className="bg-[#FFA41C] text-black font-bold text-[30px] leading-[42px] py-3 px-6 rounded-2xl mb-6 w-full max-w-4xl"
+      >
+        &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
+        <span className="text-[20px] font-medium">
+          (ONLY ₹{course.salesPrice}/3 Months)
+        </span>
+      </button>
+      <div className="text-white mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
+        <h3 className="text-[29px] font-bold mb-10 ">
           HERE IS WHAT YOU ARE GOING TO ACHIEVE
         </h3>
 
@@ -154,17 +159,30 @@ console.log(courseId)
           ].map((item, index) => (
             <div
               key={index}
-              className="p-4 border border-yellow-500 rounded-md"
+              className="p-6 border-4 border-yellow-500 rounded-2xl bg-black text-white relative flex items-start gap-3"
             >
-              <h4 className="font-bold text-yellow-400">{item.title}:</h4>
-              <p className="text-gray-300">{item.description}</p>
+              {/* Check Icon */}
+              <div className="w-4 h-4 flex items-center justify-center bg-yellow-500 rounded-full mt-2">
+                <Check size={16} color="black" strokeWidth={3} />
+              </div>
+
+              {/* Content */}
+              <div>
+                <h4 className="font-bold text-lg text-white">{item.title}:</h4>
+                <p className="text-gray-300">{item.description}</p>
+              </div>
             </div>
           ))}
         </div>
 
-        <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold text-lg py-3 px-6 rounded-md mt-6">
+        <button
+          onClick={() => handleNavigate(courseId)}
+          className="bg-[#FFA41C] text-black font-bold text-[30px] leading-[42px] py-3 px-6 rounded-2xl mb-6 mt-6 w-full"
+        >
           &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
-          <span className="text-sm">(ONLY ₹1999/3 Months)</span>
+          <span className="text-[20px] font-medium">
+            (ONLY ₹{course.salesPrice}/3 Months)
+          </span>
         </button>
 
         <p className="mt-4 text-gray-300 font-semibold">
@@ -217,7 +235,10 @@ console.log(courseId)
           </p>
 
           <div className="flex justify-center mt-4">
-            <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+            <button
+              onClick={handleNavigate}
+              className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg"
+            >
               &raquo; YES, I WANT TO AUTOMATE MY YOUTUBE SEO (ONLY ₹1999/3
               Months)
             </button>
@@ -268,7 +289,10 @@ console.log(courseId)
               />
             </div>
             <div className="flex justify-center mt-4">
-              <button onClick={handleNavigate} className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+              <button
+                onClick={handleNavigate}
+                className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg"
+              >
                 &raquo; YES, I WANT TO AUTOMATE MY YOUTUBE SEO (ONLY ₹1999/3
                 Months)
               </button>
@@ -306,12 +330,11 @@ console.log(courseId)
                     <span className="text-green-500 text-xl">✅</span>
                     <span className="ml-2 text-start font-bold text-orange-500">
                       No More Reliance on Outdated Sales Tactics:
-                    <span className="ml-1 text-white">
-                      {" "}
-                      Embrace the power of modern sales strategies.
+                      <span className="ml-1 text-white">
+                        {" "}
+                        Embrace the power of modern sales strategies.
+                      </span>
                     </span>
-                    </span>
-
                   </p>
                 </div>
 
@@ -321,10 +344,10 @@ console.log(courseId)
                     <span className="text-green-500 text-xl">✅</span>
                     <span className="ml-2  text-start font-bold text-orange-500">
                       Step-by-Step{" "}
-                      <span className="text-orange-500">Automated SEO </span> 
-                    <span className="font-bold text-white">
-                    to
-                      Optimize Your YouTube Videos & Boost Channel&apos;s Growth
+                      <span className="text-orange-500">Automated SEO </span>
+                      <span className="font-bold text-white">
+                        to Optimize Your YouTube Videos & Boost Channel&apos;s
+                        Growth
                       </span>
                     </span>
                   </p>

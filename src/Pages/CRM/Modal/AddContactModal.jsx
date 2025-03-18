@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../../../Connection/Axios";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { X } from "lucide-react"; // For close button icon
+import { X } from "lucide-react";
 
 // eslint-disable-next-line react/prop-types
 function AddContactModal({ isOpen, onClose, onContactAdded }) {
@@ -43,17 +43,13 @@ function AddContactModal({ isOpen, onClose, onContactAdded }) {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post(
-        "/admin/crm/contact/add-contact",
-        {
-          ...formData,
-          tags: [formData.tags],
-        }
-      );
+      const response = await axiosInstance.post("/admin/crm/contact/add-contact", {
+        ...formData,
+        tags: [formData.tags],
+      });
 
       toast.success("Contact added successfully!");
       setFormData({ username: "", email: "", phone: "", tags: "" });
-      console.log(response.data);
       onContactAdded(response.data.contact);
       onClose();
     } catch (error) {
@@ -68,68 +64,65 @@ function AddContactModal({ isOpen, onClose, onContactAdded }) {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-80 z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="bg-white rounded-xl shadow-lg p-6 w-[500px] md:w-[600px] max-h-[80vh] relative">
+      <div className="bg-white dark:bg-gray-900 dark:text-white rounded-xl shadow-lg p-6 w-[500px] md:w-[600px] max-h-[80vh] relative">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+          className="absolute top-3 right-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">
           Add Contact
         </h2>
 
         {/* Scrollable Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 max-h-[65vh] overflow-y-auto px-1"
-        >
+        <form onSubmit={handleSubmit} className="space-y-4 max-h-[65vh] overflow-y-auto px-1">
           <div>
-            <label className="block text-gray-700 font-medium">Username</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium">Username</label>
             <input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium">Email</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium">Phone</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-medium">Phone</label>
             <input
               type="number"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
               required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           {/* Tag Selection */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Select Tag
             </label>
             {tags.length > 0 ? (
@@ -140,7 +133,7 @@ function AddContactModal({ isOpen, onClose, onContactAdded }) {
                     className={`px-3 py-2 rounded-lg cursor-pointer border ${
                       formData.tags === tag._id
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white"
                     }`}
                   >
                     <input
@@ -156,7 +149,7 @@ function AddContactModal({ isOpen, onClose, onContactAdded }) {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">Loading tags...</p>
+              <p className="text-gray-500 dark:text-gray-400">Loading tags...</p>
             )}
           </div>
 
@@ -164,14 +157,14 @@ function AddContactModal({ isOpen, onClose, onContactAdded }) {
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+              className="px-4 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-500 transition"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
+              className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition disabled:bg-gray-400"
               disabled={loading}
             >
               {loading ? "Adding..." : "Add Contact"}

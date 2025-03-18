@@ -29,11 +29,16 @@ function ContactTable() {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axiosInstance.get(
-          "/admin/crm/contact/get-contacts"
-        );
+        const response = await axiosInstance.get("/admin/crm/contact/get-contacts");
+        console.log("API Response:", response.data);
+  
         if (response.status === 200) {
-          setContactsData(response.data);
+          const filteredContacts = response.data.filter(contact => 
+            !contact.user || !contact.user.isAdmin
+          );
+  
+          console.log("Filtered Contacts:", filteredContacts);
+          setContactsData(filteredContacts);
         }
       } catch (error) {
         console.error("Error fetching contacts:", error);
@@ -42,6 +47,7 @@ function ContactTable() {
     };
     fetchContacts();
   }, []);
+  
 
   const filteredContacts = contactsData.filter((contact) =>
     (contact.email || "")
