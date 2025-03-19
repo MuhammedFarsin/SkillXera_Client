@@ -58,69 +58,69 @@ function SaleCourseBuyPage() {
   if (!course) return <p className="text-white text-center">No course found</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-black text-center">
-      <h1 className="text-[50px] font-bold text-[#e69b2f] leading-[40px] mb-4">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-6 bg-black text-center">
+      <h1 className="text-2xl lg:text-5xl font-bold text-[#e69b2f] leading-tight sm:mb-2 lg:mb-1">
         Experience the <span className="text-white"> Power of </span>
       </h1>
 
-      <h2 className="text-[37px] font-extrabold text-[#e69b2f] leading-[40px]">
+      <h2 className="text-[13px] mt-1 lg:text-4xl font-extrabold text-[#e69b2f] leading-tight">
         &quot;AUTOMATED YOUTUBE SEO WITH FOZATO SEO&quot;
       </h2>
-      <p className="text-lg text-gray-300 mt-4">
-        <span className="text-[27px] font-extrabold text-[#e69b2f] leading-[27px]">
-          &quot;DOUBLE YOUR YOUTUBE VIEWS & REVENUE&quot;{" "}
+
+      <p className="text-sm md:text-xl lg:text-xl text-gray-300 lg:mt-4 px-2">
+        <span className="text-[16px] lg:text-2xl font-sans font-bold lg:font-extrabold text-[#e69b2f]">
+          &quot;DOUBLE YOUR YOUTUBE VIEWS & REVENUE&quot;
           <span className="text-white"> with Our Revolutionary</span>
-        </span>{" "}
+        </span>
       </p>
-      <span className="text-white text-[27px] font-bold leading-[30px]">
+
+      <span className="text-white text-lg md:text-xl font-bold leading-snug px-2">
         YouTube SEO App, by Performing YouTube SEO Automatically!
       </span>
 
-      <span className="text-start">
-        with Our Revolutionary YouTube SEO App, by Performing YouTube SEO
-        Automatically!
-      </span>
-      <p className="mt-2 text-[#9b9b9b] text-[22px] leading-[30px] font-semibold">
-        (Join 5857+ satisfied users who have optimized <br />
+      <p className="mt-2 text-[14px] text-[#9b9b9b] lg:text-lg leading-snug font-semibold">
+        (Join 5857+ satisfied users who have optimized{" "}
+        <br className="hidden md:block" />
         <span className="font-semibold">
           their YouTube videos using Fozato SEO)
         </span>
       </p>
 
-      <p className="mt-2 text-gray-400 text-[19px] font-semibold">
+      <p className="mt-2 text-gray-400 text-[12px] lg:text-base font-semibold">
         (Even if you’ve never done SEO for YouTube videos before)
       </p>
-      <div className="mt-6">
-        <span className="px-4 py-2 text-[20px] text-[#e69b2f] leading-[25px] font-normal font-[Poppins]">
-          Rank Higher | Reach more viewers | Get more Revenue
-        </span>
-      </div>
-      <div className="border-4 border-[#e69b2f] rounded-2xl px-6 py-3 inline-block mt-6">
-        <p className="text-white text-lg font-bold">
-          <span className="text-[#ffffff]">fozato SEO:</span>
-          <span className="text-[#e69b2f]">
+
+      <div className="border-2 md:border-4 border-[#e69b2f] rounded-2xl lg:rounded-2xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/3">
+        <p className="text-white text-sm md:text-lg font-bold">
+          <span className="text-[#ffffff] text-[8px] lg:text-xl">
+            Fozato SEO:
+          </span>
+          <span className="text-[#e69b2f] text-[8px] lg:text-xl">
             {" "}
             The World’s First Most Powerful YouTube Ranking System
           </span>
         </p>
       </div>
 
-      <div className="w-3/4 mt-6 ">
+      <div className="w-full md:w-3/4 mt-6 px-4">
         <VidalyticsPlayer />
       </div>
 
       {/* After Video Content */}
       <button
         onClick={() => handleNavigate(courseId)}
-        className="bg-[#FFA41C] text-black font-bold text-[30px] leading-[42px] py-3 px-6 rounded-2xl mb-6 w-full max-w-4xl"
+        className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-5 lg:px-10 rounded-2xl lg:rounded-3xl 
+             mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
       >
         &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
-        <span className="text-[20px] font-medium">
+        <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
           (ONLY ₹{course.salesPrice}/3 Months)
         </span>
       </button>
-      <div className="text-white mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
-        <h3 className="text-[29px] font-bold mb-10 ">
+
+      <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
+        <h3 className="text-[29px] font-bold mb-10 lg:mb-10 ">
           HERE IS WHAT YOU ARE GOING TO ACHIEVE
         </h3>
 
@@ -159,7 +159,7 @@ function SaleCourseBuyPage() {
           ].map((item, index) => (
             <div
               key={index}
-              className="p-6 border-4 border-yellow-500 rounded-2xl bg-black text-white relative flex items-start gap-3"
+              className="p-3 lg:p-6 border-2 border-yellow-500 rounded-3xl bg-black text-white relative flex items-start gap-3"
             >
               {/* Check Icon */}
               <div className="w-4 h-4 flex items-center justify-center bg-yellow-500 rounded-full mt-2">
@@ -177,25 +177,33 @@ function SaleCourseBuyPage() {
 
         <button
           onClick={() => handleNavigate(courseId)}
-          className="bg-[#FFA41C] text-black font-bold text-[30px] leading-[42px] py-3 px-6 rounded-2xl mb-6 mt-6 w-full"
+          className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-5 lg:px-10 rounded-2xl lg:rounded-3xl 
+             mb-6 w-full md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
         >
           &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
-          <span className="text-[20px] font-medium">
+          <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
             (ONLY ₹{course.salesPrice}/3 Months)
           </span>
         </button>
 
-        <p className="mt-4 text-gray-300 font-semibold">
-          Register quickly before the offer ends to unlock bonuses worth ₹97,000
+        <p className="text-[18px] lg:text-[22px] text-gray-300 font-bold">
+          Register quickly before{" "}
+          <span className="text-[#E69B2F]"> the offer ends </span> to unlock
+          bonuses worth <span className="text-[#E69B2F]"> ₹97,000</span>
         </p>
+        <div className="bg-[#111111] h-20 lg:h-44 flex flex-col justify-center items-center text-center mt-4">
+          <p className="font-bold text-white flex items-center space-x-1">
+            <span className="text-[8px] lg:text-[22px]">Fozato SEO:</span>
+            <span className="text-[#E69B2F] lg:text-[22px] text-[10px]">
+              The World&apos;s First Most Powerful YouTube Ranking System
+            </span>
+          </p>
 
-        <p className="mt-6 font-bold text-yellow-400">Fozato SEO:</p>
-        <p className="text-yellow-300">
-          The World&apos;s First Most Powerful YouTube Ranking System
-        </p>
-        <p className="text-red-500 font-bold mt-2">
-          ***Hurry! Limited spots available for this offer!***
-        </p>
+          <p className="text-[#E69B2F] text-[14px] font-bold mt-1 lg:text-[22px]">
+            ***Hurry! Limited spots available for this offer!***
+          </p>
+        </div>
 
         <div className="mt-6 text-white p-6 rounded-lg">
           <p className="font-bold text-yellow-400 text-center">
