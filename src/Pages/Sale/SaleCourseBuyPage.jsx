@@ -90,19 +90,19 @@ function SaleCourseBuyPage() {
         (Even if you’ve never done SEO for YouTube videos before)
       </p>
 
-      <div className="border-2 md:border-4 border-[#e69b2f] rounded-2xl lg:rounded-2xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/3">
+      <div className="border-2 md:border-2 border-[#e69b2f] rounded-2xl lg:rounded-2xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/4">
         <p className="text-white text-sm md:text-lg font-bold">
-          <span className="text-[#ffffff] text-[8px] lg:text-xl">
+          <span className="text-[#ffffff] text-[8px] lg:text-[15px]">
             Fozato SEO:
           </span>
-          <span className="text-[#e69b2f] text-[8px] lg:text-xl">
+          <span className="text-[#e69b2f] text-[8px] lg:text-[15px]">
             {" "}
             The World’s First Most Powerful YouTube Ranking System
           </span>
         </p>
       </div>
 
-      <div className="w-full md:w-3/4 mt-6 px-4">
+      <div className="w-full md:w-4/6 mt-6 rounded border-2 lg:border-2 border-[#e69b2f]">
         <VidalyticsPlayer />
       </div>
 
@@ -110,7 +110,7 @@ function SaleCourseBuyPage() {
       <button
         onClick={() => handleNavigate(courseId)}
         className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
-             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-5 lg:px-10 rounded-2xl lg:rounded-3xl 
+             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
              mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
       >
         &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
@@ -120,7 +120,7 @@ function SaleCourseBuyPage() {
       </button>
 
       <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
-        <h3 className="text-[29px] font-bold mb-10 lg:mb-10 ">
+        <h3 className="text-[29px] font-bold mb-10 lg:mb-10 leading-tight">
           HERE IS WHAT YOU ARE GOING TO ACHIEVE
         </h3>
 
@@ -178,7 +178,7 @@ function SaleCourseBuyPage() {
         <button
           onClick={() => handleNavigate(courseId)}
           className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
-             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-5 lg:px-10 rounded-2xl lg:rounded-3xl 
+             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
              mb-6 w-full md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
         >
           &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
@@ -205,13 +205,13 @@ function SaleCourseBuyPage() {
           </p>
         </div>
 
-        <div className="mt-6 text-white p-6 rounded-lg">
-          <p className="font-bold text-yellow-400 text-center">
+        <div className="mx-auto ">
+          <p className="font-bold text-center text-[21px] lg:text-[32px] leading-[38px] text-[#9B9B9B]">
             Please Check All Boxes Where Your Answer Is{" "}
             <span className="text-yellow-500">YES!</span>
           </p>
 
-          <div className="mt-4 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {[
               "I want to get more views and subscribers on YouTube effortlessly",
               "I am a complete beginner in YouTube SEO with no prior experience or technical skills",
@@ -222,169 +222,534 @@ function SaleCourseBuyPage() {
             ].map((text, index) => (
               <div
                 key={index}
-                className="bg-white p-4 rounded-lg flex items-center space-x-3"
+                className="bg-white p-5 rounded-2xl flex items-start text-start lg:space-x-2 shadow-md"
               >
                 <input
                   type="checkbox"
-                  className="form-checkbox text-yellow-400 w-5 h-5"
+                  className="w-5 h-5 border-gray-400 rounded-md"
                 />
-                <span className="text-black text-center">{text}</span>
+                <span className="text-gray-800 lg:text-lg pl-3">{text}</span>
               </div>
             ))}
           </div>
 
-          <p className="mt-6 text-white font-semibold text-center">
-            If You Checked <span className="text-yellow-400">ANY</span> Of The
-            Boxes Above, Then You’re Invited To Use The
+          <p className="mt-6 text-white font-semibold text-center text-[15px] lg:text-[25px]">
+            If You Checked ANY Of The Boxes Above, Then You’re Invited To Use
+            The
           </p>
 
-          <p className="mt-2 text-white font-bold text-lg text-center">
+          <p className="mt-2 lg:mt-7 text-white font-bold text-lg text-center text-[25px] lg:text-[45px] lg:whitespace-nowrap lg:flex justify-center">
             “FOZATO SEO YOUTUBE AUTO SEO APP”
           </p>
 
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={handleNavigate}
-              className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg"
-            >
-              &raquo; YES, I WANT TO AUTOMATE MY YOUTUBE SEO (ONLY ₹1999/3
-              Months)
-            </button>
-          </div>
+          <button
+            onClick={() => handleNavigate(courseId)}
+            className="bg-[#FFA41C] text-black font-extrabold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+             leading-tight py-3 px-2 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl lg:mt-16
+             mb-6 w-full md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+          >
+            &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
+            <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
+              (ONLY ₹{course.salesPrice}/3 Months)
+            </span>
+          </button>
 
-          <p className="mt-4 text-red-400 font-bold text-center">
-            Register quickly before the offer ends to unlock bonuses worth
-            ₹97,000
+          <p className="font-bold text-center lg:text-[22px]">
+            Register quickly before{" "}
+            <span className="text-[#E69B2F]">the offer ends </span> to unlock
+            bonuses worth ₹97,000
           </p>
 
           {/* New Content Below */}
 
-          <div className="mt-10 text-center text-white">
-            <h2 className="text-2xl font-bold">
-              Unlock Your Potential in{" "}
-              <span className="text-yellow-400">YouTube SEO Today!</span>
-            </h2>
-            <p className="mt-2 text-gray-300">
-              With the right guidance and access to{" "}
-              <span className="text-blue-400 underline">
-                cutting-edge tools
-              </span>
-              , you can rank your videos higher and grow your channel
-              effortlessly!
-            </p>
+          {/* <div className="mt-5 text-center text-white "> */}
+          <h2 className="text-2xl font-bold lg:text-[42px] lg:whitespace-nowrap">
+            Unlock Your Potential in{" "}
+            <span className="text-yellow-400">YouTube SEO Today!</span>
+          </h2>
+          <p className="mt-2 text-[#9b9b9b] font-semibold text-[16px] leading-tight lg:text-[29px]">
+            With the right guidance and access to{" "}
+            <span className="underline">cutting-edge tools</span>, you can rank
+            your videos higher and grow your channel effortlessly!
+          </p>
 
-            <p className="mt-4 text-gray-300">
-              Whether you’re a complete novice with zero SEO experience <br />
-              And have never attempted YouTube optimization before... <br />
-              You need an Automated System that will do SEO for you.
-            </p>
+          <p className="mt-4 text-[#9b9b9b] font-semibold lg:font-normal text-[16px] leading-tight lg:mt-10 lg:text-[29px]">
+            Whether you’re a complete novice with zero SEO experience <br />
+            And have never attempted YouTube optimization before... <br />
+            You need an Automated System that will do SEO for you.
+          </p>
 
-            <p className="mt-4 text-gray-300 font-semibold">
-              And That’s Exactly What You Will Experience In This
-            </p>
+          <p className="mt-8 text-[#9b9b9b] font-semibold text-[16px] leading-tight lg:font-normal lg:text-[29px]">
+            And That’s Exactly What You Will Experience In This
+          </p>
 
-            <h3 className="mt-2 text-yellow-400 font-bold text-lg">
-              “fozato SEO –{" "}
-              <span className="text-yellow-500">YouTube Auto SEO App”</span>
-            </h3>
+          <h3 className="mt-2 text-[24px] lg:text-[42px] font-bold text-lg">
+            “fozato SEO –{" "}
+            <span className="text-yellow-500">YouTube Auto SEO App”</span>
+          </h3>
 
-            {/* Image Section */}
-            <div className="flex justify-center mt-6">
-              <img
-                src={`${BASE_URL}${course.images[0]}`}
-                alt="Fozato SEO - YouTube Auto SEO App"
-                className="w-full max-w-3xl rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={handleNavigate}
-                className="bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-lg"
-              >
-                &raquo; YES, I WANT TO AUTOMATE MY YOUTUBE SEO (ONLY ₹1999/3
-                Months)
-              </button>
-            </div>
-            <div className="mt-10 text-white">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white">
-                {/* Left Side */}
-                <div>
-                  <p className="flex items-start">
-                    <span className="text-green-500 text-xl">✅</span>
-                    <span className="ml-2 text-start font-bold text-yellow-400">
-                      Stop Waiting and{" "}
-                      <span className="text-orange-500">
-                        Start Optimising Your YouTube Videos
-                      </span>{" "}
-                      in Less Than 3 Minutes ~ GUARANTEED!
+          {/* Image Section */}
+          <div className="flex justify-center mt-6 bg-white rounded-3xl lg:rounded">
+            <img
+              src={`${BASE_URL}${course.images[0]}`}
+              alt="Fozato SEO - YouTube Auto SEO App"
+              className="w-full lg:max-w-6xl lg:max-h-[500px] rounded-lg shadow-lg"
+            />
+          </div>
+          <button
+            onClick={() => handleNavigate(courseId)}
+            className="bg-[#FFA41C] text-black font-extrabold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+             leading-tight py-3 px-2 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+             mb-6 w-full md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+          >
+            &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
+            <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
+              (ONLY ₹{course.salesPrice}/3 Months)
+            </span>
+          </button>
+
+          <div className="lg:mt-10 text-white bg-[#111111] p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white lg:text-[20px]">
+              {/* Left Side */}
+              <div>
+                <p className="flex items-start ">
+                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-2">
+                    <Check size={20} color="black" strokeWidth={3} />
+                  </div>
+                  <span className="ml-2 text-start font-bold">
+                    Stop Waiting and{" "}
+                    <span className="text-[#E69B2F]">
+                      Start Optimising Your YouTube Videos
+                    </span>{" "}
+                    in Less Than 3 Minutes ~ GUARANTEED!
+                  </span>
+                </p>
+
+                <p className="flex items-start mt-4">
+                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-2">
+                    <Check size={20} color="black" strokeWidth={3} />
+                  </div>
+                  <span className="ml-2 text-start font-bold">
+                    Craft Seamless{" "}
+                    <span className="text-[#CE981E] text-end">
+                      Sales Pitches:
                     </span>
-                  </p>
-
-                  <p className="flex items-start mt-4">
-                    <span className="text-green-500 text-xl">✅</span>
-                    <span className="ml-2 text-start font-bold text-yellow-400">
-                      Craft Seamless{" "}
-                      <span className="text-orange-500 text-end">
-                        Sales Pitches:
-                      </span>
-                      <span className="text-start text-white">
-                        {" "}
-                        Tailored to your industry and business needs.
-                      </span>
+                    <span className="text-start text-white">
+                      {" "}
+                      Tailored to your industry and business needs.
                     </span>
-                  </p>
+                  </span>
+                </p>
 
-                  <p className="flex items-start mt-4">
-                    <span className="text-green-500 text-xl">✅</span>
-                    <span className="ml-2 text-start font-bold text-orange-500">
-                      No More Reliance on Outdated Sales Tactics:
-                      <span className="ml-1 text-white">
-                        {" "}
-                        Embrace the power of modern sales strategies.
-                      </span>
+                <p className="flex items-start mt-4">
+                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-2">
+                    <Check size={20} color="black" strokeWidth={3} />
+                  </div>
+                  <span className="ml-2 text-start font-bold text-[#CE981E]">
+                    No More Reliance on Outdated Sales Tactics:
+                    <span className="ml-1 text-white">
+                      {" "}
+                      Embrace the power of modern sales strategies.
                     </span>
-                  </p>
-                </div>
+                  </span>
+                </p>
+              </div>
 
-                {/* Right Side */}
-                <div>
-                  <p className="flex items-start">
-                    <span className="text-green-500 text-xl">✅</span>
-                    <span className="ml-2  text-start font-bold text-orange-500">
-                      Step-by-Step{" "}
-                      <span className="text-orange-500">Automated SEO </span>
-                      <span className="font-bold text-white">
-                        to Optimize Your YouTube Videos & Boost Channel&apos;s
-                        Growth
-                      </span>
+              {/* Right Side */}
+              <div>
+                <p className="flex items-start">
+                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-2">
+                    <Check size={20} color="black" strokeWidth={3} />
+                  </div>
+                  <span className="ml-2  text-start font-bold text-[#CE981E]">
+                    Step-by-Step{" "}
+                    <span className="text-[#CE981E]">Automated SEO </span>
+                    <span className="font-bold text-white">
+                      to Optimize Your YouTube Videos & Boost Channel&apos;s
+                      Growth
                     </span>
-                  </p>
+                  </span>
+                </p>
 
-                  <p className="flex items-start mt-4">
-                    <span className="text-green-500 text-xl">✅</span>
-                    <span className="ml-2 text-start font-bold text-white">
-                      Learn to{" "}
-                      <span className="text-orange-500">
-                        Leverage Tools for YouTube SEO
-                      </span>{" "}
-                      and Experience Freedom from Tedious Tasks
-                    </span>
-                  </p>
+                <p className="flex items-start mt-4">
+                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-2">
+                    <Check size={20} color="black" strokeWidth={3} />
+                  </div>
+                  <span className="ml-2 text-start font-bold text-white">
+                    Learn to{" "}
+                    <span className="text-[#CE981E]">
+                      Leverage Tools for YouTube SEO
+                    </span>{" "}
+                    and Experience Freedom from Tedious Tasks
+                  </span>
+                </p>
 
-                  <p className="flex items-start mt-4">
-                    <span className="text-green-500 text-xl">✅</span>
-                    <span className="ml-2 text-start font-bold text-white">
-                      Witness a{" "}
-                      <span className="text-orange-500">
-                        Boost in Your Revenue
-                      </span>{" "}
-                      with High-Ranking SEO-Optimized Videos
-                    </span>
-                  </p>
-                </div>
+                <p className="flex items-start mt-4">
+                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-2">
+                    <Check size={20} color="black" strokeWidth={3} />
+                  </div>
+                  <span className="ml-2 text-start font-bold text-white">
+                    Witness a{" "}
+                    <span className="text-[#CE981E]">
+                      Boost in Your Revenue
+                    </span>{" "}
+                    with High-Ranking SEO-Optimized Videos
+                  </span>
+                </p>
               </div>
             </div>
           </div>
+          <h1 className="font-bold text-[22px]">BONUSES</h1>
+          <div className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 mt-10 h-[425px]">
+            {/* Bonus Header */}
+            <div className="relative flex justify-center">
+              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
+                🎁 Bonus #1:
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
+              <img
+                src={`${BASE_URL}${course.images[1]}`}
+                alt="YouTube Viral Trending SEO"
+                className="w-full max-w-[250px] rounded-lg"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
+              YouTube Viral Trending SEO
+            </h3>
+
+            {/* Price Tag */}
+            <div className="mt-3 flex justify-center">
+              <button className="bg-white text-[#34495E] text-[20px] font-bold py-2 px-6 rounded-full shadow-md border border-gray-400">
+                Worth ₹{course.salesPrice}/-
+              </button>
+            </div>
+          </div>
+          <div className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 mt-10 h-[425px]">
+            {/* Bonus Header */}
+            <div className="relative flex justify-center">
+              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
+                🎁 Bonus #2:
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
+              <img
+                src={`${BASE_URL}${course.images[2]}`}
+                alt="YouTube Viral Trending SEO"
+                className="w-full max-w-[250px] rounded-lg"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
+              YouTube Evergreen SEO
+            </h3>
+
+            {/* Price Tag */}
+            <div className="mt-3 flex justify-center">
+              <button className="bg-white text-[#34495E] text-[20px] font-bold py-2 px-6 rounded-full shadow-md border border-gray-400">
+                Worth ₹{course.salesPrice}/-
+              </button>
+            </div>
+          </div>
+          <div className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 mt-10 h-[425px]">
+            {/* Bonus Header */}
+            <div className="relative flex justify-center">
+              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
+                🎁 Bonus #3:
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
+              <img
+                src={`${BASE_URL}${course.images[3]}`}
+                alt="YouTube Viral Trending SEO"
+                className="w-full max-w-[250px] rounded-lg"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
+              YouTube Revenue SEO
+            </h3>
+
+            {/* Price Tag */}
+            <div className="mt-3 flex justify-center">
+              <button className="bg-white text-[#34495E] text-[20px] font-bold py-2 px-6 rounded-full shadow-md border border-gray-400">
+                Worth ₹{course.salesPrice}/-
+              </button>
+            </div>
+          </div>
+          <div className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 mt-10 h-[425px]">
+            {/* Bonus Header */}
+            <div className="relative flex justify-center">
+              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
+                🎁 Bonus #4:
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
+              <img
+                src={`${BASE_URL}${course.images[4]}`}
+                alt="YouTube Viral Trending SEO"
+                className="w-full max-w-[250px] rounded-lg"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
+              YouTube Bulk SEO
+            </h3>
+
+            {/* Price Tag */}
+            <div className="mt-3 flex justify-center">
+              <button className="bg-white text-[#34495E] text-[20px] font-bold py-2 px-6 rounded-full shadow-md border border-gray-400">
+                Worth ₹{course.salesPrice}/-
+              </button>
+            </div>
+          </div>
+          <div className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 mt-10 h-[425px]">
+            {/* Bonus Header */}
+            <div className="relative flex justify-center">
+              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
+                🎁 Bonus #5:
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
+              <img
+                src={`${BASE_URL}${course.images[5]}`}
+                alt="YouTube Viral Trending SEO"
+                className="w-full max-w-[250px] rounded-lg"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
+              YouTube Sales SEO
+            </h3>
+
+            {/* Price Tag */}
+            <div className="mt-3 flex justify-center">
+              <button className="bg-white text-[#34495E] text-[20px] font-bold py-2 px-6 rounded-full shadow-md border border-gray-400">
+                Worth ₹{course.salesPrice}/-
+              </button>
+            </div>
+          </div>
+          <div className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 mt-10 h-[425px]">
+            {/* Bonus Header */}
+            <div className="relative flex justify-center">
+              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
+                🎁 Bonus #6:
+              </div>
+            </div>
+
+            {/* Image Section */}
+            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
+              <img
+                src={`${BASE_URL}${course.images[6]}`}
+                alt="YouTube Viral Trending SEO"
+                className="w-full max-w-[250px] rounded-lg"
+              />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
+              Extra 2 Month FREE
+            </h3>
+
+            {/* Price Tag */}
+            <div className="mt-3 flex justify-center">
+              <button className="bg-white text-[#34495E] text-[20px] font-bold py-2 px-6 rounded-full shadow-md border border-gray-400">
+                Worth ₹{course.salesPrice}/-
+              </button>
+            </div>
+          </div>
+          <div className="bg-black text-white p-2 rounded-3xl shadow-lg max-w-md mx-auto text-center">
+            {/* Heading */}
+            <h2 className="text-[22px] font-bold">
+              Get All This Inside The App
+            </h2>
+
+            {/* Pricing Info */}
+            <p className="text-[#FFA500] font-bold text-[19px] mt-2">
+              Total Value Of Bonuses: ₹97,000
+            </p>
+            <p className="text-[19px] font-bold mt-1">
+              Normal Course Ticket Price: ₹6999
+            </p>
+
+            {/* Offer Price Section */}
+            <p className="text-[22px] font-bold mt-3">
+              <span className="text-[#FFD700]">Join Today At Just</span>
+            </p>
+            <p className="text-2xl font-extrabold mt-1">
+              <span className="text-gray-400 line-through">₹6999</span>
+              <span className="text-[#7CDC12] ml-2">₹1999 </span>
+              <span className="text-[#E69B2F]">Only</span>
+            </p>
+
+            {/* Urgency Message */}
+            <p className="text-[15px] font-bold mt-2">
+              Time is running out. Reserve your access now!
+            </p>
+
+            {/* Countdown Timer */}
+            <div className="flex justify-center mt-4">
+              <div className="bg-[#333] text-[#FFD700] py-3 px-6 text-center rounded-3xl flex items-center gap-3">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">10</p>
+                  <p className="text-xs text-white">HOURS</p>
+                </div>
+                <p className="text-2xl font-bold mb-5">:</p>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">50</p>
+                  <p className="text-xs text-white">MINUTES</p>
+                </div>
+                <p className="text-2xl font-bold mb-5">:</p>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">27</p>
+                  <p className="text-xs text-white">SECONDS</p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Message */}
+            <p className="font-bold text-center lg:text-[22px] leading-tight">
+              Register quickly before{" "}
+              <span className="text-[#E69B2F]">the offer ends </span> to unlock
+              bonuses worth <span className="text-[#E69B2F]"> ₹97,000</span>
+            </p>
+            <p className="mt-7 font-bold text-[18px]">
+              This app promises to be a game changer, showcasing the power of
+              automated YouTube SEO!
+            </p>
+            <button
+              onClick={() => handleNavigate(courseId)}
+              className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+             mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+            >
+              &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
+              <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
+                (ONLY ₹{course.salesPrice}/3 Months)
+              </span>
+            </button>
+            <p className="font-bold text-center lg:text-[22px] leading-tight">
+              Register quickly before{" "}
+              <span className="text-[#E69B2F]">the offer ends </span> to unlock
+              bonuses worth <span className="text-[#E69B2F]"> ₹97,000</span>
+            </p>
+          </div>
+
+          <h1 className="text-[23px] text-[#c9c6c6] font-bold">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-[15px] text-[#6e7071]">
+            I have answered all common questions below that you might have about
+            the course. For any further queries, please contact: <br />
+            support@fozato.com
+          </p>
+          <div className="flex flex-col gap-4 mt-4">
+            <div className="bg-[#4A4A4A] text-white p-4 rounded-2xl">
+              <p className="font-bold text-[20px] text-start">
+                For whom is this app?
+              </p>
+              <p className="text-[16px] mt-1 text-start">
+                This app is for anyone who wants to optimize their YouTube
+                videos automatically and improve their channel’s performance.
+              </p>
+            </div>
+
+            <div className="bg-[#4A4A4A] text-white p-4 rounded-2xl">
+              <p className="font-bold text-[20px] text-start">
+                I made the payment but didn’t receive any update
+              </p>
+              <p className="text-[16px] mt-1 text-start">
+                Please email us at{" "}
+                <span className="font-bold">support@fozato.com</span> & our
+                support team will get back to you as soon as possible.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => handleNavigate(courseId)}
+            className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+             mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+          >
+            &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
+            <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
+              (ONLY ₹{course.salesPrice}/3 Months)
+            </span>
+          </button>
+          <p className="font-bold text-center lg:text-[22px] leading-tight">
+            Register quickly before{" "}
+            <span className="text-[#E69B2F]">the offer ends </span> to unlock
+            bonuses worth <span className="text-[#E69B2F]"> ₹97,000</span>
+          </p>
+          <footer className="bg-black text-gray-300 text-sm mt-5 leading-relaxed text-center">
+            <p className="text-[8px]">
+              This site is not affiliated with YouTube™, Google™, Meta™,
+              Instagram™, or Facebook™, nor is it endorsed by them in any
+              manner. The term “YouTube™” is a trademark owned by Google™, Inc.,
+              and “Facebook™” is a trademark owned by Meta Platforms, Inc. As
+              required by law, we cannot guarantee any specific results or
+              earnings from the use of our automated SEO tools, strategies, or
+              services presented through Fozato SEO. Our goal is to provide
+              valuable content, guidance, and strategies that have proven
+              effective for ourselves and our users, and we believe can help you
+              grow your YouTube channel and optimize your online presence. You
+              can access all of our terms, privacy policies, and disclaimers for
+              this platform through the provided links. Transparency is
+              important to us, and we hold ourselves (and you) to high standards
+              of integrity. Thank you for trusting Fozato SEO. We hope this app
+              and our content provide you with significant value and measurable
+              results.
+            </p>
+
+            <p className="mt-4 text-[8px]">
+              Note: This service is provided as part of our automated system,
+              offering real-time SEO support to optimize your YouTube videos.
+              Once you subscribe, you’ll be able to unlock all features for
+              on-demand SEO automation and enjoy a seamless experience.
+            </p>
+
+            <p className="mt-4 text-[8px]">
+              Fozato SEO specializes in YouTube SEO and optimization tools, not
+              in promoting “get rich quick” schemes or guaranteed income
+              systems. We believe that with the right tools and automation,
+              individuals and businesses can make informed decisions that
+              improve their channel’s performance. However, we do not guarantee
+              success or income results from our services. Fozato SEO does not
+              make claims about specific earnings or outcomes and cannot
+              guarantee that the app will generate revenue for you. All
+              materials and tools provided are protected by copyright, and any
+              unauthorized duplication or distribution is strictly
+              prohibited.While our service focuses on improving YouTube
+              performance, success depends on individual effort, time, and
+              content quality. We may link to or refer content provided by third
+              parties not affiliated with Fozato, SEO and we are not responsible
+              for their content or services. Additionally, we may collaborate
+              with or refer you to third-party businesses. Thank you for
+              choosing Fozato SEO for your YouTube optimization needs.
+            </p>
+            <p className="cursor-pointer text-[8px]">
+              Terms and Conditions | Privacy Policy | Refund/Cancellation |
+              Shipping Policy | About Us | Contact Us
+            </p>
+          </footer>
+
+         
         </div>
       </div>
     </div>

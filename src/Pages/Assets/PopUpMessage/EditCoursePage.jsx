@@ -61,16 +61,22 @@ const EditCoursePage = () => {
 
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
-    if (files.length + imagePreviews.length > 3) {
-      toast.error("You can upload up to 3 images only.");
+  
+    // Define max image count
+    const maxImages = 10;
+  
+    // Prevent exceeding the limit
+    if (files.length + imagePreviews.length > maxImages) {
+      toast.error(`You can only upload up to ${maxImages} images.`);
       return;
     }
-
+  
     setImages((prev) => [...prev, ...files]);
-
+  
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews((prev) => [...prev, ...newPreviews]);
   };
+  
 
   const handleRemoveImage = (index) => {
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
@@ -88,8 +94,8 @@ const EditCoursePage = () => {
       toast.error("All fields are required!");
       return;
     }
-    if (imagePreviews.length !== 3) {
-      toast.error("Please upload exactly 3 images.");
+    if (imagePreviews.length < 3) {
+      toast.error("Please upload minimum 3 images.");
       return;
     }
     if (isNaN(regularPrice) || Number(regularPrice) <= 0) {

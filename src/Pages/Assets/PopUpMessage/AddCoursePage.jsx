@@ -58,8 +58,8 @@ const AddCoursePage = () => {
       toast.error("All fields are required!");
       return;
     }
-    if (images.length !== 3) {
-      toast.error("Please upload exactly 3 images.");
+    if (images.length < 3) {
+      toast.error("Please upload minimum 3 images.");
       return;
     }
     if (isNaN(regularPrice) || Number(regularPrice) <= 0) {
