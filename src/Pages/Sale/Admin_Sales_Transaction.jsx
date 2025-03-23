@@ -133,7 +133,8 @@ function Admin_Sales_Transaction() {
                     checked={selectedPayment.length === filteredPayments.length}
                   />
                   <div className="col-span-3">Date</div>
-                  <div className="col-span-4">Email</div>
+                  <div className="col-span-2">Email</div>
+                  <div className="col-span-2">Payment</div>
                   <div className="col-span-2">Amount</div>
                   <div className="col-span-2">Status</div>
                 </div>
@@ -168,8 +169,11 @@ function Admin_Sales_Transaction() {
                       <div className="col-span-3">
                         {format(new Date(payment.createdAt), "PPpp")}
                       </div>
-                      <div className="col-span-4 text-green-500 cursor-pointer">
+                      <div className="col-span-2 text-green-500 cursor-pointer">
                         {payment.email}
+                      </div>
+                      <div className="col-span-2 text-green-500 cursor-pointer">
+                        {payment.paymentMethod}
                       </div>
                       <div className="col-span-2">₹{payment.amount}</div>
                       <div

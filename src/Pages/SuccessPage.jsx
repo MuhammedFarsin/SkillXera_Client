@@ -35,7 +35,7 @@ function SuccessPage() {
 
     if (!orderId || !gateway) {
       toast.error("Invalid payment request! Order ID or Gateway is missing.");
-      navigate(`/explore/checkout/${courseId}`);
+      navigate(`/payment-success`);
       return;
     }
 
@@ -82,7 +82,7 @@ function SuccessPage() {
             `verifiedPayment_${orderId}`,
             JSON.stringify(response.data.payment)
           );
-console.log(response)
+          console.log(response);
           // ✅ Track Facebook Pixel Event
           ReactPixel.track("Purchase", {
             value: response.data.payment.amount,
@@ -92,7 +92,7 @@ console.log(response)
         } else if (response?.status === 201) {
           toast.success(response.data.message);
         } else {
-          navigate(`/explore/checkout/${courseId}`);
+          navigate(`/payment-success`);
         }
       } catch (error) {
         console.error("Verification Error:", error);
@@ -167,9 +167,28 @@ console.log(response)
             )}
           </>
         ) : (
-          <h2 className="text-2xl font-bold text-red-600">
-            Payment Verification Failed
-          </h2>
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-600">
+              Payment Verification Failed
+            </h2>
+            <p className="text-gray-700 mt-2">
+              If your money was deducted, please contact support or try again.
+            </p>
+            <div className="mt-4 flex justify-center space-x-4">
+              <button
+                className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-300"
+                onClick={() => window.location.reload()}
+              >
+                Retry Verification
+              </button>
+              <button
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+                onClick={() => navigate("/contact")}
+              >
+                Contact Support
+              </button>
+            </div>
+          </div>
         )}
       </div>
       <ToasterHot />

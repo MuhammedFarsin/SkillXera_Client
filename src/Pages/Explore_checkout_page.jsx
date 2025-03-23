@@ -106,8 +106,16 @@ const PaymentPage = () => {
 
   const handleRazorpayPayment = async (amount) => {
     try {
+      ReactPixel.track("InitiateCheckout", {
+        content_name: course.title,
+        content_ids: [course._id],
+        value: amount,
+        currency: "INR",
+      });
+
       const scriptLoaded = await loadRazorpayScript();
       console.log(scriptLoaded);
+      
       if (!scriptLoaded) {
         toast.error("Failed to load Razorpay. Check your internet connection.");
         return;
@@ -156,6 +164,13 @@ const PaymentPage = () => {
         },
         theme: { color: "#F37254" },
       };
+      ReactPixel.track("AddPaymentInfo", {
+        content_name: course.title,
+        content_ids: [course._id],
+        value: amount,
+        currency: "INR",
+        payment_method: "Cashfree",
+      });
 
       const razorpay = new window.Razorpay(options);
       console.log('this is the response',razorpay);
