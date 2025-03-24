@@ -16,7 +16,7 @@ import ViewContactModal from "../Modal/ViewContactModal";
 function ContactTable() {
   const [contactsData, setContactsData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [viewContact, setViewContact] = useState(null);
   const [viewContactModal, setViewContactModal] = useState(null);
@@ -55,14 +55,15 @@ function ContactTable() {
     fetchContacts();
   }, []);
   const handleViewOpenModal = async (contactId) => {
-   
     setViewContactModal(true); // Open modal
 
     try {
-      const response = await axiosInstance.get(`/admin/get-contacts-details/${contactId}`);
+      const response = await axiosInstance.get(
+        `/admin/get-contacts-details/${contactId}`
+      );
       setViewContact(response.data);
     } catch (error) {
-      toast.error("Failed to load contact details",error)
+      toast.error("Failed to load contact details", error);
       setError("Failed to load contact details");
     } finally {
       setLoading(false);
@@ -285,12 +286,12 @@ function ContactTable() {
                       <div>{format(new Date(contact.createdAt), "PPpp")}</div>
 
                       <div
-          key={contact._id}
-          className="text-green-400 cursor-pointer"
-          onClick={() => handleViewOpenModal(contact._id)}
-        >
-          {contact.email}
-        </div>
+                        key={contact._id}
+                        className="text-green-400 cursor-pointer"
+                        onClick={() => handleViewOpenModal(contact._id)}
+                      >
+                        {contact.email}
+                      </div>
                       <div
                         className="text-green-400 cursor-pointer"
                         onClick={() => navigate(`/edit/${contact._id}`)}
@@ -402,12 +403,12 @@ function ContactTable() {
         contactId={selectedContactId}
         onContactEdited={handleUpdateContact}
       />
-       <ViewContactModal 
-        isOpen={viewContactModal} 
-        contact={viewContact} 
-        loading={loading} 
-        error={error} 
-        onClose={handleViewContactCloseModal} 
+      <ViewContactModal
+        isOpen={viewContactModal}
+        contact={viewContact}
+        loading={loading}
+        error={error}
+        onClose={handleViewContactCloseModal}
       />
     </div>
   );

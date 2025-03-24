@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import Admin_Navbar from "../Common/AdminNavbar";
 import ToastHot from "../Common/ToasterHot";
@@ -11,8 +11,10 @@ import Swal from "sweetalert2";
 function Admin_Sales_Transaction() {
   const [payments, setPayments] = useState([]);
   const [searchFilter, setSearchFilter] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState("");
   const [selectedPayment, setSelectedPayment] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -79,6 +81,7 @@ function Admin_Sales_Transaction() {
   };
   const handleResendPaymentMail = async (orderId) => {
     try {
+      console.log("this is the order_id", orderId);
       if (!orderId) {
         toast.error("Order ID is missing");
         return;
@@ -100,13 +103,26 @@ function Admin_Sales_Transaction() {
     }
   };
 
-  const filteredPayments = payments.filter((payment) =>
-    payment.email.toLowerCase().includes(searchFilter.toLowerCase())
-  );
+  const filteredPayments = useMemo(() => {
+    return payments.filter((payment) => {
+      const matchesEmail = payment.email.toLowerCase().includes(searchFilter.toLowerCase());
+      const matchesStatus = statusFilter
+        ? payment.status.toLowerCase() === statusFilter.toLowerCase()
+        : true;
+      const matchesPaymentMethod = paymentFilter
+        ? payment.paymentMethod === paymentFilter
+        : true;
+
+      return matchesEmail && matchesStatus && matchesPaymentMethod;
+    });
+  }, [payments, searchFilter, statusFilter, paymentFilter]);
+  
+  
+
   return (
     <div className="relative bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-200 text-sm">
       <Admin_Navbar />
-  
+
       <div className="p-10 mx-auto py-10 mt-12 bg-gray-900">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Transactions</h2>
@@ -114,6 +130,8 @@ function Admin_Sales_Transaction() {
         <div className="flex gap-10">
           <div className="h-80 w-64 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <h2 className="text-xl font-bold mb-4">Filters</h2>
+
+            {/* Search Input */}
             <input
               type="text"
               placeholder="Search by email..."
@@ -121,8 +139,28 @@ function Admin_Sales_Transaction() {
               onChange={(e) => setSearchFilter(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-gray-200"
             />
+
+            {/* Dropdown for Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-3 py-2 mt-4 border rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-gray-200"
+            >
+              <option value="">Select Status</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+            </select>
+            <select
+              value={paymentFilter}
+              onChange={(e) => setPaymentFilter(e.target.value)}
+              className="w-full px-3 py-2 mt-4 border rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-gray-200"
+            >
+              <option value="">Select Payment</option>
+              <option value="Razorpay">Razorpay</option>
+              <option value="Cashfree">Cashfree</option>
+            </select>
           </div>
-  
+
           <div className="flex-1 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md relative">
             {filteredPayments.length > 0 ? (
               <>
@@ -138,7 +176,7 @@ function Admin_Sales_Transaction() {
                   <div className="col-span-2">Amount</div>
                   <div className="col-span-2">Status</div>
                 </div>
-  
+
                 <div>
                   {filteredPayments.map((payment) => (
                     <div
@@ -177,7 +215,11 @@ function Admin_Sales_Transaction() {
                       </div>
                       <div className="col-span-2">₹{payment.amount}</div>
                       <div
-                        className={`col-span-2 font-bold ${payment.status === "Success" ? "text-green-500" : "text-red-500"}`}
+                        className={`col-span-2 font-bold ${
+                          payment.status === "Success"
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
                       >
                         {payment.status}
                       </div>
@@ -192,12 +234,18 @@ function Admin_Sales_Transaction() {
                   alt="No Payments"
                   className="w-40 h-40 rounded-full"
                 />
-                <p className="text-gray-500 dark:text-gray-400 mt-4">No payment records found.</p>
+                <p className="text-gray-500 dark:text-gray-400 mt-4">
+                  No payment records found.
+                </p>
               </div>
             )}
             <motion.div
               initial={{ y: 100, opacity: 0 }}
-              animate={selectedPayment.length > 0 ? { y: 0, opacity: 1 } : { y: 100, opacity: 0 }}
+              animate={
+                selectedPayment.length > 0
+                  ? { y: 0, opacity: 1 }
+                  : { y: 100, opacity: 0 }
+              }
               transition={{ duration: 0.4, ease: "easeInOut" }}
               className="fixed bottom-0 left-0 right-0 bg-gray-700 dark:bg-gray-800 text-white shadow-md p-4 flex justify-end gap-10 items-center"
             >
@@ -225,7 +273,7 @@ function Admin_Sales_Transaction() {
                     {payments.map((payment) => (
                       <button
                         key={payment._id}
-                        onClick={() => handleResendPaymentMail(payment.cashfree_order_id)}
+                        onClick={() => handleResendPaymentMail(payment._id)}
                         className="block w-full text-left rounded-lg text-black dark:text-gray-200 px-4 py-2 hover:bg-white dark:hover:bg-gray-600"
                       >
                         Resend Email

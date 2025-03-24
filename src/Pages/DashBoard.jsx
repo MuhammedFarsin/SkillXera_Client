@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import Admin_Navbar from "./Common/AdminNavbar";
+import { FaFilter } from "react-icons/fa";
 import { format } from "date-fns";
+import DateRange_Picker from "../Utils/DateRangePicker";
+// import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   AreaChart,
   Area,
@@ -10,9 +14,16 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+
 import axiosInstance from "../Connection/Axios";
 
 function DashBoard() {
+  const [dateRange, setDateRange] = useState({
+    startDate: null,
+    endDate: null,
+  });
+  const [showPicker, setShowPicker] = useState(false);
+  const [dashboardData, setDashboardData] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [leadsData, setLeadsData] = useState([]);
   const [recentLeads, setRecentLeads] = useState([]);
@@ -22,41 +33,57 @@ function DashBoard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Function to fetch data
+  const fetchDashboardData = async (startDate, endDate) => {
+    try {
+      setLoading(true);
+      setError(null);
+  
+      // Construct query only if startDate and endDate are provided
+      const query =
+        startDate && endDate ? `?startDate=${startDate}&endDate=${endDate}` : "";
+      const response = await axiosInstance.get(`/admin/dashboard${query}`);
+  
+      console.log("API Response:", response.data);
+  
+      const {
+        ordersGraphData,
+        leadsGraphData,
+        totalLeads,
+        totalSales,
+        recentLeads,
+        totalRevenue,
+      } = response.data;
+  
+      setSalesData(ordersGraphData);
+      setLeadsData(leadsGraphData);
+      setTotalLeads(totalLeads);
+      setTotalSales(totalSales);
+      setTotalRevenue(totalRevenue);
+      setRecentLeads(recentLeads);
+      setDashboardData(response.data);
+    } catch (error) {
+      setError("Failed to fetch dashboard data. Please try again later.");
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await axiosInstance.get("/admin/sales-data");
+    if (dateRange.startDate && dateRange.endDate) {
+      const startDate = format(dateRange.startDate, "yyyy-MM-dd");
+      const endDate = format(dateRange.endDate, "yyyy-MM-dd");
+      console.log("Start Date:", startDate);
+      console.log("End Date:", endDate);
+      fetchDashboardData(startDate, endDate);
+    } else {
+      // Fetch all data if no date range is provided
+      fetchDashboardData();
+    }
+  }, [dateRange]);
+  
 
-        console.log("API Response:", response.data);
-
-        const {
-          ordersGraphData,
-          leadsGraphData,
-          totalLeads,
-          totalSales,
-          recentLeads,
-          totalRevenue,
-        } = response.data;
-        console.log(response.data);
-
-        setSalesData(ordersGraphData);
-        setLeadsData(leadsGraphData);
-        setTotalLeads(totalLeads);
-        setTotalSales(totalSales);
-        setTotalRevenue(totalRevenue);
-        setRecentLeads(recentLeads);
-      } catch (error) {
-        setError("Failed to fetch dashboard data. Please try again later.");
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
   return (
     <div className="bg-gray-900 text-gray-100 min-h-screen text-sm">
       <Admin_Navbar />
@@ -90,6 +117,20 @@ function DashBoard() {
                 </h3>
               </div>
             </div>
+            {/* Filter Button */}
+            <div
+              className="bg-gray-800 px-6 py-3 rounded-lg shadow-md flex justify-center items-center cursor-pointer"
+              onClick={() => setShowPicker((prev) => !prev)}
+            >
+              <FaFilter className="text-gray-300 text-xl hover:text-white" />
+            </div>
+
+            {/* Date Picker UI */}
+            <DateRange_Picker
+              showPicker={showPicker}
+              setShowPicker={setShowPicker}
+              setDateRange={setDateRange}
+            />
           </div>
         </div>
 

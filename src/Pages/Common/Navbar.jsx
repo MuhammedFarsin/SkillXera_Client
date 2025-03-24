@@ -1,4 +1,5 @@
-import { FaUserCircle, FaHome, FaCompass } from "react-icons/fa";
+import { useState } from "react";
+import { FaUserCircle, FaHome, FaCompass, FaEllipsisV, FaInfoCircle, FaPhone, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ import logo from "../../assets/logo.jpg";
 function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -36,27 +38,13 @@ function Navbar() {
       {/* Left Section: Logo */}
       <div className="flex items-center">
         <img src={logo} alt="SkillXera Logo" className="w-10 h-10 rounded-lg" />
-        {/* Show text only on medium and larger screens */}
         <h1 className="text-white text-xl font-bold hidden md:block ml-2">SkillXera</h1>
       </div>
 
       {/* Navigation Section */}
-      <nav className="flex items-center space-x-32">
-        {/* Mobile View (Icons Only) */}
-        <div className="flex md:hidden space-x-16">
-          <Link to="/home" className="text-white hover:text-gray-300">
-            <FaHome size={24} />
-          </Link>
-          <Link to="/explore" className="text-white hover:text-gray-300">
-            <FaCompass size={24} />
-          </Link>
-          <button onClick={handleLogout} className="text-white hover:text-gray-300">
-            <FaUserCircle size={24} />
-          </button>
-        </div>
-
-        {/* Tablet & Desktop View (Icons + Text Side by Side) */}
-        <div className="hidden md:flex space-x-32">
+      <nav className="flex items-center space-x-10">
+        {/* Desktop View */}
+        <div className="hidden md:flex space-x-10">
           <Link to="/home" className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2">
             <FaHome size={22} />
             <span className="text-base">Home</span>
@@ -65,6 +53,18 @@ function Navbar() {
             <FaCompass size={22} />
             <span className="text-base">Explore</span>
           </Link>
+          <Link to="/about" className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2">
+            <FaInfoCircle size={22} />
+            <span className="text-base">About</span>
+          </Link>
+          <Link to="/contact" className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2">
+            <FaPhone size={22} />
+            <span className="text-base">Contact</span>
+          </Link>
+          <Link to="/privacy" className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2">
+            <FaLock size={22} />
+            <span className="text-base">Privacy</span>
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center text-white hover:text-gray-300 transition duration-200 space-x-2"
@@ -72,6 +72,69 @@ function Navbar() {
             <FaUserCircle size={22} />
             <span className="text-base">Logout</span>
           </button>
+        </div>
+
+        {/* Mobile View - Three Dots Menu */}
+        <div className="md:hidden relative">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-white hover:text-gray-300">
+            <FaEllipsisV size={24} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2">
+              <Link
+                to="/home"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center space-x-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaHome size={18} />
+                <span>Home</span>
+              </Link>
+              <Link
+                to="/explore"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center space-x-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaCompass size={18} />
+                <span>Explore</span>
+              </Link>
+              <Link
+                to="/about"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center space-x-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaInfoCircle size={18} />
+                <span>About</span>
+              </Link>
+              <Link
+                to="/contact"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center space-x-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaPhone size={18} />
+                <span>Contact</span>
+              </Link>
+              <Link
+                to="/privacy"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center space-x-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaLock size={18} />
+                <span>Privacy</span>
+              </Link>
+              <button
+                onClick={(e) => {
+                  handleLogout(e);
+                  setMenuOpen(false);
+                }}
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center w-full text-left space-x-2"
+              >
+                <FaUserCircle size={18} />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </nav>
     </header>
