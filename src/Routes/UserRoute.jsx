@@ -101,7 +101,7 @@ function UserRoute() {
         }
       />
       <Route
-        path="/learn/:courseId/module/:moduleId/lecture/:lectureIndex"
+        path="/learn/:courseId/module/:moduleId/lectures/:lectureIndex"
         element={
           <ProtectedRoute>
             <LearningPage />

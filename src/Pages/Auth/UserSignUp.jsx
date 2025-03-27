@@ -14,6 +14,7 @@ function UserSignUp() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +23,7 @@ function UserSignUp() {
       toast.error("Passwords do not match");
       return;
     }
+    setLoading(true)
 
     try {
       const response = await axiosInstance.post("/signup", { username, email, phone, password, confirmPassword });
@@ -35,6 +37,8 @@ function UserSignUp() {
       }
     } catch (err) {
       toast.error("Something went wrong...!",err);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -121,7 +125,7 @@ function UserSignUp() {
             type="submit"
             className="w-full py-2 px-3 text-white text-sm font-semibold rounded-lg bg-gradient-to-r from-pink-500 to-violet-600 hover:bg-gradient-to-l"
           >
-            Sign Up
+            {loading ? "verifying..." : "SignUp"}
           </button>
         </form>
 

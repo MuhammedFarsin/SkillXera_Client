@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.jpg";
 
 function LandingPage() {
@@ -24,7 +24,7 @@ function LandingPage() {
         <motion.img
           src={logo}
           alt="SkillXera Logo"
-          className="w-24 sm:w-32 h-24 sm:h-32 rounded-lg mx-auto mb-4 animate-none"
+          className="w-24 sm:w-32 h-24 sm:h-32 rounded-2xl mx-auto mb-4 animate-none "
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -123,15 +123,15 @@ function LandingPage() {
       <footer className="w-full bg-gray-900 py-8 text-center text-gray-400 px-4">
         <p>&copy; {new Date().getFullYear()} SkillXera. All Rights Reserved.</p>
         <div className="mt-4 flex flex-wrap justify-center gap-4">
-          <a href="#" className="hover:text-white">
+          <Link to="/privacy" className="hover:text-white">
             Privacy Policy
-          </a>
-          <a href="#" className="hover:text-white">
+          </Link>
+          <Link to="/terms" className="hover:text-white">
             Terms of Service
-          </a>
-          <a href="#" className="hover:text-white">
+          </Link>
+          <Link to="/contact" className="hover:text-white">
             Contact
-          </a>
+          </Link>
         </div>
       </footer>
     </div>

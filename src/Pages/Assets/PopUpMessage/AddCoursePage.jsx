@@ -37,7 +37,7 @@ const AddCoursePage = () => {
   // Handle file change for images
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length !== 3) {
+    if (files.length < 3) {
       toast.error("Please upload exactly 3 images.");
       return;
     }
@@ -46,7 +46,6 @@ const AddCoursePage = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('button is clikcing')
     if (
       !courseName ||
       !courseRoute ||

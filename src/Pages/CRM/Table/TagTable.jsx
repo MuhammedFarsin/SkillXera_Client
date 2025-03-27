@@ -49,11 +49,6 @@ function TagTable() {
     setOpenMenuIndex(openMenuIndex === index ? null : index);
   };
 
-  const handleClickOutside = (event) => {
-    if (!event.target.closest(".dropdown-menu")) {
-      setOpenMenuIndex(null);
-    }
-  };
 
   const handleTagEdited = (updatedTag) => {
     setTags((prevTags) =>
@@ -61,12 +56,7 @@ function TagTable() {
     );
   };
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  
   console.log(tags)
 
   const handleDelete = async (tagId) => {
