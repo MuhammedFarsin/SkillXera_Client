@@ -98,7 +98,7 @@ const PaymentPage = () => {
 
       cashfree.checkout({
         paymentSessionId: response.data.payment_session_id,
-        return_url: `http://localhost:5173/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}&gateway=cashfree`,
+        return_url: `${import.meta.env.VITE_FRONTEND_URL}/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}&gateway=cashfree`,
       });
     } catch (error) {
       toast.error("Cashfree Payment failed");

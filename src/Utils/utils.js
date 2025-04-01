@@ -1,1 +1,1 @@
-export const frontendRoute = "http://localhost:5173"
+export const frontendRoute = import.meta.env.VITE_FRONTEND_URL

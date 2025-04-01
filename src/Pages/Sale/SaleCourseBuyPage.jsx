@@ -38,8 +38,8 @@ function SaleCourseBuyPage() {
       console.warn("Course ID is missing");
       return;
     }
-    ReactPixel.track("Purchase", {
-      value: course.price,
+    ReactPixel.track("PageView", {
+      value: course.salesPrice,
       currency: "INR",
       content_name: "SkillXera",
       content_category: "Online Course",

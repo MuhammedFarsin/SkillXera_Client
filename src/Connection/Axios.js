@@ -5,7 +5,7 @@ import { removeUser } from "../Store/Slices/userSlice";
 
 // Create Axios instance
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000", 
+  baseURL: import.meta.env.VITE_BACKEND_URL, 
   withCredentials: true, 
 });
 
