@@ -1,5 +1,5 @@
 import React from 'react'
-import SaleCourse_page from "../../Pages/Sale/SaleCourseBuyPage"
+import SaleCourse_page from "../../Pages/Sale/SalesPage"
 
 function SaleCourse() {
   return (

@@ -43,7 +43,7 @@ const EditCoursePage = () => {
           setSalesPrice(salesPrice);
           setDescription(description);
           setBuyCourse(
-            buyCourse.replace(`${frontendRoute}/sale/buy-course/course/`, "") ||
+            buyCourse.replace(`${frontendRoute}/sale/sales-page/course/`, "") ||
               ""
           );
           console.log(response.data);
@@ -109,7 +109,7 @@ const EditCoursePage = () => {
 
     setLoading(true);
     const fullRoute = `${frontendRoute}/course/${courseRoute}`;
-    const buyCourseLink = `${frontendRoute}/sale/buy-course/course/${buyCourse}`;
+    const buyCourseLink = `${frontendRoute}/sale/sales-page/course/${buyCourse}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
@@ -163,7 +163,7 @@ const EditCoursePage = () => {
     toast.success("Link copied!");
   };
   const handleBuyCourseCopyLink = () => {
-    const fullLink = `${frontendRoute}/sale/buy-course/course/${buyCourse}`;
+    const fullLink = `${frontendRoute}/sale/sales-page/course/${buyCourse}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };

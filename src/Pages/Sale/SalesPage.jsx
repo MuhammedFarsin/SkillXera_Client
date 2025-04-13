@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../Connection/Axios";
 import ReactPixel from "react-facebook-pixel";
-import VidalyticsPlayer from "../../Utils/VidalyticsPlayer";
 import { Check } from "lucide-react";
+import VideoEmbed from "../../Utils/EmbeddedVideo";
 
-function SaleCourseBuyPage() {
+function SalesPage() {
   const navigate = useNavigate();
   const { courseId } = useParams();
+  const [salesPage, setSalesPage] = useState(null);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,10 +18,10 @@ function SaleCourseBuyPage() {
     const fetchCourseDetails = async () => {
       try {
         const response = await axiosInstance.get(
-          `/sale/buy-course/course/${courseId}`
+          `/sale/get-sales-page/course/${courseId}`
         );
-        setCourse(response.data);
-        console.log(response);
+        setSalesPage(response.data);
+        setCourse(response.data.courseId);
       } catch (error) {
         setError("Failed to fetch course details");
         console.log(error);
@@ -32,14 +33,11 @@ function SaleCourseBuyPage() {
     fetchCourseDetails();
   }, [courseId]);
 
+
   const handleNavigate = (courseId) => {
-    console.log("Navigating with Course ID:", courseId);
-    if (!courseId) {
-      console.warn("Course ID is missing");
-      return;
-    }
+    if (!courseId) return;
     ReactPixel.track("PageView", {
-      value: course.salesPrice,
+      value: course?.salesPrice,
       currency: "INR",
       content_name: "SkillXera",
       content_category: "Online Course",
@@ -47,49 +45,85 @@ function SaleCourseBuyPage() {
       content_type: "product",
     });
 
-    navigate(`/sale/buy-course/course/payment/${courseId}`);
+    navigate(`/sale/checkout-page/course/payment/${courseId}`);
   };
-
-  console.log(courseId);
 
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
-  if (!course) return <p className="text-white text-center">No course found</p>;
+  if (!salesPage)
+    return <p className="text-white text-center">No course found</p>;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-6 bg-black text-center">
-      <h1 className="text-2xl lg:text-5xl font-bold text-[#e69b2f] leading-tight sm:mb-2 lg:mb-1">
-        Experience the <span className="text-white"> Power of </span>
-      </h1>
+      {/* Line 0 - Can contain HTML like span, etc. */}
+      <h1
+        className="text-2xl lg:text-6xl leading-tight [&>p>strong]:text-white"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[0] }}
+      />
 
-      <h2 className="text-[13px] mt-1 lg:text-4xl font-extrabold text-[#e69b2f] leading-tight">
-        &quot;AUTOMATED YOUTUBE SEO WITH FOZATO SEO&quot;
-      </h2>
+      {/* Line 1 */}
+      <h2
+        className="text-[18px] mt-1 lg:text-4xl leading-tight"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[1] }}
+      />
 
+      {/* CTA Text */}
       <p className="text-sm md:text-xl lg:text-xl text-gray-300 lg:mt-4 px-2">
-        <span className="text-[16px] lg:text-2xl font-sans font-bold lg:font-extrabold text-[#e69b2f]">
-          &quot;DOUBLE YOUR YOUTUBE VIEWS & REVENUE&quot;
-          <span className="text-white"> with Our Revolutionary</span>
-        </span>
+        <span
+          className="text-[16px] lg:text-4xl"
+          dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }}
+        ></span>
       </p>
 
-      <span className="text-white text-lg md:text-xl font-bold leading-snug px-2">
-        YouTube SEO App, by Performing YouTube SEO Automatically!
-      </span>
+      {/* Line 2 */}
+      <span
+        className="text-lg md:text-4xl leading-snug px-2"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[3] }}
+      ></span>
 
-      <p className="mt-2 text-[14px] text-[#9b9b9b] lg:text-lg leading-snug font-semibold">
-        (Join 5857+ satisfied users who have optimized{" "}
-        <br className="hidden md:block" />
-        <span className="font-semibold">
-          their YouTube videos using Fozato SEO)
-        </span>
+      {/* Main Image */}
+      {/* {salesPage?.mainImage && (
+        <img
+          src={`${BASE_URL}/uploads/${salesPage.mainImage}`}
+          alt="Main"
+          className="mt-6 w-full max-w-md rounded-md"
+        />
+      )} */}
+
+      {/* Bonus Images */}
+      {/* <div className="flex gap-4 mt-6 flex-wrap justify-center">
+        {salesPage?.bonusImages?.map((img, index) => (
+          <img
+            key={index}
+            src={`${BASE_URL}/uploads/${img}`}
+            alt={`Bonus ${index}`}
+            className="w-32 h-auto rounded"
+          />
+        ))}
+      </div> */}
+
+      {/* Embed Video */}
+
+      {/* User Count */}
+      <p className="mt-2 text-[12px] lg:text-[24px] leading-snug">
+        {/* First Line Content */}
+        <span dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[4] }} />
+
+        {/* Second Line Content inside Span */}
+        <span
+          className=""
+          dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[5] }}
+        />
       </p>
 
-      <p className="mt-2 text-gray-400 text-[12px] lg:text-base font-semibold">
-        (Even if you’ve never done SEO for YouTube videos before)
-      </p>
+      {/* Subtext */}
+      <p
+        className="mt-2 text-[10px] lg:text-base"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[6] }}
+      ></p>
 
+      {/* Highlight Box */}
       <div className="border-2 md:border-2 border-[#e69b2f] rounded-2xl lg:rounded-2xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/4">
         <p className="text-white text-sm md:text-lg font-bold">
           <span className="text-[#ffffff] text-[8px] lg:text-[15px]">
@@ -101,12 +135,9 @@ function SaleCourseBuyPage() {
           </span>
         </p>
       </div>
+     {salesPage?.embedCode && <VideoEmbed embedCode={salesPage.embedCode} />}
 
-      <div className="w-full md:w-4/6 mt-6 rounded border-2 lg:border-2 border-[#e69b2f]">
-        <VidalyticsPlayer />
-      </div>
 
-      {/* After Video Content */}
       <button
         onClick={() => handleNavigate(courseId)}
         className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
@@ -651,4 +682,4 @@ function SaleCourseBuyPage() {
   );
 }
 
-export default SaleCourseBuyPage;
+export default SalesPage;

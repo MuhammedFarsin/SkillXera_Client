@@ -1,4 +1,4 @@
-// import { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { persistStore } from "redux-persist";
 import store from "./Store/store.js"
@@ -11,11 +11,11 @@ import App from './App.jsx';
 let persistor = persistStore(store)
 
 createRoot(document.getElementById('root')).render(
-  // <StrictMode>
+  <StrictMode>
     <Provider store={store}> 
       <PersistGate loading={<Loadingpage/>} persistor={persistor}> 
         <App />
       </PersistGate>
     </Provider>
-  // </StrictMode>
+   </StrictMode>
 );

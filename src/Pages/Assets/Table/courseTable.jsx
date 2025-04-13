@@ -25,7 +25,7 @@ const CourseTable = () => {
     fetchCourses();
   }, []);
 
-  const fullBuyingCourseRoute = `${frontendRoute}/sale/buy-course/course`;
+  const fullBuyingCourseRoute = `${frontendRoute}/sale/sales-page/course`;
 
   const fetchCourses = async () => {
     try {

@@ -8,7 +8,9 @@ const Dashboard_Page = React.lazy(() =>
 const Contact_Page = React.lazy(() => import("../Components/Admin/Contact"));
 const Courses_Page = React.lazy(() => import("../Components/Admin/Courses"));
 import AddCourse from "../Components/Admin/AddCourse";
+import SalesPage from "../Components/Admin/SalesPage";
 import EditCourse from "../Components/Admin/EditCourse"
+import AddCheckout from "../Components/Admin/AddCheckout"
 const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() =>
@@ -59,6 +61,22 @@ function AdminRoute() {
         element={
           <ProtectedRoute>
             <AddCourse />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/course/add-salespage/:courseId"
+        element={
+          <ProtectedRoute>
+            <SalesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/course/add-checkoutPage/:courseId"
+        element={
+          <ProtectedRoute>
+            <AddCheckout />
           </ProtectedRoute>
         }
       />

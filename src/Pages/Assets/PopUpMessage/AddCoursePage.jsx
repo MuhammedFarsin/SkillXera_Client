@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import axiosInstance from "../../../Connection/Axios";
 import { frontendRoute } from "../../../Utils/utils";
 import { useNavigate } from "react-router-dom";
-import ToastHot from "../../Common/ToasterHot"
+import ToastHot from "../../Common/ToasterHot";
 
 const AddCoursePage = () => {
   const fileInputRef = useRef(null);
@@ -18,6 +18,7 @@ const AddCoursePage = () => {
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [courseId, setCourseId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Function to reset form fields
@@ -72,7 +73,7 @@ const AddCoursePage = () => {
 
     setLoading(true);
     const fullCourseRoute = `${frontendRoute}/course/${courseRoute}`;
-    const fullBuyingCourseRoute = `${frontendRoute}/sale/buy-course/course/${buyingCourseRoute}`;
+    const fullBuyingCourseRoute = `${frontendRoute}/sale/sales-page/course/${buyingCourseRoute}`;
 
     const formData = new FormData();
     formData.append("title", courseName);
@@ -97,11 +98,12 @@ const AddCoursePage = () => {
       );
 
       if (response.status === 201) {
+        const newCourseId = response.data.course?._id || response.data._id;
+        setCourseId(newCourseId);
         toast.success("Course added successfully!");
         setTimeout(() => {
-          navigate("/admin/assets/courses");
           resetForm();
-        }, 2000);
+        }, 60000);
       } else {
         toast.error("Failed to add course!");
       }
@@ -112,6 +114,9 @@ const AddCoursePage = () => {
       setLoading(false);
     }
   };
+  const handleNavigate = () => {
+    navigate(`/admin/assets/course/add-salespage/${courseId}`);
+  };
 
   // Handle copying the link
   const handleCopyLink = () => {
@@ -120,7 +125,7 @@ const AddCoursePage = () => {
     toast.success("Link copied!");
   };
   const handleBuyCourseCopyLink = () => {
-    const fullLink = `${frontendRoute}/sale/buy-course/course/${buyingCourseRoute}`;
+    const fullLink = `${frontendRoute}/sale/sales-page/course/${buyingCourseRoute}`;
     navigator.clipboard.writeText(fullLink);
     toast.success("Link copied!");
   };
@@ -255,16 +260,20 @@ const AddCoursePage = () => {
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={courseId ? handleNavigate : handleSubmit}
               className="bg-gradient-to-b from-gray-800 to-teal-500 text-white px-4 py-2 rounded-md hover:from-gray-700 hover:to-teal-600"
               disabled={loading}
             >
-              {loading ? "Adding..." : "Add Course"}
+              {loading
+                ? "Adding..."
+                : courseId
+                ? "Create Sales Page"
+                : "Add Course"}
             </button>
           </div>
         </div>
       </div>
-          <ToastHot/>
+      <ToastHot />
     </div>
   );
 };
