@@ -251,6 +251,12 @@ const CourseTable = () => {
                         >
                           Delete
                         </button>
+                        <button
+                          className="block w-full px-4 py-2 hover:bg-blue-700 rounded-md text-sm text-white"
+                          onClick={() => navigate(`/admin/assets/course/edit-sales-page/${course._id}`)}
+                        >
+                          SalesPage
+                        </button>
                       </motion.div>
                     )}
                   </td>

@@ -33,7 +33,7 @@ const VideoEmbed = ({ embedCode }) => {
   }, [embedCode]);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-80 lg:w-3/4 border-2 rounded border-yellow-400 mt-6">
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-black text-white z-10">
           <p>Loading video...</p>

@@ -33,7 +33,6 @@ function SalesPage() {
     fetchCourseDetails();
   }, [courseId]);
 
-
   const handleNavigate = (courseId) => {
     if (!courseId) return;
     ReactPixel.track("PageView", {
@@ -47,7 +46,14 @@ function SalesPage() {
 
     navigate(`/sale/checkout-page/course/payment/${courseId}`);
   };
-
+  const buttonHTML = `
+  <span class='text-[10px] md:text-lg lg:text-3xl text-black'>
+    ${salesPage?.buttonContend}
+  </span>
+  <span class='text-[11px] md:text-lg lg:text-xl font-semibold'>
+    (ONLY ₹${course.salesPrice}/3 Months)
+  </span>
+`;
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
@@ -76,46 +82,22 @@ function SalesPage() {
         ></span>
       </p>
 
-      {/* Line 2 */}
       <span
-        className="text-lg md:text-4xl leading-snug px-2"
+        className="text-lg md:text-4xl leading-snug"
         dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[3] }}
       ></span>
 
-      {/* Main Image */}
-      {/* {salesPage?.mainImage && (
-        <img
-          src={`${BASE_URL}/uploads/${salesPage.mainImage}`}
-          alt="Main"
-          className="mt-6 w-full max-w-md rounded-md"
-        />
-      )} */}
-
-      {/* Bonus Images */}
-      {/* <div className="flex gap-4 mt-6 flex-wrap justify-center">
-        {salesPage?.bonusImages?.map((img, index) => (
-          <img
-            key={index}
-            src={`${BASE_URL}/uploads/${img}`}
-            alt={`Bonus ${index}`}
-            className="w-32 h-auto rounded"
-          />
-        ))}
-      </div> */}
-
-      {/* Embed Video */}
-
       {/* User Count */}
-      <p className="mt-2 text-[12px] lg:text-[24px] leading-snug">
+      <p className="text-[10px] font-thin lg:text-[24px]">
         {/* First Line Content */}
         <span dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[4] }} />
-
-        {/* Second Line Content inside Span */}
-        <span
-          className=""
-          dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[5] }}
-        />
       </p>
+
+      {/* Second Line Content inside Span */}
+      <span
+        className="text-[12px] lg:text-[24px] font-light mt-6"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[5] }}
+      />
 
       {/* Subtext */}
       <p
@@ -124,99 +106,58 @@ function SalesPage() {
       ></p>
 
       {/* Highlight Box */}
-      <div className="border-2 md:border-2 border-[#e69b2f] rounded-2xl lg:rounded-2xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/4">
-        <p className="text-white text-sm md:text-lg font-bold">
-          <span className="text-[#ffffff] text-[8px] lg:text-[15px]">
-            Fozato SEO:
-          </span>
-          <span className="text-[#e69b2f] text-[8px] lg:text-[15px]">
-            {" "}
-            The World’s First Most Powerful YouTube Ranking System
-          </span>
-        </p>
+      <div className="border-2 md:border-2 border-[#e69b2f] rounded-xl lg:rounded-xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/4">
+        <p
+          className="text-white text-[10px] md:text-lg"
+          dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContend }}
+        ></p>
       </div>
-     {salesPage?.embedCode && <VideoEmbed embedCode={salesPage.embedCode} />}
-
+      {salesPage?.embedCode && <VideoEmbed embedCode={salesPage.embedCode} />}
 
       <button
         onClick={() => handleNavigate(courseId)}
         className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
-             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
-             mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
-      >
-        &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
-        <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
-          (ONLY ₹{course.salesPrice}/3 Months)
-        </span>
-      </button>
+           leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+           mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+        dangerouslySetInnerHTML={{ __html: buttonHTML }}
+      />
 
       <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
-        <h3 className="text-[29px] font-bold mb-10 lg:mb-10 leading-tight">
-          HERE IS WHAT YOU ARE GOING TO ACHIEVE
-        </h3>
+        <h3
+          className="text-[29px] mb-10 lg:mb-10 leading-tight"
+          dangerouslySetInnerHTML={{ __html: salesPage?.checkBoxHeading }}
+        ></h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-          {[
-            {
-              title: "Top Rankings on YouTube",
-              description:
-                "Automatically perform professional YouTube SEO to get your videos to the top.",
-            },
-            {
-              title: "Maximize Revenue",
-              description:
-                "Increase YouTube income by 10 times with effective SEO strategies.",
-            },
-            {
-              title: "Generate Optimized Content",
-              description:
-                "Discover the best keywords, titles, tags, and descriptions tailored to your video.",
-            },
-            {
-              title: "Save Time and Effort",
-              description:
-                "Automate your YouTube SEO and focus on creating amazing content.",
-            },
-            {
-              title: "Increase Viewership",
-              description:
-                "Attract more viewers with high CTR thumbnails and optimized SEO.",
-            },
-            {
-              title: "Leverage Trends",
-              description:
-                "Utilize Google Trends & other tools to stay ahead in the game.",
-            },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className="p-3 lg:p-6 border-2 border-yellow-500 rounded-3xl bg-black text-white relative flex items-start gap-3"
-            >
-              {/* Check Icon */}
-              <div className="w-4 h-4 flex items-center justify-center bg-yellow-500 rounded-full mt-2">
-                <Check size={16} color="black" strokeWidth={3} />
-              </div>
+        {salesPage?.FirstCheckBox?.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mt-10">
+            {salesPage.FirstCheckBox.map((item, index) => (
+              <div
+                key={index}
+                className="p-3 lg:p-6 border-2 border-yellow-500 rounded-3xl bg-black text-white relative flex items-start gap-3"
+              >
+                {/* Check Icon */}
+                <div className="w-4 h-4 flex items-center justify-center bg-yellow-500 rounded-full mt-2">
+                  <Check size={16} color="black" strokeWidth={3} />
+                </div>
 
-              {/* Content */}
-              <div>
-                <h4 className="font-bold text-lg text-white">{item.title}:</h4>
-                <p className="text-gray-300">{item.description}</p>
+                <div>
+                  <div
+                    className="text-gray-300"
+                    dangerouslySetInnerHTML={{ __html: item.description }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={() => handleNavigate(courseId)}
           className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
-             leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
-             mb-6 w-full md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
-        >
-          &gt;&gt; YES, I WANT TO AUTOMATE MY YOUTUBE SEO <br />
-          <span className="text-[11px] md:text-lg lg:text-xl font-semibold">
-            (ONLY ₹{course.salesPrice}/3 Months)
-          </span>
-        </button>
+           leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+           mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+          dangerouslySetInnerHTML={{ __html: buttonHTML }}
+        />
 
         <p className="text-[18px] lg:text-[22px] text-gray-300 font-bold">
           Register quickly before{" "}
