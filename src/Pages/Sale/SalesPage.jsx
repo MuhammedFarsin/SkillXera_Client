@@ -46,14 +46,14 @@ function SalesPage() {
 
     navigate(`/sale/checkout-page/course/payment/${courseId}`);
   };
-  const buttonHTML = `
-  <span class='text-[10px] md:text-lg lg:text-3xl text-black'>
-    ${salesPage?.buttonContend}
-  </span>
-  <span class='text-[11px] md:text-lg lg:text-xl font-semibold'>
-    (ONLY ₹${course.salesPrice}/3 Months)
-  </span>
-`;
+  //   const buttonHTML = `
+  //   <span class='text-[10px] md:text-lg lg:text-3xl text-black'>
+  //     ${salesPage?.buttonContend}
+  //   </span>
+  //   <span class='text-[11px] md:text-lg lg:text-xl font-semibold'>
+  //     (ONLY ₹${course.salesPrice}/3 Months)
+  //   </span>
+  // `;
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
@@ -75,52 +75,69 @@ function SalesPage() {
       />
 
       {/* CTA Text */}
-      <p className="text-sm md:text-xl lg:text-xl text-gray-300 lg:mt-4 px-2">
+      {/* <p className="text-sm md:text-xl lg:text-xl text-gray-300 lg:mt-4 px-2">
         <span
           className="text-[16px] lg:text-4xl"
           dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }}
         ></span>
-      </p>
+      </p> */}
 
-      <span
+      {/* <span
         className="text-lg md:text-4xl leading-snug"
-        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[3] }}
-      ></span>
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }}
+      ></span> */}
 
       {/* User Count */}
-      <p className="text-[10px] font-thin lg:text-[24px]">
+      <p className="mt-6">
         {/* First Line Content */}
-        <span dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[4] }} />
+        <span dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }} />
       </p>
 
       {/* Second Line Content inside Span */}
       <span
-        className="text-[12px] lg:text-[24px] font-light mt-6"
-        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[5] }}
+        className="mt-6"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[3] }}
       />
 
       {/* Subtext */}
       <p
-        className="mt-2 text-[10px] lg:text-base"
-        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[6] }}
+        className="mt-2"
+        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[4] }}
       ></p>
 
       {/* Highlight Box */}
       <div className="border-2 md:border-2 border-[#e69b2f] rounded-xl lg:rounded-xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/4">
-        <p
-          className="text-white text-[10px] md:text-lg"
-          dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContend }}
-        ></p>
+        <div dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContent }} />
       </div>
       {salesPage?.embedCode && <VideoEmbed embedCode={salesPage.embedCode} />}
 
-      <button
-        onClick={() => handleNavigate(courseId)}
-        className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
-           leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
-           mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
-        dangerouslySetInnerHTML={{ __html: buttonHTML }}
-      />
+      {course?.salesPrice ? (
+        <button
+          onClick={() => handleNavigate(courseId)}
+          className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+       leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+       mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+          dangerouslySetInnerHTML={{
+            __html: `
+      <span class='text-[10px] md:text-lg lg:text-3xl text-black'>
+        ${salesPage?.buttonContent || "YES, I WANT TO AUTOMATE MY YOUTUBE SEO"}
+      </span>
+      <span class='text-[11px] md:text-lg lg:text-xl font-semibold'>
+        (ONLY ₹${course.salesPrice}/3 Months)
+      </span>
+    `,
+          }}
+        />
+      ) : (
+        <button
+          className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+       leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+       mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+          disabled
+        >
+          Loading price...
+        </button>
+      )}
 
       <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
         <h3
@@ -151,38 +168,46 @@ function SalesPage() {
           </div>
         )}
 
-        <button
-          onClick={() => handleNavigate(courseId)}
-          className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
-           leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
-           mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
-          dangerouslySetInnerHTML={{ __html: buttonHTML }}
-        />
+        {course?.salesPrice ? (
+          <button
+            onClick={() => handleNavigate(courseId)}
+            className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+       leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+       mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+            dangerouslySetInnerHTML={{
+              __html: `
+      <span class='text-[10px] md:text-lg lg:text-3xl text-black'>
+        ${salesPage?.buttonContent || "YES, I WANT TO AUTOMATE MY YOUTUBE SEO"}
+      </span>
+      <span class='text-[11px] md:text-lg lg:text-xl font-semibold'>
+        (ONLY ₹${course.salesPrice}/3 Months)
+      </span>
+    `,
+            }}
+          />
+        ) : (
+          <button
+            className="bg-[#FFA41C] text-black font-bold text-[11px] md:text-lg lg:text-3xl shadow-xl 
+       leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
+       mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6"
+            disabled
+          >
+            Loading price...
+          </button>
+        )}
 
-        <p className="text-[18px] lg:text-[22px] text-gray-300 font-bold">
-          Register quickly before{" "}
-          <span className="text-[#E69B2F]"> the offer ends </span> to unlock
-          bonuses worth <span className="text-[#E69B2F]"> ₹97,000</span>
+        <p>
+        <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }}/>
         </p>
         <div className="bg-[#111111] h-20 lg:h-44 flex flex-col justify-center items-center text-center mt-4">
-          <p className="font-bold text-white flex items-center space-x-1">
-            <span className="text-[8px] lg:text-[22px]">Fozato SEO:</span>
-            <span className="text-[#E69B2F] lg:text-[22px] text-[10px]">
-              The World&apos;s First Most Powerful YouTube Ranking System
-            </span>
-          </p>
-
-          <p className="text-[#E69B2F] text-[14px] font-bold mt-1 lg:text-[22px]">
-            ***Hurry! Limited spots available for this offer!***
-          </p>
+         
+          <div dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContent }} />
+          <div dangerouslySetInnerHTML={{ __html: salesPage?.offerLimitingContent }} />
         </div>
 
-        <div className="mx-auto ">
-          <p className="font-bold text-center text-[21px] lg:text-[32px] leading-[38px] text-[#9B9B9B]">
-            Please Check All Boxes Where Your Answer Is{" "}
-            <span className="text-yellow-500">YES!</span>
-          </p>
-
+        <div className="mx-auto mt-6 ">
+        <div dangerouslySetInnerHTML={{ __html: salesPage?.secondCheckBoxHeading }} />
+        
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {[
               "I want to get more views and subscribers on YouTube effortlessly",

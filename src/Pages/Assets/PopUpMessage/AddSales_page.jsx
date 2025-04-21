@@ -34,8 +34,8 @@ function AddSales_page() {
     faq: [
       {
         question: "",
-        answer: ""
-      }
+        answer: "",
+      },
     ],
   });
 
@@ -46,14 +46,14 @@ function AddSales_page() {
   const handleLineChange = (index, value) => {
     const updatedLines = [...formData.lines];
     updatedLines[index] = value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       lines: updatedLines,
     }));
   };
 
   const addNewLine = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       lines: [...prev.lines, ""],
     }));
@@ -62,7 +62,7 @@ function AddSales_page() {
   const handleMainImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         mainImage: file,
       }));
@@ -104,14 +104,14 @@ function AddSales_page() {
     updatedFaq[index][field] = value;
     setFormData({ ...formData, faq: updatedFaq });
   };
-  
+
   const addFaq = () => {
     setFormData({
       ...formData,
-      faq: [...formData.faq, { question: "", answer: "" }]
+      faq: [...formData.faq, { question: "", answer: "" }],
     });
   };
-  
+
   const removeFaq = (index) => {
     const updatedFaq = formData.faq.filter((_, i) => i !== index);
     setFormData({ ...formData, faq: updatedFaq });
@@ -127,21 +127,21 @@ function AddSales_page() {
   const handleFirstCheckboxChange = (index, value) => {
     const updatedCheckBoxes = [...formData.FirstCheckBox];
     updatedCheckBoxes[index].description = value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       FirstCheckBox: updatedCheckBoxes,
     }));
   };
 
   const addCheckBox = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       FirstCheckBox: [...prev.FirstCheckBox, { description: "" }],
     }));
   };
 
   const handleEmbedCodeChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       embedCode: e.target.value,
     }));
@@ -200,21 +200,55 @@ function AddSales_page() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     if (!formData.mainImage) {
       toast.error("Main image is required");
       setLoading(false);
       return;
     }
+    // Check required fields
+    const requiredFields = [
+      "mainImage",
+      "smallBoxContent",
+      "buttonContent",
+      "checkBoxHeading",
+      "Topic",
+      "ThirdSectionSubHeading",
+    ];
+
+    for (const field of requiredFields) {
+      if (
+        !formData[field] ||
+        (Array.isArray(formData[field]) && formData[field].length === 0)
+      ) {
+        toast.error(`${field} is required`);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Check FirstCheckBox descriptions
+    if (formData.FirstCheckBox.some((item) => !item.description)) {
+      toast.error("All First CheckBox descriptions are required");
+      setLoading(false);
+      return;
+    }
+    const stringifiedFields = {
+      FirstCheckBox: JSON.stringify(formData.FirstCheckBox),
+      SecondCheckBox: JSON.stringify(formData.SecondCheckBox),
+      ThirdSectionDescription: JSON.stringify(formData.ThirdSectionDescription),
+      AfterButtonPoints: JSON.stringify(formData.AfterButtonPoints),
+      faq: JSON.stringify(formData.faq),
+    };
 
     try {
       const submissionData = new FormData();
@@ -233,12 +267,7 @@ function AddSales_page() {
       submissionData.append("buttonContent", formData.buttonContent);
       submissionData.append("checkBoxHeading", formData.checkBoxHeading);
 
-      formData.FirstCheckBox.forEach((item, i) => {
-        submissionData.append(
-          `FirstCheckBox[${i}][description]`,
-          item.description
-        );
-      });
+      submissionData.append("FirstCheckBox", stringifiedFields.FirstCheckBox);
 
       submissionData.append(
         "secondCheckBoxHeading",
@@ -249,12 +278,18 @@ function AddSales_page() {
         "ThirdSectionSubHeading",
         formData.ThirdSectionSubHeading
       );
-      submissionData.append("ctaText", formData.ctaText);
-      submissionData.append("ctaHighlight", formData.ctaHighlight);
+
+      submissionData.append("SecondCheckBox", stringifiedFields.SecondCheckBox);
       submissionData.append("embedCode", formData.embedCode);
       submissionData.append("offerContent", formData.offerContent);
-      submissionData.append("offerLimitingContent", formData.offerLimitingContent);
-      submissionData.append("SecondCheckBoxConcluding", formData.SecondCheckBoxConcluding);
+      submissionData.append(
+        "offerLimitingContent",
+        formData.offerLimitingContent
+      );
+      submissionData.append(
+        "SecondCheckBoxConcluding",
+        formData.SecondCheckBoxConcluding
+      );
       submissionData.append("lastPartHeading", formData.lastPartHeading);
       submissionData.append("lastPartContent", formData.lastPartContent);
 
@@ -262,10 +297,10 @@ function AddSales_page() {
         submissionData.append(`ThirdSectionDescription[${i}]`, desc);
       });
 
-      formData.AfterButtonPoints.description.forEach((point, i) => {
-        submissionData.append(`AfterButtonPoints[${i}]`, point);
-      });
-
+      submissionData.append(
+        "AfterButtonPoints",
+        stringifiedFields.AfterButtonPoints
+      );
       formData.section5Lines.forEach((line, i) => {
         submissionData.append(`section5Lines[${i}]`, line);
       });
@@ -454,7 +489,7 @@ function AddSales_page() {
               />
             </div>
           ))}
-          
+
           <button
             type="button"
             onClick={addSecondCheckBox}
@@ -462,7 +497,7 @@ function AddSales_page() {
           >
             + Add Second Check Box
           </button>
-          
+
           <div>
             <label className="block text-gray-300 mb-2">
               Check Box Concluding words
@@ -490,7 +525,7 @@ function AddSales_page() {
         {/* Section 4 */}
         <div className="space-y-6 p-4 border border-gray-700 rounded-lg bg-gray-900 mb-8">
           <h2 className="text-xl text-white font-semibold mb-4">Section 4</h2>
-          
+
           <div>
             <label className="block text-gray-300 mb-2">
               Fourth Section Subheading
@@ -515,7 +550,7 @@ function AddSales_page() {
               />
             </div>
           ))}
-          
+
           <button
             type="button"
             onClick={addThirdDescription}
@@ -523,7 +558,7 @@ function AddSales_page() {
           >
             + Add Third Description
           </button>
-          
+
           <div>
             <label className="block text-gray-300 mb-2">Main Image</label>
             <input
@@ -545,7 +580,7 @@ function AddSales_page() {
         {/* Section 5 */}
         <div className="space-y-6 p-4 border border-gray-700 rounded-lg bg-gray-900 mb-8">
           <h2 className="text-xl text-white font-semibold mb-4">Section 5</h2>
-          
+
           {formData.AfterButtonPoints.description.map((point, index) => (
             <div key={index}>
               <label className="block text-gray-300 mb-2">
@@ -557,7 +592,7 @@ function AddSales_page() {
               />
             </div>
           ))}
-          
+
           <button
             type="button"
             onClick={addAfterButtonPoint}
@@ -567,42 +602,44 @@ function AddSales_page() {
           </button>
 
           <div className="space-y-6">
-      <label className="block text-gray-300">Bonus Images</label>
+            <label className="block text-gray-300">Bonus Images</label>
 
-      {formData.bonusImages.map((bonus, index) => (
-        <div key={index} className="space-y-2">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleBonusImagesChange(e, index)}
-            className="text-white block"
-          />
-          {bonus.file && (
-            <img
-              src={URL.createObjectURL(bonus.file)}
-              alt={`Bonus Preview ${index + 1}`}
-              className="rounded-md max-w-xs border border-gray-700"
-            />
-          )}
-          <input
-            type="text"
-            placeholder={`Title for bonus image ${index + 1}`}
-            value={bonus.title}
-            onChange={(e) => handleBonusTitleChange(index, e.target.value)}
-            className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-          />
-        </div>
-      ))}
+            {formData.bonusImages.map((bonus, index) => (
+              <div key={index} className="space-y-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleBonusImagesChange(e, index)}
+                  className="text-white block"
+                />
+                {bonus.file && (
+                  <img
+                    src={URL.createObjectURL(bonus.file)}
+                    alt={`Bonus Preview ${index + 1}`}
+                    className="rounded-md max-w-xs border border-gray-700"
+                  />
+                )}
+                <input
+                  type="text"
+                  placeholder={`Title for bonus image ${index + 1}`}
+                  value={bonus.title}
+                  onChange={(e) =>
+                    handleBonusTitleChange(index, e.target.value)
+                  }
+                  className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
+                />
+              </div>
+            ))}
 
-      {/* Add Button at Bottom */}
-      <button
-        type="button"
-        onClick={handleAddBonusImage}
-        className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
-      >
-        Add Bonus Image
-      </button>
-    </div>
+            {/* Add Button at Bottom */}
+            <button
+              type="button"
+              onClick={handleAddBonusImage}
+              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+            >
+              Add Bonus Image
+            </button>
+          </div>
 
           {formData.section5Lines.map((line, index) => (
             <div key={index}>
@@ -630,7 +667,9 @@ function AddSales_page() {
           <h2 className="text-xl text-white font-semibold mb-4">Section 6</h2>
 
           <div>
-            <label className="block text-gray-300 mb-2">Last Part Heading</label>
+            <label className="block text-gray-300 mb-2">
+              Last Part Heading
+            </label>
             <input
               type="text"
               name="lastPartHeading"
@@ -639,9 +678,11 @@ function AddSales_page() {
               onChange={handleInputChange}
             />
           </div>
-          
+
           <div>
-            <label className="block text-gray-300 mb-2">Last Part Content</label>
+            <label className="block text-gray-300 mb-2">
+              Last Part Content
+            </label>
             <TiptapEditor
               value={formData.lastPartContent}
               onChange={(value) =>
@@ -649,7 +690,7 @@ function AddSales_page() {
               }
             />
           </div>
-          
+
           <div>
             <h3 className="text-lg text-white font-semibold mt-6 mb-4">FAQs</h3>
             {formData.faq.map((item, index) => (
@@ -658,11 +699,15 @@ function AddSales_page() {
                 className="mb-4 p-4 bg-gray-800 border border-gray-700 rounded-md space-y-3"
               >
                 <div>
-                  <label className="block text-gray-300 mb-1">Question {index + 1}</label>
+                  <label className="block text-gray-300 mb-1">
+                    Question {index + 1}
+                  </label>
                   <input
                     type="text"
                     value={item.question}
-                    onChange={(e) => handleFaqChange(index, "question", e.target.value)}
+                    onChange={(e) =>
+                      handleFaqChange(index, "question", e.target.value)
+                    }
                     className="w-full p-2 bg-gray-900 border border-gray-700 rounded-md text-white"
                     placeholder="Enter the question"
                   />
@@ -671,7 +716,9 @@ function AddSales_page() {
                   <label className="block text-gray-300 mb-1">Answer</label>
                   <TiptapEditor
                     value={item.answer}
-                    onChange={(value) => handleFaqChange(index, "answer", value)}
+                    onChange={(value) =>
+                      handleFaqChange(index, "answer", value)
+                    }
                   />
                 </div>
                 <button

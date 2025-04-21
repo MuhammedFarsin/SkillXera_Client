@@ -41,3 +41,24 @@
 .read-the-docs {
   color: #888;
 }
+/* In your global CSS */
+[data-font-size="text-sm lg:text-base"] {
+  font-size: 0.875rem; /* 14px */
+}
+@media (min-width: 1024px) {
+  [data-font-size="text-sm lg:text-base"] {
+    font-size: 1rem; /* 16px */
+  }
+}
+
+[data-font-size="text-base lg:text-lg"] {
+  font-size: 1rem; /* 16px */
+}
+@media (min-width: 1024px) {
+  [data-font-size="text-base lg:text-lg"] {
+    font-size: 1.125rem; /* 18px */
+  }
+}
+
+
+/* Continue for all size options... */
