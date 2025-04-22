@@ -169,7 +169,6 @@ function AddSales_page() {
       SecondCheckBox: [...formData.SecondCheckBox, { description: "" }],
     });
   };
-
   const handleThirdDescriptionChange = (index, value) => {
     const updated = [...formData.ThirdSectionDescription];
     updated[index] = value;
@@ -479,25 +478,24 @@ function AddSales_page() {
           </div>
 
           {formData.SecondCheckBox.map((item, index) => (
-            <div key={index}>
-              <label className="block text-gray-300 mb-2">
-                Second Checkbox Description {index + 1}
-              </label>
-              <TiptapEditor
-                value={item.description}
-                onChange={(value) => handleSecondCheckboxChange(index, value)}
-              />
-            </div>
-          ))}
+  <div key={index}>
+    <label className="block text-gray-300 mb-2">
+      Second Checkbox Description {index + 1}
+    </label>
+    <TiptapEditor
+      value={item.description}
+      onChange={(value) => handleSecondCheckboxChange(index, value)}
+    />
+  </div>
+))}
 
-          <button
-            type="button"
-            onClick={addSecondCheckBox}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md"
-          >
-            + Add Second Check Box
-          </button>
-
+<button
+  type="button"
+  onClick={addSecondCheckBox}
+  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md"
+>
+  + Add Second Check Box
+</button>
           <div>
             <label className="block text-gray-300 mb-2">
               Check Box Concluding words

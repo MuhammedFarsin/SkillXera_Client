@@ -14,11 +14,11 @@ function EditSalesPage() {
   const [formData, setFormData] = useState({
     mainImage: null,
     mainImagePreview: "",
-    bonusImages: [], // New files to upload
-    existingBonusImages: [], // Existing images from server
-    bonusTitles: [], // For bonus image titles
-    lines: [], // Initialize empty, will be filled from API
-    section5Lines: [], // Initialize empty
+    bonusImages: [],
+    existingBonusImages: [],
+    bonusTitles: [],
+    lines: [],
+    section5Lines: [],
     embedCode: "",
     smallBoxContent: "",
     buttonContent: "",
@@ -37,8 +37,7 @@ function EditSalesPage() {
     lastPartContent: "",
     faq: []
   });
-  
-  // In your useEffect when fetching data:
+
   useEffect(() => {
     const fetchSalesPageDetails = async () => {
       try {
@@ -46,11 +45,8 @@ function EditSalesPage() {
           `/admin/assets/course/get-sales-page/${courseId}`
         );
 
-  
         if (response.status === 200) {
-          console.log(response.data)
           const data = response.data;
-          
           setFormData({
             mainImage: null,
             mainImagePreview: data.mainImage ? `${baseURL}/uploads/${data.mainImage}` : "",
@@ -63,19 +59,19 @@ function EditSalesPage() {
             smallBoxContent: data.smallBoxContent || "",
             buttonContent: data.buttonContent || "",
             checkBoxHeading: data.checkBoxHeading || "",
-            FirstCheckBox: data.FirstCheckBox || [],
+            FirstCheckBox: data.FirstCheckBox?.length ? data.FirstCheckBox : [{ description: "" }],
             secondCheckBoxHeading: data.secondCheckBoxHeading || "",
-            SecondCheckBox: data.SecondCheckBox || [],
+            SecondCheckBox: data.SecondCheckBox?.length ? data.SecondCheckBox : [{ description: "" }],
             Topic: data.Topic || "",
             ThirdSectionSubHeading: data.ThirdSectionSubHeading || "",
-            ThirdSectionDescription: data.ThirdSectionDescription || [],
-            AfterButtonPoints: data.AfterButtonPoints || { description: [] },
+            ThirdSectionDescription: data.ThirdSectionDescription?.length ? data.ThirdSectionDescription : [""],
+            AfterButtonPoints: data.AfterButtonPoints?.description?.length ? data.AfterButtonPoints : { description: [""] },
             offerContent: data.offerContent || "",
             offerLimitingContent: data.offerLimitingContent || "",
             SecondCheckBoxConcluding: data.SecondCheckBoxConcluding || "",
             lastPartHeading: data.lastPartHeading || "",
             lastPartContent: data.lastPartContent || "",
-            faq: data.faq || []
+            faq: data.faq?.length ? data.faq : [{ question: "", answer: "" }]
           });
         }
       } catch (error) {
@@ -83,7 +79,7 @@ function EditSalesPage() {
         toast.error("Failed to load sales page data");
       }
     };
-  
+
     fetchSalesPageDetails();
   }, [courseId, baseURL]);
 
@@ -235,7 +231,7 @@ function EditSalesPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       const submissionData = new FormData();
       
@@ -243,77 +239,61 @@ function EditSalesPage() {
       if (formData.mainImage) {
         submissionData.append("mainImage", formData.mainImage);
       }
-
-      // Append bonus images and titles
+  
+      // Handle bonus images and titles
       formData.bonusImages.forEach((bonus, i) => {
         if (bonus.file) {
           submissionData.append("bonusImages", bonus.file);
           submissionData.append(`bonusTitles[${i}]`, bonus.title || "");
         }
       });
-
-      // Append existing bonus titles for images not being changed
+  
+      // Handle existing bonus titles
       formData.existingBonusImages.forEach((img, i) => {
         if (!formData.bonusImages[i]?.file) {
           submissionData.append(`bonusTitles[${i}]`, formData.bonusTitles[i] || "");
         }
       });
-
-      // Append all other fields
-      formData.lines.forEach((line, i) => {
-        submissionData.append(`lines[${i}]`, line);
-      });
-
-      submissionData.append("smallBoxContent", formData.smallBoxContent);
-      submissionData.append("buttonContent", formData.buttonContent);
-      submissionData.append("checkBoxHeading", formData.checkBoxHeading);
-
-      formData.FirstCheckBox.forEach((item, i) => {
-        submissionData.append(
-          `FirstCheckBox[${i}][description]`,
-          item.description
-        );
-      });
-
-      submissionData.append(
-        "secondCheckBoxHeading",
-        formData.secondCheckBoxHeading
-      );
-      submissionData.append("Topic", formData.Topic);
-      submissionData.append(
-        "ThirdSectionSubHeading",
-        formData.ThirdSectionSubHeading
-      );
-      submissionData.append("embedCode", formData.embedCode);
-      submissionData.append("offerContent", formData.offerContent);
-      submissionData.append(
-        "offerLimitingContent",
-        formData.offerLimitingContent
-      );
-      submissionData.append(
-        "SecondCheckBoxConcluding",
-        formData.SecondCheckBoxConcluding
-      );
-      submissionData.append("lastPartHeading", formData.lastPartHeading);
-      submissionData.append("lastPartContent", formData.lastPartContent);
-
-      formData.ThirdSectionDescription.forEach((desc, i) => {
-        submissionData.append(`ThirdSectionDescription[${i}]`, desc);
-      });
-
-      formData.AfterButtonPoints.description.forEach((point, i) => {
-        submissionData.append(`AfterButtonPoints[${i}]`, point);
-      });
-
-      formData.section5Lines.forEach((line, i) => {
-        submissionData.append(`section5Lines[${i}]`, line);
-      });
-
-      formData.faq.forEach((item, i) => {
-        submissionData.append(`faq[${i}][question]`, item.question);
-        submissionData.append(`faq[${i}][answer]`, item.answer);
-      });
-
+  
+      // Ensure lines array has content
+      if (formData.lines.length === 0) {
+        formData.lines = [""]; // Add empty line if none exists
+      }
+  
+      // Stringify array fields
+      const stringifiedFields = {
+        FirstCheckBox: JSON.stringify(formData.FirstCheckBox),
+        SecondCheckBox: JSON.stringify(formData.SecondCheckBox),
+        ThirdSectionDescription: JSON.stringify(formData.ThirdSectionDescription),
+        AfterButtonPoints: JSON.stringify(formData.AfterButtonPoints),
+        faq: JSON.stringify(formData.faq),
+        lines: JSON.stringify(formData.lines),
+        section5Lines: JSON.stringify(formData.section5Lines)
+      };
+  
+      // Append all fields
+      submissionData.append("smallBoxContent", formData.smallBoxContent || "");
+      submissionData.append("buttonContent", formData.buttonContent || "");
+      submissionData.append("checkBoxHeading", formData.checkBoxHeading || "");
+      submissionData.append("secondCheckBoxHeading", formData.secondCheckBoxHeading || "");
+      submissionData.append("Topic", formData.Topic || "");
+      submissionData.append("ThirdSectionSubHeading", formData.ThirdSectionSubHeading || "");
+      submissionData.append("embedCode", formData.embedCode || "");
+      submissionData.append("offerContent", formData.offerContent || "");
+      submissionData.append("offerLimitingContent", formData.offerLimitingContent || "");
+      submissionData.append("SecondCheckBoxConcluding", formData.SecondCheckBoxConcluding || "");
+      submissionData.append("lastPartHeading", formData.lastPartHeading || "");
+      submissionData.append("lastPartContent", formData.lastPartContent || "");
+      
+      // Append stringified array fields
+      submissionData.append("FirstCheckBox", stringifiedFields.FirstCheckBox);
+      submissionData.append("SecondCheckBox", stringifiedFields.SecondCheckBox);
+      submissionData.append("ThirdSectionDescription", stringifiedFields.ThirdSectionDescription);
+      submissionData.append("AfterButtonPoints", stringifiedFields.AfterButtonPoints);
+      submissionData.append("faq", stringifiedFields.faq);
+      submissionData.append("lines", stringifiedFields.lines);
+      submissionData.append("section5Lines", stringifiedFields.section5Lines);
+  
       const response = await axiosInstance.put(
         `/admin/assets/course/update-sales-page/${courseId}`,
         submissionData,
@@ -323,7 +303,7 @@ function EditSalesPage() {
           },
         }
       );
-
+  
       if (response.status === 200) {
         toast.success("Sales page updated successfully.");
         setTimeout(() => {

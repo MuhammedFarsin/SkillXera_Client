@@ -98,6 +98,7 @@ const MenuBar = ({ editor }) => {
         <option value="text-sm lg:text-base">Small (Body)</option>
         <option value="text-xs lg:text-lg">Regular (Body)</option>
         <option value="text-[10px] lg:text-2xl">Button (Body)</option>
+        <option value="text-[14px] lg:text-2xl">Offer (Body)</option>
         <option value="text-lg lg:text-xl">Medium (Subheading)</option>
         <option value="text-xl lg:text-2xl">Large (Heading 3)</option>
         <option value="text-2xl lg:text-4xl">Extra Large (Heading 2)</option>

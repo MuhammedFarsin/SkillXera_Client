@@ -46,14 +46,9 @@ function SalesPage() {
 
     navigate(`/sale/checkout-page/course/payment/${courseId}`);
   };
-  //   const buttonHTML = `
-  //   <span class='text-[10px] md:text-lg lg:text-3xl text-black'>
-  //     ${salesPage?.buttonContend}
-  //   </span>
-  //   <span class='text-[11px] md:text-lg lg:text-xl font-semibold'>
-  //     (ONLY ₹${course.salesPrice}/3 Months)
-  //   </span>
-  // `;
+
+  console.log('SecondCheckBox data:', salesPage?.SecondCheckBox);
+
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
@@ -62,53 +57,34 @@ function SalesPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-6 bg-black text-center">
-      {/* Line 0 - Can contain HTML like span, etc. */}
       <h1
         className="text-2xl lg:text-6xl leading-tight [&>p>strong]:text-white"
         dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[0] }}
       />
 
-      {/* Line 1 */}
       <h2
         className="text-[18px] mt-1 lg:text-4xl leading-tight"
         dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[1] }}
       />
 
-      {/* CTA Text */}
-      {/* <p className="text-sm md:text-xl lg:text-xl text-gray-300 lg:mt-4 px-2">
-        <span
-          className="text-[16px] lg:text-4xl"
-          dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }}
-        ></span>
-      </p> */}
-
-      {/* <span
-        className="text-lg md:text-4xl leading-snug"
-        dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }}
-      ></span> */}
-
-      {/* User Count */}
       <p className="mt-6">
-        {/* First Line Content */}
         <span dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[2] }} />
       </p>
 
-      {/* Second Line Content inside Span */}
       <span
         className="mt-6"
         dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[3] }}
       />
 
-      {/* Subtext */}
       <p
         className="mt-2"
         dangerouslySetInnerHTML={{ __html: salesPage?.lines?.[4] }}
       ></p>
 
-      {/* Highlight Box */}
       <div className="border-2 md:border-2 border-[#e69b2f] rounded-xl lg:rounded-xl px-4 py-2 md:px-6 md:py-3 inline-block mt-4 w-80 lg:w-2/4">
         <div dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContent }} />
       </div>
+
       {salesPage?.embedCode && <VideoEmbed embedCode={salesPage.embedCode} />}
 
       {course?.salesPrice ? (
@@ -197,38 +173,48 @@ function SalesPage() {
         )}
 
         <p>
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }}/>
+          <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
         </p>
         <div className="bg-[#111111] h-20 lg:h-44 flex flex-col justify-center items-center text-center mt-4">
-         
-          <div dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContent }} />
-          <div dangerouslySetInnerHTML={{ __html: salesPage?.offerLimitingContent }} />
+          <div
+            dangerouslySetInnerHTML={{ __html: salesPage?.smallBoxContent }}
+          />
+          <div
+            dangerouslySetInnerHTML={{
+              __html: salesPage?.offerLimitingContent,
+            }}
+          />
         </div>
 
         <div className="mx-auto mt-6 ">
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.secondCheckBoxHeading }} />
-        
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            {[
-              "I want to get more views and subscribers on YouTube effortlessly",
-              "I am a complete beginner in YouTube SEO with no prior experience or technical skills",
-              "I am keen to explore automated SEO tools to enhance my YouTube channel without spending too much time",
-              "I cannot afford expensive SEO services and seek cost-effective solutions",
-              "I want to increase my YouTube revenue but don't know where to start",
-              "My current videos are not getting the desired views and subscribers",
-            ].map((text, index) => (
-              <div
-                key={index}
-                className="bg-white p-5 rounded-2xl flex items-start text-start lg:space-x-2 shadow-md"
-              >
-                <input
-                  type="checkbox"
-                  className="w-5 h-5 border-gray-400 rounded-md"
-                />
-                <span className="text-gray-800 lg:text-lg pl-3">{text}</span>
-              </div>
-            ))}
-          </div>
+        <div className="mt-8">
+  {/* Second Checkbox Heading */}
+  <div
+    className="text-white mb-6"
+    dangerouslySetInnerHTML={{
+      __html: salesPage?.secondCheckBoxHeading,
+    }}
+  />
+
+  {/* Second Checkbox Items Grid */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {salesPage?.SecondCheckBox?.map((item, index) => (
+      <div
+        key={index}
+        className="bg-white p-5 rounded-2xl flex items-start text-start lg:space-x-2 shadow-md"
+      >
+        <input
+          type="checkbox"
+          className="w-5 h-5 border-gray-400 rounded-md mt-1"
+        />
+        <span
+          className="text-gray-800 lg:text-lg pl-3"
+          dangerouslySetInnerHTML={{ __html: item.description }}
+        />
+      </div>
+    ))}
+  </div>
+</div>
 
           <p className="mt-6 text-white font-semibold text-center text-[15px] lg:text-[25px]">
             If You Checked ANY Of The Boxes Above, Then You’re Invited To Use
