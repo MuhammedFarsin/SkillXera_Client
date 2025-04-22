@@ -47,8 +47,6 @@ function SalesPage() {
     navigate(`/sale/checkout-page/course/payment/${courseId}`);
   };
 
-  console.log('SecondCheckBox data:', salesPage?.SecondCheckBox);
-
   if (loading)
     return <p className="text-white text-center">Loading course details...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
@@ -187,42 +185,45 @@ function SalesPage() {
         </div>
 
         <div className="mx-auto mt-6 ">
-        <div className="mt-8">
-  {/* Second Checkbox Heading */}
-  <div
-    className="text-white mb-6"
-    dangerouslySetInnerHTML={{
-      __html: salesPage?.secondCheckBoxHeading,
-    }}
-  />
+          <div className="mt-8">
+            {/* Second Checkbox Heading */}
+            <div
+              className="text-white mb-6"
+              dangerouslySetInnerHTML={{
+                __html: salesPage?.secondCheckBoxHeading,
+              }}
+            />
 
-  {/* Second Checkbox Items Grid */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {salesPage?.SecondCheckBox?.map((item, index) => (
-      <div
-        key={index}
-        className="bg-white p-5 rounded-2xl flex items-start text-start lg:space-x-2 shadow-md"
-      >
-        <input
-          type="checkbox"
-          className="w-5 h-5 border-gray-400 rounded-md mt-1"
-        />
-        <span
-          className="text-gray-800 lg:text-lg pl-3"
-          dangerouslySetInnerHTML={{ __html: item.description }}
-        />
-      </div>
-    ))}
-  </div>
-</div>
+            {/* Second Checkbox Items Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {salesPage?.SecondCheckBox?.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-5 rounded-2xl flex items-start text-start lg:space-x-2 shadow-md"
+                >
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 border-gray-400 rounded-md mt-1"
+                  />
+                  <span
+                    className="text-gray-800 lg:text-lg pl-3"
+                    dangerouslySetInnerHTML={{ __html: item.description }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
 
-          <p className="mt-6 text-white font-semibold text-center text-[15px] lg:text-[25px]">
-            If You Checked ANY Of The Boxes Above, Then You’re Invited To Use
-            The
+          <p className="mt-6">
+            <div
+              dangerouslySetInnerHTML={{
+                __html: salesPage.SecondCheckBoxConcluding,
+              }}
+            />
           </p>
 
           <p className="mt-2 lg:mt-7 text-white font-bold text-lg text-center text-[25px] lg:text-[45px] lg:whitespace-nowrap lg:flex justify-center">
-            “FOZATO SEO YOUTUBE AUTO SEO APP”
+          <div dangerouslySetInnerHTML={{ __html: salesPage.Topic }} />
           </p>
 
           <button
