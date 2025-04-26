@@ -35,7 +35,7 @@ function EditSalesPage() {
     SecondCheckBoxConcluding: "",
     lastPartHeading: "",
     lastPartContent: "",
-    faq: []
+    faq: [],
   });
 
   useEffect(() => {
@@ -49,29 +49,39 @@ function EditSalesPage() {
           const data = response.data;
           setFormData({
             mainImage: null,
-            mainImagePreview: data.mainImage ? `${baseURL}/uploads/${data.mainImage}` : "",
+            mainImagePreview: data.mainImage
+              ? `${baseURL}/uploads/${data.mainImage}`
+              : "",
             bonusImages: [],
             existingBonusImages: data.bonusImages || [],
-            bonusTitles: data.bonusImages?.map(img => img.title) || [],
+            bonusTitles: data.bonusImages?.map((img) => img.title) || [],
             lines: data.lines || [],
             section5Lines: data.section5Lines || [],
             embedCode: data.embedCode || "",
             smallBoxContent: data.smallBoxContent || "",
             buttonContent: data.buttonContent || "",
             checkBoxHeading: data.checkBoxHeading || "",
-            FirstCheckBox: data.FirstCheckBox?.length ? data.FirstCheckBox : [{ description: "" }],
+            FirstCheckBox: data.FirstCheckBox?.length
+              ? data.FirstCheckBox
+              : [{ description: "" }],
             secondCheckBoxHeading: data.secondCheckBoxHeading || "",
-            SecondCheckBox: data.SecondCheckBox?.length ? data.SecondCheckBox : [{ description: "" }],
+            SecondCheckBox: data.SecondCheckBox?.length
+              ? data.SecondCheckBox
+              : [{ description: "" }],
             Topic: data.Topic || "",
             ThirdSectionSubHeading: data.ThirdSectionSubHeading || "",
-            ThirdSectionDescription: data.ThirdSectionDescription?.length ? data.ThirdSectionDescription : [""],
-            AfterButtonPoints: data.AfterButtonPoints?.description?.length ? data.AfterButtonPoints : { description: [""] },
+            ThirdSectionDescription: data.ThirdSectionDescription?.length
+              ? data.ThirdSectionDescription
+              : [""],
+            AfterButtonPoints: data.AfterButtonPoints?.description?.length
+              ? data.AfterButtonPoints
+              : { description: [""] },
             offerContent: data.offerContent || "",
             offerLimitingContent: data.offerLimitingContent || "",
             SecondCheckBoxConcluding: data.SecondCheckBoxConcluding || "",
             lastPartHeading: data.lastPartHeading || "",
             lastPartContent: data.lastPartContent || "",
-            faq: data.faq?.length ? data.faq : [{ question: "", answer: "" }]
+            faq: data.faq?.length ? data.faq : [{ question: "", answer: "" }],
           });
         }
       } catch (error) {
@@ -83,22 +93,21 @@ function EditSalesPage() {
     fetchSalesPageDetails();
   }, [courseId, baseURL]);
 
-
   // Handler functions (similar to AddSales_page but adjusted for edit functionality)
   const handleLineChange = (index, value) => {
     const updatedLines = [...formData.lines];
     updatedLines[index] = value;
-    setFormData(prev => ({ ...prev, lines: updatedLines }));
+    setFormData((prev) => ({ ...prev, lines: updatedLines }));
   };
 
   const addNewLine = () => {
-    setFormData(prev => ({ ...prev, lines: [...prev.lines, ""] }));
+    setFormData((prev) => ({ ...prev, lines: [...prev.lines, ""] }));
   };
 
   const handleMainImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         mainImage: file,
         mainImagePreview: URL.createObjectURL(file),
@@ -112,134 +121,138 @@ function EditSalesPage() {
 
     const updated = [...formData.bonusImages];
     updated[index] = { file, title: formData.bonusTitles[index] || "" };
-    
-    setFormData(prev => ({ ...prev, bonusImages: updated }));
+
+    setFormData((prev) => ({ ...prev, bonusImages: updated }));
   };
 
   const handleBonusTitleChange = (index, title) => {
     const updatedTitles = [...formData.bonusTitles];
     updatedTitles[index] = title;
-    
-    setFormData(prev => ({ ...prev, bonusTitles: updatedTitles }));
+
+    setFormData((prev) => ({ ...prev, bonusTitles: updatedTitles }));
   };
 
   const handleAddBonusImage = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       bonusImages: [...prev.bonusImages, { file: null, title: "" }],
-      bonusTitles: [...prev.bonusTitles, ""]
+      bonusTitles: [...prev.bonusTitles, ""],
     }));
   };
 
   const handleSection5LineChange = (index, value) => {
     const updatedLines = [...formData.section5Lines];
     updatedLines[index] = value;
-    setFormData(prev => ({ ...prev, section5Lines: updatedLines }));
+    setFormData((prev) => ({ ...prev, section5Lines: updatedLines }));
   };
 
   const handleFaqChange = (index, field, value) => {
     const updatedFaq = [...formData.faq];
     updatedFaq[index][field] = value;
-    setFormData(prev => ({ ...prev, faq: updatedFaq }));
+    setFormData((prev) => ({ ...prev, faq: updatedFaq }));
   };
 
   const addFaq = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      faq: [...prev.faq, { question: "", answer: "" }]
+      faq: [...prev.faq, { question: "", answer: "" }],
     }));
   };
 
   const removeFaq = (index) => {
     const updatedFaq = formData.faq.filter((_, i) => i !== index);
-    setFormData(prev => ({ ...prev, faq: updatedFaq }));
+    setFormData((prev) => ({ ...prev, faq: updatedFaq }));
   };
 
   const addNewSection5Line = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      section5Lines: [...prev.section5Lines, ""]
+      section5Lines: [...prev.section5Lines, ""],
     }));
   };
 
   const handleFirstCheckboxChange = (index, value) => {
     const updatedCheckBoxes = [...formData.FirstCheckBox];
     updatedCheckBoxes[index].description = value;
-    setFormData(prev => ({ ...prev, FirstCheckBox: updatedCheckBoxes }));
+    setFormData((prev) => ({ ...prev, FirstCheckBox: updatedCheckBoxes }));
   };
 
   const addCheckBox = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      FirstCheckBox: [...prev.FirstCheckBox, { description: "" }]
+      FirstCheckBox: [...prev.FirstCheckBox, { description: "" }],
     }));
   };
 
   const handleEmbedCodeChange = (e) => {
-    setFormData(prev => ({ ...prev, embedCode: e.target.value }));
+    setFormData((prev) => ({ ...prev, embedCode: e.target.value }));
   };
 
   const handleSecondCheckboxChange = (index, value) => {
     const updated = [...formData.SecondCheckBox];
     updated[index].description = value;
-    setFormData(prev => ({ ...prev, SecondCheckBox: updated }));
+    setFormData((prev) => ({ ...prev, SecondCheckBox: updated }));
   };
 
   const addSecondCheckBox = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      SecondCheckBox: [...prev.SecondCheckBox, { description: "" }]
+      SecondCheckBox: [...prev.SecondCheckBox, { description: "" }],
     }));
   };
 
   const handleThirdDescriptionChange = (index, value) => {
     const updated = [...formData.ThirdSectionDescription];
     updated[index] = value;
-    setFormData(prev => ({ ...prev, ThirdSectionDescription: updated }));
+    setFormData((prev) => ({ ...prev, ThirdSectionDescription: updated }));
   };
 
   const addThirdDescription = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      ThirdSectionDescription: [...prev.ThirdSectionDescription, ""]
+      ThirdSectionDescription: [...prev.ThirdSectionDescription, ""],
     }));
   };
 
   const handleAfterButtonPointChange = (index, value) => {
-    const updated = [...formData.AfterButtonPoints.description];
-    updated[index] = value;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      AfterButtonPoints: { description: updated }
+      AfterButtonPoints: {
+        ...prev.AfterButtonPoints,
+        description: prev.AfterButtonPoints.description.map((item, i) =>
+          i === index ? value : item
+        ),
+      },
     }));
   };
 
   const addAfterButtonPoint = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       AfterButtonPoints: {
-        description: [...prev.AfterButtonPoints.description, ""]
-      }
+        ...prev.AfterButtonPoints,
+        description: [...prev.AfterButtonPoints.description, ""],
+      },
     }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       const submissionData = new FormData();
-      
+
       // Append main image if changed
       if (formData.mainImage) {
         submissionData.append("mainImage", formData.mainImage);
       }
-  
+
       // Handle bonus images and titles
       formData.bonusImages.forEach((bonus, i) => {
         if (bonus.file) {
@@ -247,53 +260,78 @@ function EditSalesPage() {
           submissionData.append(`bonusTitles[${i}]`, bonus.title || "");
         }
       });
-  
+
       // Handle existing bonus titles
       formData.existingBonusImages.forEach((img, i) => {
         if (!formData.bonusImages[i]?.file) {
-          submissionData.append(`bonusTitles[${i}]`, formData.bonusTitles[i] || "");
+          submissionData.append(
+            `bonusTitles[${i}]`,
+            formData.bonusTitles[i] || ""
+          );
         }
       });
-  
+
       // Ensure lines array has content
       if (formData.lines.length === 0) {
         formData.lines = [""]; // Add empty line if none exists
       }
-  
+
       // Stringify array fields
       const stringifiedFields = {
         FirstCheckBox: JSON.stringify(formData.FirstCheckBox),
         SecondCheckBox: JSON.stringify(formData.SecondCheckBox),
-        ThirdSectionDescription: JSON.stringify(formData.ThirdSectionDescription),
-        AfterButtonPoints: JSON.stringify(formData.AfterButtonPoints),
+        ThirdSectionDescription: JSON.stringify(
+          formData.ThirdSectionDescription
+        ),
+        AfterButtonPoints: JSON.stringify({
+          description: formData.AfterButtonPoints.description,
+        }),
         faq: JSON.stringify(formData.faq),
         lines: JSON.stringify(formData.lines),
-        section5Lines: JSON.stringify(formData.section5Lines)
+        section5Lines: JSON.stringify(formData.section5Lines),
       };
-  
+
       // Append all fields
       submissionData.append("smallBoxContent", formData.smallBoxContent || "");
       submissionData.append("buttonContent", formData.buttonContent || "");
       submissionData.append("checkBoxHeading", formData.checkBoxHeading || "");
-      submissionData.append("secondCheckBoxHeading", formData.secondCheckBoxHeading || "");
+      submissionData.append(
+        "secondCheckBoxHeading",
+        formData.secondCheckBoxHeading || ""
+      );
       submissionData.append("Topic", formData.Topic || "");
-      submissionData.append("ThirdSectionSubHeading", formData.ThirdSectionSubHeading || "");
+      submissionData.append(
+        "ThirdSectionSubHeading",
+        formData.ThirdSectionSubHeading || ""
+      );
       submissionData.append("embedCode", formData.embedCode || "");
       submissionData.append("offerContent", formData.offerContent || "");
-      submissionData.append("offerLimitingContent", formData.offerLimitingContent || "");
-      submissionData.append("SecondCheckBoxConcluding", formData.SecondCheckBoxConcluding || "");
+      submissionData.append(
+        "offerLimitingContent",
+        formData.offerLimitingContent || ""
+      );
+      submissionData.append(
+        "SecondCheckBoxConcluding",
+        formData.SecondCheckBoxConcluding || ""
+      );
       submissionData.append("lastPartHeading", formData.lastPartHeading || "");
       submissionData.append("lastPartContent", formData.lastPartContent || "");
-      
+
       // Append stringified array fields
       submissionData.append("FirstCheckBox", stringifiedFields.FirstCheckBox);
       submissionData.append("SecondCheckBox", stringifiedFields.SecondCheckBox);
-      submissionData.append("ThirdSectionDescription", stringifiedFields.ThirdSectionDescription);
-      submissionData.append("AfterButtonPoints", stringifiedFields.AfterButtonPoints);
+      submissionData.append(
+        "ThirdSectionDescription",
+        stringifiedFields.ThirdSectionDescription
+      );
+      submissionData.append(
+        "AfterButtonPoints",
+        stringifiedFields.AfterButtonPoints
+      );
       submissionData.append("faq", stringifiedFields.faq);
       submissionData.append("lines", stringifiedFields.lines);
       submissionData.append("section5Lines", stringifiedFields.section5Lines);
-  
+
       const response = await axiosInstance.put(
         `/admin/assets/course/update-sales-page/${courseId}`,
         submissionData,
@@ -303,7 +341,7 @@ function EditSalesPage() {
           },
         }
       );
-  
+
       if (response.status === 200) {
         toast.success("Sales page updated successfully.");
         setTimeout(() => {
@@ -511,13 +549,14 @@ function EditSalesPage() {
             <label className="block text-gray-300 mb-2">
               Fourth Section Subheading
             </label>
-            <input
-              type="text"
-              name="ThirdSectionSubHeading"
-              className="w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-              value={formData.ThirdSectionSubHeading}
-              onChange={handleInputChange}
-            />
+            <div className="bg-gray-800 border border-gray-700 rounded-md text-white p-2">
+              <TiptapEditor
+                value={formData.ThirdSectionSubHeading}
+                onChange={(value) =>
+                  setFormData({ ...formData, ThirdSectionSubHeading: value })
+                }
+              />
+            </div>
           </div>
 
           {formData.ThirdSectionDescription.map((desc, index) => (
@@ -597,7 +636,9 @@ function EditSalesPage() {
                   type="text"
                   placeholder={`Title for bonus image ${index + 1}`}
                   value={formData.bonusTitles[index] || ""}
-                  onChange={(e) => handleBonusTitleChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleBonusTitleChange(index, e.target.value)
+                  }
                   className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
                 />
               </div>
@@ -669,23 +710,10 @@ function EditSalesPage() {
             <label className="block text-gray-300 mb-2">
               Last Part Heading
             </label>
-            <input
-              type="text"
-              name="lastPartHeading"
-              className="w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-              value={formData.lastPartHeading}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 mb-2">
-              Last Part Content
-            </label>
             <TiptapEditor
-              value={formData.lastPartContent}
+              value={formData.lastPartHeading}
               onChange={(value) =>
-                setFormData({ ...formData, lastPartContent: value })
+                setFormData({ ...formData, lastPartHeading: value })
               }
             />
           </div>

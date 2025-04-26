@@ -525,17 +525,17 @@ function AddSales_page() {
           <h2 className="text-xl text-white font-semibold mb-4">Section 4</h2>
 
           <div>
-            <label className="block text-gray-300 mb-2">
-              Fourth Section Subheading
-            </label>
-            <input
-              type="text"
-              name="ThirdSectionSubHeading"
-              className="w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-              value={formData.ThirdSectionSubHeading}
-              onChange={handleInputChange}
-            />
-          </div>
+  <label className="block text-gray-300 mb-2">
+    Fourth Section Subheading
+  </label>
+  <TiptapEditor
+    value={formData.ThirdSectionSubHeading}
+    onChange={(value) =>
+      setFormData({ ...formData, ThirdSectionSubHeading: value })
+    }
+  />
+</div>
+
 
           {formData.ThirdSectionDescription.map((desc, index) => (
             <div key={index}>
