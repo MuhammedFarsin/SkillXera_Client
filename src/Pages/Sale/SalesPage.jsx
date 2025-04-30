@@ -269,34 +269,59 @@ function SalesPage() {
         </div>
       </div>
       <h1 className="mt-6 font-bold text-white text-[22px]">BONUSES</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
-        {salesPage?.bonusImages?.map((bonus, index) => (
-          <div
-            key={bonus._id}
-            className="bg-white text-white rounded-3xl shadow-lg mx-auto border border-gray-700 h-[425px] w-80 lg:w-72"
-          >
-            {/* Bonus Header */}
-            <div className="relative flex justify-center">
-              <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold w-56 text-lg absolute -top-5 shadow-md">
-                🎁 Bonus #{index + 1}:
+      <div className="mt-10 px-4">
+        {/* Container with dynamic sizing */}
+        <div
+          className={`flex flex-wrap justify-center gap-6 mx-auto ${
+            salesPage?.bonusImages?.length === 1
+              ? "max-w-md"
+              : salesPage?.bonusImages?.length === 2
+              ? "max-w-2xl"
+              : "max-w-6xl"
+          }`}
+        >
+          {salesPage?.bonusImages?.map((bonus, index) => (
+            <div
+              key={bonus._id}
+              className={`bg-white text-white rounded-3xl shadow-lg border border-gray-200 flex flex-col ${
+                salesPage?.bonusImages?.length === 1
+                  ? "w-full md:w-96" // Fixed width for single item
+                  : salesPage?.bonusImages?.length === 2
+                  ? "w-full sm:w-80" // Fixed width for two items
+                  : "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]" // Flexible for 3+ items
+              }`}
+            >
+              {/* Bonus Header */}
+              <div className="relative flex justify-center pt-4">
+                <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold text-lg shadow-md">
+                  🎁 Bonus #{index + 1}
+                </div>
+              </div>
+
+              {/* Image Section */}
+              <div className="flex justify-center bg-white p-6">
+                <img
+                  src={`${BASE_URL}/uploads/${bonus.image}`}
+                  alt={bonus.title}
+                  className="w-full rounded-lg object-contain h-48"
+                />
+              </div>
+
+              {/* Content Section */}
+              <div className="px-6 pb-6 flex-grow">
+                {/* Title */}
+                <h3 className="text-center font-bold text-lg text-[#34495E] mb-3">
+                  {bonus.title}
+                </h3>
+
+                {/* Price */}
+                <div className="text-center text-[#4A4A4A] font-bold">
+                  {bonus.price}
+                </div>
               </div>
             </div>
-
-            {/* Image Section */}
-            <div className="flex justify-center bg-white p-4 rounded-b-3xl mt-5">
-              <img
-                src={`${BASE_URL}/uploads/${bonus.image}`}
-                alt={bonus.title}
-                className="w-full max-w-[250px] rounded-lg"
-              />
-            </div>
-
-            {/* Title */}
-            <h3 className="text-center mt-4 font-bold text-lg text-[#34495E]">
-              {bonus.title}
-            </h3>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       <div className="bg-black text-white p-2 rounded-3xl shadow-lg w-full max-w-4xl mx-auto text-center">
