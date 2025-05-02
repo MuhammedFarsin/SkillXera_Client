@@ -3,7 +3,6 @@ import Admin_Navbar from "./Common/AdminNavbar";
 import { FaFilter } from "react-icons/fa";
 import { format } from "date-fns";
 import DateRange_Picker from "../Utils/DateRangePicker";
-// import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   AreaChart,
@@ -14,8 +13,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
 import axiosInstance from "../Connection/Axios";
+import socket from "../socket"; // Import the socket instance
 
 function DashBoard() {
   const [dateRange, setDateRange] = useState({
@@ -23,6 +22,7 @@ function DashBoard() {
     endDate: null,
   });
   const [showPicker, setShowPicker] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [dashboardData, setDashboardData] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [leadsData, setLeadsData] = useState([]);
@@ -32,6 +32,8 @@ function DashBoard() {
   const [totalSales, setTotalSales] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasNewLeads, setHasNewLeads] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   // Function to fetch data
   const fetchDashboardData = async (startDate, endDate) => {
@@ -39,12 +41,8 @@ function DashBoard() {
       setLoading(true);
       setError(null);
   
-      // Construct query only if startDate and endDate are provided
-      const query =
-        startDate && endDate ? `?startDate=${startDate}&endDate=${endDate}` : "";
+      const query = startDate && endDate ? `?startDate=${startDate}&endDate=${endDate}` : "";
       const response = await axiosInstance.get(`/admin/dashboard${query}`);
-  
-      console.log("API Response:", response.data);
   
       const {
         ordersGraphData,
@@ -69,20 +67,43 @@ function DashBoard() {
       setLoading(false);
     }
   };
-  
+
+  // Socket.IO effects
+  useEffect(() => {
+    // Listen for new leads
+    socket.on("new_lead", (newLead) => {
+      setHasNewLeads(true);
+      setNotificationCount(prev => prev + 1);
+      
+      // Update recent leads (keep only the 5 most recent)
+      setRecentLeads(prev => [newLead, ...prev.slice(0, 4)]);
+      
+      // Update total leads count
+      setTotalLeads(prev => prev + 1);
+    });
+
+    // Clean up on unmount
+    return () => {
+      socket.off("new_lead");
+    };
+  }, []);
+
+  // Date range effect
   useEffect(() => {
     if (dateRange.startDate && dateRange.endDate) {
       const startDate = format(dateRange.startDate, "yyyy-MM-dd");
       const endDate = format(dateRange.endDate, "yyyy-MM-dd");
-      console.log("Start Date:", startDate);
-      console.log("End Date:", endDate);
       fetchDashboardData(startDate, endDate);
     } else {
-      // Fetch all data if no date range is provided
       fetchDashboardData();
     }
   }, [dateRange]);
-  
+
+  // Clear notifications
+  const clearNotifications = () => {
+    setHasNewLeads(false);
+    setNotificationCount(0);
+  };
 
   return (
     <div className="bg-gray-900 text-gray-100 min-h-screen text-sm">
@@ -197,8 +218,8 @@ function DashBoard() {
                         <Area
                           type="monotone"
                           dataKey="totalOrders"
-                          stroke="#F59E0B" // Amber (Yellow-Orange)
-                          fill="rgba(245, 158, 11, 0.3)" // Matching Amber with transparency
+                          stroke="#F59E0B"
+                          fill="rgba(245, 158, 11, 0.3)"
                           strokeWidth={3}
                         />
                       </AreaChart>
@@ -238,10 +259,24 @@ function DashBoard() {
             </div>
           </div>
 
-          <div className="bg-gray-800 p-6 rounded-lg  shadow  overflow-y-auto">
-            <h3 className="text-md font-semibold text-gray-200 mb-2">
-              Live Updates
-            </h3>
+          <div className="bg-gray-800 p-6 rounded-lg shadow overflow-y-auto">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-md font-semibold text-gray-200">Live Updates</h3>
+              {hasNewLeads && (
+                <button 
+                  onClick={clearNotifications}
+                  className="relative p-1"
+                  title="Clear notifications"
+                >
+                  <span className="absolute -top-1 -right-1 h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs flex items-center justify-center">
+                      {notificationCount}
+                    </span>
+                  </span>
+                </button>
+              )}
+            </div>
 
             {loading ? (
               <p className="text-gray-400 animate-pulse">

@@ -27,6 +27,7 @@ const PaymentPage = () => {
   });
 
   const [paymentMethod, setPaymentMethod] = useState("cashfree");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchCheckoutData = async () => {
@@ -65,6 +66,9 @@ const PaymentPage = () => {
   const handlePayment = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (checkoutData.loading) return;
     if (!checkoutData.course || !checkoutData.course.salesPrice) {
       return toast.error("Invalid course price");
@@ -83,8 +87,11 @@ const PaymentPage = () => {
   };
 
   const handleCashfreePayment = async (amount) => {
+    if (isSubmitting) return; // Early return if already submitting
+  setIsSubmitting(true);
     try {
       ReactPixel.track("InitiateCheckout", {
+        
         content_name: checkoutData.course.title,
         content_ids: [checkoutData.course._id],
         value: amount,
@@ -128,6 +135,8 @@ const PaymentPage = () => {
     } catch (error) {
       toast.error("Cashfree Payment failed");
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -309,7 +318,7 @@ const PaymentPage = () => {
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
             >
-              Pay Now ₹{checkoutData.course?.salesPrice}
+               {isSubmitting ? 'Processing...' : `Pay Now ₹${checkoutData.course?.salesPrice}`}
             </button>
           </form>
         </div>
