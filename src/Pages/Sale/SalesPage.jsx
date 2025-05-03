@@ -187,84 +187,90 @@ function SalesPage() {
         </div>
       </div>
 
-      <p className="mt-6">
+      <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
+        <p className="mt-6">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: salesPage.SecondCheckBoxConcluding,
+            }}
+          />
+        </p>
+
+        <p className="mt-2 lg:mt-7 text-white font-bold text-lg text-center text-[25px] lg:text-[45px] lg:whitespace-nowrap lg:flex justify-center">
+          <div dangerouslySetInnerHTML={{ __html: salesPage.Topic }} />
+        </p>
+
+        {CourseCTAButton}
+
+        <p>
+          <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
+        </p>
+
+        {/* New Content Below */}
+
+        {/* <div className="mt-5 text-center text-white "> */}
         <div
+          className="text-2xl font-bold lg:text-[42px] lg:mt-20"
           dangerouslySetInnerHTML={{
-            __html: salesPage.SecondCheckBoxConcluding,
+            __html: salesPage?.ThirdSectionSubHeading,
           }}
         />
-      </p>
 
-      <p className="mt-2 lg:mt-7 text-white font-bold text-lg text-center text-[25px] lg:text-[45px] lg:whitespace-nowrap lg:flex justify-center">
-        <div dangerouslySetInnerHTML={{ __html: salesPage.Topic }} />
-      </p>
+        {salesPage?.ThirdSectionDescription?.map((desc, index) => (
+          <p
+            key={index}
+            className={`${
+              index === 0 ? "mt-4 lg:mt-10" : "mt-8"
+            } text-[#9b9b9b] font-semibold text-[16px] leading-tight lg:font-normal lg:text-[29px]`}
+            dangerouslySetInnerHTML={{ __html: desc }}
+          />
+        ))}
 
-      {CourseCTAButton}
+        <p className="mt-2 lg:mt-7 text-yellow-500 font-bold text-lg text-center text-[25px] lg:text-[45px] lg:whitespace-nowrap lg:flex justify-center">
+          <div dangerouslySetInnerHTML={{ __html: salesPage.Topic }} />
+        </p>
 
-      <p>
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
-      </p>
+        {/* Image Section */}
+        <div className="flex justify-center mt-6 bg-white rounded-2xl lg:rounded">
+          <img
+            src={`${BASE_URL}/uploads/${salesPage?.mainImage}`}
+            alt="Fozato SEO - YouTube Auto SEO App"
+            className="w-full lg:max-w-6xl lg:max-h-[500px] rounded-lg shadow-lg"
+          />
+        </div>
+        {CourseCTAButton}
 
-      {/* New Content Below */}
+        <div className="lg:mt-10 text-white bg-[#111111] p-6">
+          <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl mx-auto">
+            <div className="grid gap-6 text-white lg:text-[20px] grid-cols-1 md:grid-cols-2">
+              {salesPage?.AfterButtonPoints?.description?.map(
+                (point, index) => {
+                  // If there's an odd number of points, make the last one span full width
+                  const isLastOdd =
+                    salesPage?.AfterButtonPoints?.description?.length % 2 !==
+                      0 &&
+                    index ===
+                      salesPage?.AfterButtonPoints?.description?.length - 1;
 
-      {/* <div className="mt-5 text-center text-white "> */}
-      <div
-        className="text-2xl font-bold lg:text-[42px] lg:mt-20"
-        dangerouslySetInnerHTML={{
-          __html: salesPage?.ThirdSectionSubHeading,
-        }}
-      />
-
-      {salesPage?.ThirdSectionDescription?.map((desc, index) => (
-        <p
-          key={index}
-          className={`${
-            index === 0 ? "mt-4 lg:mt-10" : "mt-8"
-          } text-[#9b9b9b] font-semibold text-[16px] leading-tight lg:font-normal lg:text-[29px]`}
-          dangerouslySetInnerHTML={{ __html: desc }}
-        />
-      ))}
-
-      <p className="mt-2 lg:mt-7 text-yellow-500 font-bold text-lg text-center text-[25px] lg:text-[45px] lg:whitespace-nowrap lg:flex justify-center">
-        <div dangerouslySetInnerHTML={{ __html: salesPage.Topic }} />
-      </p>
-
-      {/* Image Section */}
-      <div className="flex justify-center mt-6 bg-white rounded-2xl lg:rounded">
-        <img
-          src={`${BASE_URL}/uploads/${salesPage?.mainImage}`}
-          alt="Fozato SEO - YouTube Auto SEO App"
-          className="w-full lg:max-w-6xl lg:max-h-[500px] rounded-lg shadow-lg"
-        />
-      </div>
-      {CourseCTAButton}
-
-      <div className="lg:mt-10 text-white bg-[#111111] p-6">
-        <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-          <div className="grid gap-6 text-white lg:text-[20px] grid-cols-1 md:grid-cols-2">
-            {salesPage?.AfterButtonPoints?.description?.map((point, index) => {
-              // If there's an odd number of points, make the last one span full width
-              const isLastOdd =
-                salesPage?.AfterButtonPoints?.description?.length % 2 !== 0 &&
-                index === salesPage?.AfterButtonPoints?.description?.length - 1;
-
-              return (
-                <div
-                  key={index}
-                  className={`flex items-start mt-4 md:mt-0 ${
-                    isLastOdd ? "md:col-span-2 justify-center" : ""
-                  }`}
-                >
-                  <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-1 shrink-0">
-                    <Check size={20} color="black" strokeWidth={3} />
-                  </div>
-                  <div
-                    className="ml-2 text-start font-bold"
-                    dangerouslySetInnerHTML={{ __html: point }}
-                  />
-                </div>
-              );
-            })}
+                  return (
+                    <div
+                      key={index}
+                      className={`flex items-start mt-4 md:mt-0 ${
+                        isLastOdd ? "md:col-span-2 justify-center" : ""
+                      }`}
+                    >
+                      <div className="w-6 h-5 flex items-center justify-center bg-yellow-500 rounded mt-1 shrink-0">
+                        <Check size={20} color="black" strokeWidth={3} />
+                      </div>
+                      <div
+                        className="ml-2 text-start font-bold"
+                        dangerouslySetInnerHTML={{ __html: point }}
+                      />
+                    </div>
+                  );
+                }
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -323,147 +329,157 @@ function SalesPage() {
           ))}
         </div>
       </div>
+      <div className="text-white lg:mt-10 text-center rounded-lg shadow-lg w-full max-w-4xl">
+        <div className="bg-black text-white p-2 rounded-3xl shadow-lg w-full max-w-4xl mx-auto text-center">
+          <div className="text-center text-white">
+            <h2
+              className="mt-6"
+              dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[0] }}
+            />
 
-      <div className="bg-black text-white p-2 rounded-3xl shadow-lg w-full max-w-4xl mx-auto text-center">
-        <div className="text-center text-white">
-          <h2
-            className="mt-6"
-            dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[0] }}
-          />
+            <p
+              className="mt-6"
+              dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[1] }}
+            />
 
+            <p
+              className="mt-6"
+              dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[2] }}
+            />
+
+            <p
+              className="mt-6"
+              dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[3] }}
+            />
+
+            <p
+              className="mt-2 lg:mt-10"
+              dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[4] }}
+            />
+          </div>
+
+          <Timer />
+
+          <p>
+            <div
+              dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }}
+            />
+          </p>
           <p
-            className="mt-6"
-            dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[1] }}
+            className="mt-2"
+            dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[5] }}
           />
 
-          <p
-            className="mt-6"
-            dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[2] }}
-          />
-
-          <p
-            className="mt-6"
-            dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[3] }}
-          />
-
-          <p
-            className="mt-2 lg:mt-10"
-            dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[4] }}
-          />
+          {CourseCTAButton}
         </div>
-
-        <Timer />
 
         <p>
           <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
         </p>
-        <p
-          className="mt-2"
-          dangerouslySetInnerHTML={{ __html: salesPage?.section5Lines[5] }}
-        />
+
+        <h1 className="mt-10">
+          <div
+            dangerouslySetInnerHTML={{ __html: salesPage?.lastPartHeading }}
+          />
+        </h1>
+        <p className="mt-6">
+          <div
+            dangerouslySetInnerHTML={{ __html: salesPage?.lastPartContent }}
+          />
+        </p>
+        <div className="flex flex-col gap-4 mt-4">
+          {salesPage?.faq?.map((item, index) => (
+            <div
+              key={item._id || index}
+              className="bg-[#4A4A4A] text-white p-4 rounded-2xl"
+            >
+              <p className="font-bold text-[20px] text-start">
+                {item.question}
+              </p>
+              <div
+                className="text-[16px] mt-1 text-start"
+                dangerouslySetInnerHTML={{ __html: item.answer }}
+              />
+            </div>
+          ))}
+        </div>
 
         {CourseCTAButton}
+        <p>
+          <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
+        </p>
+        <footer className="bg-black text-gray-300 text-sm mt-5 leading-relaxed text-center lg:mt-20">
+          <p className="text-[8px] lg:text-[10px]">
+            This site is not affiliated with YouTube™, Google™, Meta™,
+            Instagram™, or Facebook™, nor is it endorsed by them in any manner.
+            The term “YouTube™” is a trademark owned by Google™, Inc., and
+            “Facebook™” is a trademark owned by Meta Platforms, Inc. As required
+            by law, we cannot guarantee any specific results or earnings from
+            the use of our automated SEO tools, strategies, or services
+            presented through Fozato SEO. Our goal is to provide valuable
+            content, guidance, and strategies that have proven effective for
+            ourselves and our users, and we believe can help you grow your
+            YouTube channel and optimize your online presence. You can access
+            all of our terms, privacy policies, and disclaimers for this
+            platform through the provided links. Transparency is important to
+            us, and we hold ourselves (and you) to high standards of integrity.
+            Thank you for trusting Fozato SEO. We hope this app and our content
+            provide you with significant value and measurable results.
+          </p>
+
+          <p className="mt-4 text-[8px] lg:text-[10px]">
+            Note: This service is provided as part of our automated system,
+            offering real-time SEO support to optimize your YouTube videos. Once
+            you subscribe, you’ll be able to unlock all features for on-demand
+            SEO automation and enjoy a seamless experience.
+          </p>
+
+          <p className="mt-4 text-[8px] lg:text-[10px]">
+            Fozato SEO specializes in YouTube SEO and optimization tools, not in
+            promoting “get rich quick” schemes or guaranteed income systems. We
+            believe that with the right tools and automation, individuals and
+            businesses can make informed decisions that improve their channel’s
+            performance. However, we do not guarantee success or income results
+            from our services. Fozato SEO does not make claims about specific
+            earnings or outcomes and cannot guarantee that the app will generate
+            revenue for you. All materials and tools provided are protected by
+            copyright, and any unauthorized duplication or distribution is
+            strictly prohibited.While our service focuses on improving YouTube
+            performance, success depends on individual effort, time, and content
+            quality. We may link to or refer content provided by third parties
+            not affiliated with Fozato, SEO and we are not responsible for their
+            content or services. Additionally, we may collaborate with or refer
+            you to third-party businesses. Thank you for choosing Fozato SEO for
+            your YouTube optimization needs.
+          </p>
+
+          <p className="cursor-pointer text-[8px] flex flex-wrap justify-center gap-2">
+            <Link to="/terms" className="hover:underline">
+              Terms and Conditions
+            </Link>
+            |
+            <Link to="/privacy" className="hover:underline">
+              Privacy Policy
+            </Link>
+            |
+            <Link to="/refund" className="hover:underline">
+              Refund/Cancellation
+            </Link>
+            |
+            <Link to="/shipping" className="hover:underline">
+              Shipping Policy
+            </Link>
+            |
+            <Link to="/about" className="hover:underline">
+              About Us
+            </Link>
+            |
+            <Link to="/contact" className="hover:underline">
+              Contact Us
+            </Link>
+          </p>
+        </footer>
       </div>
-
-      <p>
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
-      </p>
-
-      <h1 className="mt-10">
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.lastPartHeading }} />
-      </h1>
-      <p className="mt-6">
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.lastPartContent }} />
-      </p>
-      <div className="flex flex-col gap-4 mt-4">
-        {salesPage?.faq?.map((item, index) => (
-          <div
-            key={item._id || index}
-            className="bg-[#4A4A4A] text-white p-4 rounded-2xl"
-          >
-            <p className="font-bold text-[20px] text-start">{item.question}</p>
-            <div
-              className="text-[16px] mt-1 text-start"
-              dangerouslySetInnerHTML={{ __html: item.answer }}
-            />
-          </div>
-        ))}
-      </div>
-
-      {CourseCTAButton}
-      <p>
-        <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
-      </p>
-      <footer className="bg-black text-gray-300 text-sm mt-5 leading-relaxed text-center lg:mt-20">
-        <p className="text-[8px] lg:text-[10px]">
-          This site is not affiliated with YouTube™, Google™, Meta™, Instagram™,
-          or Facebook™, nor is it endorsed by them in any manner. The term
-          “YouTube™” is a trademark owned by Google™, Inc., and “Facebook™” is a
-          trademark owned by Meta Platforms, Inc. As required by law, we cannot
-          guarantee any specific results or earnings from the use of our
-          automated SEO tools, strategies, or services presented through Fozato
-          SEO. Our goal is to provide valuable content, guidance, and strategies
-          that have proven effective for ourselves and our users, and we believe
-          can help you grow your YouTube channel and optimize your online
-          presence. You can access all of our terms, privacy policies, and
-          disclaimers for this platform through the provided links. Transparency
-          is important to us, and we hold ourselves (and you) to high standards
-          of integrity. Thank you for trusting Fozato SEO. We hope this app and
-          our content provide you with significant value and measurable results.
-        </p>
-
-        <p className="mt-4 text-[8px] lg:text-[10px]">
-          Note: This service is provided as part of our automated system,
-          offering real-time SEO support to optimize your YouTube videos. Once
-          you subscribe, you’ll be able to unlock all features for on-demand SEO
-          automation and enjoy a seamless experience.
-        </p>
-
-        <p className="mt-4 text-[8px] lg:text-[10px]">
-          Fozato SEO specializes in YouTube SEO and optimization tools, not in
-          promoting “get rich quick” schemes or guaranteed income systems. We
-          believe that with the right tools and automation, individuals and
-          businesses can make informed decisions that improve their channel’s
-          performance. However, we do not guarantee success or income results
-          from our services. Fozato SEO does not make claims about specific
-          earnings or outcomes and cannot guarantee that the app will generate
-          revenue for you. All materials and tools provided are protected by
-          copyright, and any unauthorized duplication or distribution is
-          strictly prohibited.While our service focuses on improving YouTube
-          performance, success depends on individual effort, time, and content
-          quality. We may link to or refer content provided by third parties not
-          affiliated with Fozato, SEO and we are not responsible for their
-          content or services. Additionally, we may collaborate with or refer
-          you to third-party businesses. Thank you for choosing Fozato SEO for
-          your YouTube optimization needs.
-        </p>
-
-        <p className="cursor-pointer text-[8px] flex flex-wrap justify-center gap-2">
-          <Link to="/terms" className="hover:underline">
-            Terms and Conditions
-          </Link>
-          |
-          <Link to="/privacy" className="hover:underline">
-            Privacy Policy
-          </Link>
-          |
-          <Link to="/refund" className="hover:underline">
-            Refund/Cancellation
-          </Link>
-          |
-          <Link to="/shipping" className="hover:underline">
-            Shipping Policy
-          </Link>
-          |
-          <Link to="/about" className="hover:underline">
-            About Us
-          </Link>
-          |
-          <Link to="/contact" className="hover:underline">
-            Contact Us
-          </Link>
-        </p>
-      </footer>
     </div>
   );
 }

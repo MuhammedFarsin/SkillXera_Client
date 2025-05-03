@@ -14,6 +14,8 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
   const [duration, setDuration] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [embedCode, setEmbedCode] = useState("");
+  const [contentType, setContentType] = useState("file"); // 'file' or 'embed'
 
   // Handle file selection
   const handleFileChange = (e) => {
@@ -21,6 +23,7 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
     console.log("📂 File Selected:", file);
     setVideo(file);
   };
+
   const resetForm = () => {
     setTitle("");
     setDescription("");
@@ -28,24 +31,37 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
     setDuration("");
     setUploadProgress(0);
     setIsUploading(false);
-  }
+    setEmbedCode("");
+    setContentType("file");
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!file) {
+    if (contentType === "file" && !file) {
       toast.error("Please select a video file");
+      return;
+    }
+
+    if (contentType === "embed" && !embedCode.trim()) {
+      toast.error("Please provide an embed code");
       return;
     }
 
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("video", file);
+    if (contentType === "file") {
+      formData.append("video", file);
+    } else {
+      formData.append("embedCode", embedCode.trim());
+    }
     formData.append("title", title.trim());
     formData.append("description", description.trim());
     formData.append("duration", Number(duration) || 0);
+    formData.append("contentType", contentType);
+
     for (let pair of formData.entries()) {
       console.log(`${pair[0]}:`, pair[1]);
     }
@@ -56,12 +72,12 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-          onUploadProgress: (progressEvent) => {
+          onUploadProgress: contentType === "file" ? (progressEvent) => {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
             );
             setUploadProgress(percentCompleted);
-          },
+          } : undefined,
         }
       );
 
@@ -75,6 +91,9 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
       }
     } catch (error) {
       console.error("🚨 Upload Error:", error);
+      toast.error(error.response?.data?.message || "Failed to add lecture");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -119,29 +138,59 @@ function AddLectureModal({ isOpen, onClose, moduleId, onLectureAdded }) {
             onChange={(e) => setDescription(e.target.value)}
             className="w-full p-2 border rounded-md bg-gray-800 text-white"
           />
-          <input
-            type="file"
-            accept="video/*"
-            onChange={handleFileChange}
-            className="w-full p-2 border rounded-md bg-gray-800 text-white"
-          />
+
+          <div className="flex space-x-4 mb-4">
+            <button
+              type="button"
+              className={`px-4 py-2 rounded-md ${contentType === 'file' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+              onClick={() => setContentType('file')}
+            >
+              Upload Video
+            </button>
+            <button
+              type="button"
+              className={`px-4 py-2 rounded-md ${contentType === 'embed' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+              onClick={() => setContentType('embed')}
+            >
+              Embed Video
+            </button>
+          </div>
+
+          {contentType === "file" ? (
+            <>
+              <input
+                type="file"
+                accept="video/*"
+                onChange={handleFileChange}
+                className="w-full p-2 border rounded-md bg-gray-800 text-white"
+              />
+              {isUploading && (
+                <div className="w-full h-2 bg-gray-200 rounded-md">
+                  <motion.div
+                    className="h-full bg-blue-600 rounded-md"
+                    initial={{ width: "0%" }}
+                    animate={{ width: `${uploadProgress}%` }}
+                  ></motion.div>
+                </div>
+              )}
+            </>
+          ) : (
+            <textarea
+              placeholder="Paste your embed code here (e.g., YouTube iframe)"
+              value={embedCode}
+              onChange={(e) => setEmbedCode(e.target.value)}
+              className="w-full p-2 border rounded-md bg-gray-800 text-white h-24"
+            />
+          )}
+
           <input
             type="number"
             placeholder="Duration (in minutes)"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             className="w-full p-2 border rounded-md bg-gray-800 text-white"
+            required
           />
-
-          {isUploading && (
-            <div className="w-full h-2 bg-gray-200 rounded-md">
-              <motion.div
-                className="h-full bg-blue-600 rounded-md"
-                initial={{ width: "0%" }}
-                animate={{ width: `${uploadProgress}%` }}
-              ></motion.div>
-            </div>
-          )}
 
           <button
             type="submit"

@@ -90,24 +90,29 @@ function HomePage() {
                   />
                 )}
 
-<div className="p-4 text-center">
-  <h3 className="text-lg font-semibold">{course.course.title}</h3>
+                <div className="p-4 text-center">
+                  <h3 className="text-lg font-semibold">
+                    {course.course.title}
+                  </h3>
 
-  {course.course.modules?.length > 0 ? (
-    <Link to={`/learn/${course.course.courseId}/module/${course.course.modules[0]._id}/lectures/0`}>
-      <motion.button
-        className="mt-3 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        Start Learning
-      </motion.button>
-    </Link>
-  ) : (
-    <p className="text-gray-500 text-sm mt-2">No modules available.</p>
-  )}
-</div>
-
+                  {course.course.modules?.length > 0 ? (
+                    <Link
+                      to={`/learn/${course.course.courseId}/module/${course.course.modules[0]._id}/lectures/0`}
+                    >
+                      <motion.button
+                        className="mt-3 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Start Learning
+                      </motion.button>
+                    </Link>
+                  ) : (
+                    <p className="text-gray-500 text-sm mt-2">
+                      No modules available.
+                    </p>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -121,7 +126,9 @@ function HomePage() {
             <h3 className="text-xl font-semibold">
               Looks like you haven&apos;t enrolled in any courses yet.
             </h3>
-            <p className="mt-2">Start exploring and invest in your growth today! 🚀</p>
+            <p className="mt-2">
+              Start exploring and invest in your growth today! 🚀
+            </p>
             <Link to="/explore">
               <motion.button
                 className="mt-4 bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600"
