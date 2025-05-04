@@ -5,6 +5,7 @@ import ReactPixel from "react-facebook-pixel";
 import { Check } from "lucide-react";
 import VideoEmbed from "../../Utils/EmbeddedVideo";
 import Timer from "../../Utils/Timer";
+import Spinner from "../Common/spinner";
 
 function SalesPage() {
   const navigate = useNavigate();
@@ -76,7 +77,11 @@ function SalesPage() {
   );
 
   if (loading)
-    return <p className="text-white text-center">Loading course details...</p>;
+    return (
+      <div className="flex justify-center items-center h-40">
+        <Spinner />
+      </div>
+    );
   if (error) return <p className="text-red-500 text-center">{error}</p>;
   if (!salesPage)
     return <p className="text-white text-center">No course found</p>;

@@ -5,6 +5,7 @@ import Navbar from "./Common/Navbar";
 import axiosInstance from "../Connection/Axios";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import Spinner from "./Common/spinner";
 
 function HomePage() {
   const user = useSelector((state) => state.user);
@@ -71,7 +72,9 @@ function HomePage() {
         </h2>
 
         {loading ? (
-          <p className="text-center text-gray-600">Fetching your courses...</p>
+           <div className="flex justify-center items-center h-40">
+           <Spinner />
+         </div>
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {courses.map((course) => (

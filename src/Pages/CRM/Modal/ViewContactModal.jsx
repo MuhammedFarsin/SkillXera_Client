@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import Spinner from "../../Common/spinner";
 
 // eslint-disable-next-line react/prop-types
 export default function ViewContactModal({ isOpen, contact, loading, error, onClose }) {
@@ -28,7 +29,9 @@ export default function ViewContactModal({ isOpen, contact, loading, error, onCl
         {/* Contact Details */}
         <div className="space-y-4 max-h-[65vh] overflow-y-auto px-1">
           {loading ? (
-            <p className="text-center text-gray-500 dark:text-gray-400">Loading...</p>
+             <div className="flex justify-center items-center h-40">
+             <Spinner />
+           </div>
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (

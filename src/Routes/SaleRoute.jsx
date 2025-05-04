@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import Spinner from "../Pages/Common/spinner";
 // import ProtectedRoute from "./ProtectSaleRoute";
 
 const SaleCourse_Page = React.lazy(() =>
@@ -12,7 +13,13 @@ const Success_Page = React.lazy(() => import("../Components/Sale/SuccessPage"));
 
 function SaleRoute() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div>
+          <Spinner />
+        </div>
+      }
+    >
       <Routes>
         <Route
           path="/sales-page/course/:courseId"

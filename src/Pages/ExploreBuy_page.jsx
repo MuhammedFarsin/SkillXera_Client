@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../Connection/Axios";
 import Navbar from "./Common/Navbar";
+import Spinner from "./Common/spinner";
 
 function BuyCoursePage() {
   const { userId, courseId } = useParams();
@@ -29,7 +30,7 @@ function BuyCoursePage() {
   if (loading)
     return (
       <div className="text-center mt-10 text-lg text-gray-300 dark:text-gray-400">
-        Loading course details...
+       <Spinner/>
       </div>
     );
   if (!course)

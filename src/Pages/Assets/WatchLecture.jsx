@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../Connection/Axios";
 import Navbar from "../Common/AdminNavbar";
 import VideoEmbed from "../../Utils/EmbeddedVideo";
+import Spinner from "../Common/spinner";
 
 const WatchLecture = () => {
   const BASE_URL = axiosInstance.defaults.baseURL;
@@ -87,7 +88,9 @@ const WatchLecture = () => {
 
   if (loading)
     return (
-      <p className="text-center text-lg font-semibold">Loading lecture...</p>
+      <div className="flex justify-center items-center h-40">
+      <Spinner />
+    </div>
     );
   if (error)
     return (

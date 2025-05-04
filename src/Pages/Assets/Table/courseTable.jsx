@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal";
 import { frontendRoute } from "../../../Utils/utils";
 import Admin_Navbar from "../../Common/AdminNavbar";
+import Spinner from "../../Common/spinner";
 
 const CourseTable = () => {
   const menuRef = useRef(null);
@@ -184,7 +185,9 @@ const CourseTable = () => {
             {loading ? (
               <tr>
                 <td colSpan="5" className="p-5 text-center">
-                  Loading courses...
+                  <div className="flex justify-center items-center h-40">
+                    <Spinner />
+                  </div>
                 </td>
               </tr>
             ) : sortedCourses().length === 0 ? (
@@ -241,7 +244,11 @@ const CourseTable = () => {
                         </button>
                         <button
                           className="block w-full px-4 py-2 hover:bg-blue-700 rounded-md text-sm text-white"
-                          onClick={() => navigate(`/admin/assets/course/edit-course/${course._id}`)}
+                          onClick={() =>
+                            navigate(
+                              `/admin/assets/course/edit-course/${course._id}`
+                            )
+                          }
                         >
                           Edit
                         </button>
@@ -253,7 +260,11 @@ const CourseTable = () => {
                         </button>
                         <button
                           className="block w-full px-4 py-2 hover:bg-blue-700 rounded-md text-sm text-white"
-                          onClick={() => navigate(`/admin/assets/course/edit-sales-page/${course._id}`)}
+                          onClick={() =>
+                            navigate(
+                              `/admin/assets/course/edit-sales-page/${course._id}`
+                            )
+                          }
                         >
                           SalesPage
                         </button>

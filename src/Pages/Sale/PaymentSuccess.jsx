@@ -7,6 +7,7 @@ import axiosInstance from "../../Connection/Axios";
 import ReactPixel from "react-facebook-pixel";
 import { initFacebookPixel } from "../../utils/metaPixel";
 import ToasterHot from "../Common/ToasterHot";
+import Spinner from "../Common/spinner";
 
 const PaymentSuccess = () => {
   const location = useLocation();
@@ -54,20 +55,26 @@ const PaymentSuccess = () => {
         let response;
 
         if (gateway === "cashfree") {
-          response = await axiosInstance.post("/sale/salespage/verify-cashfree-payment", {
-            order_id: orderId,
-            courseId,
-            email,
-          });
+          response = await axiosInstance.post(
+            "/sale/salespage/verify-cashfree-payment",
+            {
+              order_id: orderId,
+              courseId,
+              email,
+            }
+          );
         } else if (gateway === "razorpay") {
-          response = await axiosInstance.post("/sale/salespage/verify-razorpay-payment", {
-            razorpay_order_id,
-            razorpay_payment_id,
-            razorpay_signature,
-            order_id: orderId,
-            courseId,
-            email,
-          });
+          response = await axiosInstance.post(
+            "/sale/salespage/verify-razorpay-payment",
+            {
+              razorpay_order_id,
+              razorpay_payment_id,
+              razorpay_signature,
+              order_id: orderId,
+              courseId,
+              email,
+            }
+          );
         }
 
         if (response?.status === 200 && response.data.status === "success") {
@@ -82,7 +89,6 @@ const PaymentSuccess = () => {
             `verifiedPayment_${orderId}`,
             JSON.stringify(response.data.payment)
           );
-          console.log('this is i need',response);
           ReactPixel.track("Purchase", {
             value: response.data.payment.amount,
             currency: "INR",
@@ -113,7 +119,10 @@ const PaymentSuccess = () => {
       <div className="p-8 bg-white shadow-xl rounded-lg text-center w-[400px]">
         {loading ? (
           <p className="text-gray-700 text-lg font-semibold">
-            Verifying payment...
+            <div className="flex justify-center items-center h-40">
+              <Spinner />
+              Verifying payment...
+            </div>
           </p>
         ) : verified ? (
           <>
@@ -167,25 +176,27 @@ const PaymentSuccess = () => {
           </>
         ) : (
           <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600">Payment Verification Failed</h2>
-          <p className="text-gray-700 mt-2">
-            If your money was deducted, please contact support or try again.
-          </p>
-          <div className="mt-4 flex justify-center space-x-4">
-            <button
-              className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-300"
-              onClick={() => window.location.reload()}
-            >
-              Retry Verification
-            </button>
-            <button
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
-              onClick={() => navigate("/contact")}
-            >
-              Contact Support
-            </button>
+            <h2 className="text-2xl font-bold text-red-600">
+              Payment Verification Failed
+            </h2>
+            <p className="text-gray-700 mt-2">
+              If your money was deducted, please contact support or try again.
+            </p>
+            <div className="mt-4 flex justify-center space-x-4">
+              <button
+                className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-300"
+                onClick={() => window.location.reload()}
+              >
+                Retry Verification
+              </button>
+              <button
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+                onClick={() => navigate("/contact")}
+              >
+                Contact Support
+              </button>
+            </div>
           </div>
-        </div>
         )}
       </div>
       <ToasterHot />

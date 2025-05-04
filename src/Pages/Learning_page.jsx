@@ -4,6 +4,7 @@ import axiosInstance from "../Connection/Axios";
 import Navbar from "./Common/Navbar";
 import { IoMenu } from "react-icons/io5";
 import VideoEmbed from "../Utils/EmbeddedVideo";
+import Spinner from "./Common/spinner";
 
 function Learning_page() {
   const BASE_URL = axiosInstance.defaults.baseURL;
@@ -85,7 +86,9 @@ function Learning_page() {
 
   if (loading)
     return (
-      <p className="text-center text-lg font-semibold">Loading lecture...</p>
+      <div className="flex justify-center items-center h-40">
+    <Spinner />
+  </div>
     );
   if (error)
     return (

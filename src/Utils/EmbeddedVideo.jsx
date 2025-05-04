@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import DOMPurify from 'dompurify';
+import { useEffect, useRef, useState } from "react";
+import DOMPurify from "dompurify";
+import Spinner from "../Pages/Common/spinner";
 
 // eslint-disable-next-line react/prop-types
 const VideoEmbed = ({ embedCode }) => {
@@ -13,28 +14,28 @@ const VideoEmbed = ({ embedCode }) => {
     // Reset state for new embed
     setIsLoaded(false);
     setError(null);
-    containerRef.current.innerHTML = '';
+    containerRef.current.innerHTML = "";
 
     if (!embedCode) {
-      setError('No embed code provided');
+      setError("No embed code provided");
       return;
     }
 
     try {
       // Sanitize the embed code while allowing common embed elements
       const sanitizedCode = DOMPurify.sanitize(embedCode, {
-        ADD_TAGS: ['iframe', 'embed', 'object', 'script'],
-        ADD_ATTR: ['allowfullscreen', 'frameborder', 'allow'],
-        FORBID_TAGS: ['style'],
-        FORBID_ATTR: ['onload', 'onerror']
+        ADD_TAGS: ["iframe", "embed", "object", "script"],
+        ADD_ATTR: ["allowfullscreen", "frameborder", "allow"],
+        FORBID_TAGS: ["style"],
+        FORBID_ATTR: ["onload", "onerror"],
       });
 
       // Create temporary container
-      const tempDiv = document.createElement('div');
+      const tempDiv = document.createElement("div");
       tempDiv.innerHTML = sanitizedCode;
 
       // Handle all potential embed types
-      const embedTypes = ['iframe', 'embed', 'object', 'div', 'video'];
+      const embedTypes = ["iframe", "embed", "object", "div", "video"];
       let embedElement = null;
 
       for (const tag of embedTypes) {
@@ -44,18 +45,18 @@ const VideoEmbed = ({ embedCode }) => {
 
       if (embedElement) {
         const clonedElement = embedElement.cloneNode(true);
-        
+
         // Standardize attributes for responsive behavior
-        clonedElement.style.width = '100%';
-        clonedElement.style.height = '100%';
-        clonedElement.style.border = 'none';
-        clonedElement.style.display = 'block';
+        clonedElement.style.width = "100%";
+        clonedElement.style.height = "100%";
+        clonedElement.style.border = "none";
+        clonedElement.style.display = "block";
 
         // Special handling for iframes
-        if (clonedElement.tagName.toLowerCase() === 'iframe') {
+        if (clonedElement.tagName.toLowerCase() === "iframe") {
           clonedElement.onload = () => setIsLoaded(true);
           clonedElement.onerror = () => {
-            setError('Failed to load embedded content');
+            setError("Failed to load embedded content");
             setIsLoaded(true); // Show the error
           };
         }
@@ -63,7 +64,7 @@ const VideoEmbed = ({ embedCode }) => {
         containerRef.current.appendChild(clonedElement);
 
         // For non-iframes, set loaded state after a short delay
-        if (clonedElement.tagName.toLowerCase() !== 'iframe') {
+        if (clonedElement.tagName.toLowerCase() !== "iframe") {
           setTimeout(() => setIsLoaded(true), 1500);
         }
       } else {
@@ -73,15 +74,15 @@ const VideoEmbed = ({ embedCode }) => {
       }
 
       // Handle scripts safely
-      const scripts = tempDiv.querySelectorAll('script');
-      scripts.forEach(script => {
-        if (script.src && !script.src.startsWith('https://')) {
-          console.warn('Blocked potentially unsafe script:', script.src);
+      const scripts = tempDiv.querySelectorAll("script");
+      scripts.forEach((script) => {
+        if (script.src && !script.src.startsWith("https://")) {
+          console.warn("Blocked potentially unsafe script:", script.src);
           return;
         }
 
-        const newScript = document.createElement('script');
-        newScript.type = 'text/javascript';
+        const newScript = document.createElement("script");
+        newScript.type = "text/javascript";
         if (script.src) {
           newScript.src = script.src;
         } else {
@@ -89,10 +90,9 @@ const VideoEmbed = ({ embedCode }) => {
         }
         document.body.appendChild(newScript);
       });
-
     } catch (err) {
-      console.error('Embed rendering error:', err);
-      setError('Error loading embedded content');
+      console.error("Embed rendering error:", err);
+      setError("Error loading embedded content");
       setIsLoaded(true); // Show the error state
     }
   }, [embedCode]);
@@ -100,8 +100,11 @@ const VideoEmbed = ({ embedCode }) => {
   return (
     <div className="relative w-full lg:w-3/4 aspect-video bg-black mt-6 rounded-lg overflow-hidden">
       {!isLoaded && !error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 text-white z-10">
-          <p>Loading content...</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 text-white z-50">
+          <div className="flex flex-col items-center space-y-4">
+            <Spinner className="w-12 h-12 text-blue-500 animate-spin" />
+            <p className="text-lg font-medium">Loading, please wait...</p>
+          </div>
         </div>
       )}
 
@@ -111,9 +114,11 @@ const VideoEmbed = ({ embedCode }) => {
         </div>
       )}
 
-      <div 
+      <div
         ref={containerRef}
-        className={`w-full h-full ${(isLoaded && !error) ? 'block' : 'invisible'}`}
+        className={`w-full h-full ${
+          isLoaded && !error ? "block" : "invisible"
+        }`}
       />
     </div>
   );

@@ -8,13 +8,16 @@ import { useState } from "react";
 import { login } from "../../Store/Slices/authSlice";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../Store/Slices/userSlice";
+import Spinner from "../Common/spinner";
 
 function SignInPage() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await axiosInstance.post(
@@ -24,11 +27,14 @@ function SignInPage() {
       );
 
       if (response.data.success) {
-        console.log("Access Token received from server:", response.data.accessToken);  
+        console.log(
+          "Access Token received from server:",
+          response.data.accessToken
+        );
         localStorage.setItem("accessToken", response.data.accessToken);
         const token = localStorage.getItem("accessToken");
         console.log("Access Token retrieved from localStorage:", token);
-      
+
         toast.success("Login successful...");
         setTimeout(() => {
           dispatch(login());
@@ -36,7 +42,9 @@ function SignInPage() {
         }, 2000);
       }
     } catch (err) {
-      toast.error("Something went wrong...!",err);
+      toast.error("Something went wrong...!", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,9 +106,17 @@ function SignInPage() {
 
           <button
             type="submit"
-            className="w-full py-3 px-4 text-white font-semibold rounded-lg bg-gradient-to-r from-pink-500 to-violet-600 hover:bg-gradient-to-l"
+            className="w-full py-3 px-4 text-white font-semibold rounded-lg bg-gradient-to-r from-pink-500 to-violet-600 hover:bg-gradient-to-l flex justify-center items-center gap-2"
+            disabled={loading}
           >
-            Sign In
+            {loading ? (
+              <>
+                <Spinner small />
+                <span>Signing In...</span>
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 

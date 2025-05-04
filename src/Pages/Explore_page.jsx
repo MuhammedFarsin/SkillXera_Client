@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import Navbar from "./Common/Navbar";
 import axiosInstance from "../Connection/Axios";
 import { Link } from "react-router-dom";
+import Spinner from "./Common/spinner";
 
 function ExplorePage() {
   const user = useSelector((state) => state.user); 
@@ -37,7 +38,7 @@ function ExplorePage() {
         <h2 className="text-2xl font-bold mb-4 text-center">Courses</h2>
 
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center"><Spinner/></p>
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {courses.map((course) => (

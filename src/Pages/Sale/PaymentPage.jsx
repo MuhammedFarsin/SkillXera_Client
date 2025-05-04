@@ -8,6 +8,7 @@ import ReactPixel from "react-facebook-pixel";
 import { loadRazorpayScript } from "../../Utils/RazorpayScript";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import Spinner from "../Common/spinner";
 
 const PaymentPage = () => {
   const { courseId } = useParams();
@@ -201,9 +202,9 @@ const PaymentPage = () => {
 
   if (checkoutData.loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Loading...
-      </div>
+      <div className="flex justify-center items-center h-40">
+    <Spinner />
+  </div>
     );
   }
 
