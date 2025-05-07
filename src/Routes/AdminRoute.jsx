@@ -11,7 +11,9 @@ import AddCourse from "../Components/Admin/AddCourse";
 import SalesPage from "../Components/Admin/SalesPage";
 import EditCourse from "../Components/Admin/EditCourse"
 import EditSalesPage from "../Components/Admin/EditSalesPage"
+import AddDigitalProduct from "../Components/Admin/AddDigitalProductPage"
 import AddCheckout from "../Components/Admin/AddCheckout"
+import EditDigitalProduct from "../Components/Admin/EditDigitalProductPage"
 const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() =>
@@ -119,6 +121,22 @@ function AdminRoute() {
         element={
           <ProtectedRoute>
             <Files_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/file/add-digital-product-page"
+        element={
+          <ProtectedRoute>
+            <AddDigitalProduct />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/file/edit-digital-product-page/:id"
+        element={
+          <ProtectedRoute>
+            <EditDigitalProduct />
           </ProtectedRoute>
         }
       />

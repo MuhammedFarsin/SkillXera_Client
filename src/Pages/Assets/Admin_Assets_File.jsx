@@ -1,10 +1,12 @@
-import Admin_Navbar from "../Common/AdminNavbar"
+  import ToastHot from "../Common/ToasterHot";
+import DigitalProductTable from "./Table/digitalCourseTable";
 function Admin_Assets_File() {
   return (
     <div>
-      <Admin_Navbar/>
+      <DigitalProductTable />
+      <ToastHot />
     </div>
-  )
+  );
 }
 
-export default Admin_Assets_File
+export default Admin_Assets_File;
