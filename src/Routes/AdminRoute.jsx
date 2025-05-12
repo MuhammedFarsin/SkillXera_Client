@@ -8,12 +8,12 @@ const Dashboard_Page = React.lazy(() =>
 const Contact_Page = React.lazy(() => import("../Components/Admin/Contact"));
 const Courses_Page = React.lazy(() => import("../Components/Admin/Courses"));
 import AddCourse from "../Components/Admin/AddCourse";
-import SalesPage from "../Components/Admin/SalesPage";
-import EditCourse from "../Components/Admin/EditCourse"
-import EditSalesPage from "../Components/Admin/EditSalesPage"
-import AddDigitalProduct from "../Components/Admin/AddDigitalProductPage"
-import AddCheckout from "../Components/Admin/AddCheckout"
-import EditDigitalProduct from "../Components/Admin/EditDigitalProductPage"
+import AddSalesPage from "../Components/Admin/SalesPage";
+import EditCourse from "../Components/Admin/EditCourse";
+import EditSalesPage from "../Components/Admin/EditSalesPage";
+import AddDigitalProduct from "../Components/Admin/AddDigitalProductPage";
+import AddCheckout from "../Components/Admin/AddCheckout";
+import EditDigitalProduct from "../Components/Admin/EditDigitalProductPage";
 const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() =>
@@ -68,15 +68,15 @@ function AdminRoute() {
         }
       />
       <Route
-        path="/assets/course/add-salespage/:courseId"
+        path="/assets/create-sales-page/:type/:id"
         element={
           <ProtectedRoute>
-            <SalesPage />
+            <AddSalesPage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/assets/course/edit-sales-page/:courseId"
+        path="/assets/edit-sales-page/:type/:id"
         element={
           <ProtectedRoute>
             <EditSalesPage />
@@ -84,7 +84,7 @@ function AdminRoute() {
         }
       />
       <Route
-        path="/assets/course/add-checkoutPage/:courseId"
+        path="/assets/add-checkoutPage/:type/:id"
         element={
           <ProtectedRoute>
             <AddCheckout />

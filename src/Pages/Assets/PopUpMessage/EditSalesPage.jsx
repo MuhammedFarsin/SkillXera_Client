@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import ToastHot from "../../Common/ToasterHot";
 
 function EditSalesPage() {
-  const { courseId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -42,9 +42,9 @@ function EditSalesPage() {
     const fetchSalesPageDetails = async () => {
       try {
         const response = await axiosInstance.get(
-          `/admin/assets/course/get-sales-page/${courseId}`
+          `/admin/assets/get-sales-page/digital-product/${id}`
         );
-
+  
         if (response.status === 200) {
           const data = response.data;
           setFormData({
@@ -54,12 +54,12 @@ function EditSalesPage() {
               : "",
           
             existingBonusImages: data.bonusImages?.map((img) => ({
-              image: img.image,          // the filename from server
+              image: img.image,
               title: img.title || "",
               price: img.price || "",
             })) || [],
           
-            bonusImages: [], // always empty for new uploads
+            bonusImages: [],
           
             lines: Array.isArray(data.lines) ? data.lines : [],
             section5Lines: Array.isArray(data.section5Lines) ? data.section5Lines : [],
@@ -97,16 +97,21 @@ function EditSalesPage() {
               ? data.faq
               : [{ question: "", answer: "" }],
           });
-          
         }
       } catch (error) {
+        if (error.response?.status === 404) {
+          // Handle case where sales page doesn't exist yet
+          return;
+        }
         console.error("Failed to fetch sales page details:", error);
         toast.error("Failed to load sales page data");
       }
     };
-
-    fetchSalesPageDetails();
-  }, [courseId, baseURL]);
+  
+    if (id) {
+      fetchSalesPageDetails();
+    }
+  }, [id, baseURL]);
 
   // Handler functions (similar to AddSales_page but adjusted for edit functionality)
   const handleLineChange = (index, value) => {
@@ -375,7 +380,7 @@ const removeNewBonusImage = (index) => {
       submissionData.append("section5Lines", stringifiedFields.section5Lines);
 
       const response = await axiosInstance.put(
-        `/admin/assets/course/update-sales-page/${courseId}`,
+        `/admin/assets/course/update-sales-page/${id}`,
         submissionData,
         {
           headers: {

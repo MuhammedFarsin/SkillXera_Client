@@ -6,15 +6,13 @@ import { toast } from "sonner";
 import ToasterHot from "../../Common/ToasterHot";
 
 function AddSales_page() {
-  const { courseId } = useParams();
+  const { type, id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     mainImage: null,
     bonusImages: [{ file: null, title: "", price : "" }],
     lines: ["", "", "", ""],
     section5Lines: [""],
-    // ctaText: "",
-    // ctaHighlight: "",
     embedCode: "",
     smallBoxContent: "",
     buttonContent: "",
@@ -320,7 +318,7 @@ function AddSales_page() {
       });
 
       const response = await axiosInstance.post(
-        `/admin/create-sales-page/${courseId}`,
+        `/admin/create-sales-page/${type}/${id}`,
         submissionData,
         {
           headers: {
@@ -346,7 +344,7 @@ function AddSales_page() {
   };
 
   const handleNavigate = () => {
-    navigate(`/admin/assets/course/add-checkoutPage/${courseId}`);
+    navigate(`/admin/assets/add-checkoutPage/${type}/${id}`);
   };
 
   const handleCancel = () => {

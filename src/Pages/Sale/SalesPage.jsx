@@ -9,7 +9,7 @@ import Spinner from "../Common/spinner";
 
 function SalesPage() {
   const navigate = useNavigate();
-  const { courseId } = useParams();
+  const { type, id } = useParams();
   const [salesPage, setSalesPage] = useState(null);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,41 +17,42 @@ function SalesPage() {
   const BASE_URL = axiosInstance.defaults.baseURL;
 
   useEffect(() => {
-    const fetchCourseDetails = async () => {
+    const fetchSalesPage = async () => {
       try {
         const response = await axiosInstance.get(
-          `/sale/get-sales-page/course/${courseId}`
+          `/sale/get-sales-page/${type}/${id}` 
         );
         setSalesPage(response.data);
-        setCourse(response.data.courseId);
+        setLinkedItem(response.data.linkedTo.item); 
       } catch (error) {
-        setError("Failed to fetch course details");
+        setError("Failed to fetch sales page details");
         console.log(error);
       } finally {
         setLoading(false);
       }
     };
+  
+    fetchSalesPage();
+  }, [type, id]); // Added type as dependency
 
-    fetchCourseDetails();
-  }, [courseId]);
-
-  const handleNavigate = (courseId) => {
-    if (!courseId) return;
+  const handleNavigate = () => {
+    if (!id) return;
+    
     ReactPixel.track("PageView", {
-      value: course?.salesPrice,
+      value: salesPage?.price, // Changed from course?.salesPrice
       currency: "INR",
       content_name: "SkillXera",
-      content_category: "Online Course",
-      content_ids: courseId,
+      content_category: type === 'course' ? "Online Course" : "Digital Product",
+      content_ids: id,
       content_type: "product",
     });
-
-    navigate(`/sale/checkout-page/course/payment/${courseId}`);
+  
+    navigate(`/sale/checkout-page/${type}/payment/${id}`); // Updated route
   };
 
   const CourseCTAButton = course?.salesPrice ? (
     <button
-      onClick={() => handleNavigate(courseId)}
+      onClick={() => handleNavigate(id)}
       className="bg-[#FFA41C] md:text-lg shadow-xl 
   leading-tight py-3 px-6 md:py-4 md:px-8 lg:py-3 lg:px-10 rounded-2xl lg:rounded-3xl 
   mb-6 w-80 md:w-80 lg:w-full max-w-lg lg:max-w-4xl mt-6 text-center"

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axiosInstance from "../../../Connection/Axios";
 import { toast } from "sonner";
-import { FiUpload, FiLink } from "react-icons/fi";
+import { FiUpload, FiLink, FiShoppingCart } from "react-icons/fi";
 import ToasterHot from "../../Common/ToasterHot";
 import { useNavigate } from "react-router-dom";
 
@@ -13,14 +13,15 @@ function AddDigitalProduct() {
     regularPrice: "",
     salePrice: "",
     category: "",
-    fileUrl: "", // For file uploads
-    externalUrl: "", // For external links
-    contentType: "file", // 'file' or 'link'
+    fileUrl: "",
+    externalUrl: "",
+    contentType: "file",
     status: "active",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [createdProductId, setCreatedProductId] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,7 +34,6 @@ function AddDigitalProduct() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // For image preview (if needed)
       if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onloadend = () => setPreview(reader.result);
@@ -42,11 +42,9 @@ function AddDigitalProduct() {
         setPreview(null);
       }
 
-      // In a real app, you would upload the file here and get the URL
-      // For now, we'll just use the file name
       setProduct((prev) => ({
         ...prev,
-        fileUrl: file.name,
+        fileUrl: file,
         contentType: "file",
       }));
     }
@@ -109,11 +107,8 @@ function AddDigitalProduct() {
       formData.append('status', product.status);
       formData.append('contentType', product.contentType);
 
-      if (product.contentType === 'file') {
-        const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput.files[0]) {
-          formData.append('file', fileInput.files[0]);
-        }
+      if (product.contentType === 'file' && product.fileUrl instanceof File) {
+        formData.append('file', product.fileUrl);
       } else {
         formData.append('externalUrl', product.externalUrl);
       }
@@ -130,7 +125,7 @@ function AddDigitalProduct() {
 
       if (response.status === 201) {
         toast.success(response.data.message);
-        // Reset form
+        setCreatedProductId(response.data.product._id);
         setProduct({
           name: "",
           description: "",
@@ -143,9 +138,6 @@ function AddDigitalProduct() {
           status: "active",
         });
         setPreview(null);
-        setTimeout(() => {
-          navigate("/admin/assets/files");
-        }, 2000);
       }
     } catch (error) {
       console.error("Error adding product:", error);
@@ -155,7 +147,12 @@ function AddDigitalProduct() {
     }
   };
 
-
+  const handleAddSalesPage = () => {
+    if (createdProductId) {
+      // Since this is the digital product component, we know the type is "digital-product"
+      navigate(`/admin/assets/sales-page/digital-product/${createdProductId}`);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
@@ -317,7 +314,9 @@ function AddDigitalProduct() {
                   <label className="flex flex-col items-center px-4 py-6 bg-gray-700 rounded-lg border-2 border-dashed border-gray-600 cursor-pointer hover:bg-gray-600">
                     <FiUpload className="w-10 h-10 text-indigo-400" />
                     <span className="mt-2 text-sm text-gray-300">
-                      {product.fileUrl || "Click to upload file"}
+                      {product.fileUrl instanceof File 
+                        ? product.fileUrl.name 
+                        : product.fileUrl || "Click to upload file"}
                     </span>
                     <input
                       type="file"
@@ -372,8 +371,8 @@ function AddDigitalProduct() {
               </select>
             </div>
 
-            {/* Submit Button */}
-            <div className="pt-4">
+            {/* Submit and Sales Page Buttons */}
+            <div className="pt-4 space-y-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -383,6 +382,17 @@ function AddDigitalProduct() {
               >
                 {isSubmitting ? "Processing..." : "Add Product"}
               </button>
+
+              {createdProductId && (
+                <button
+                  type="button"
+                  onClick={handleAddSalesPage}
+                  className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  <FiShoppingCart className="mr-2" />
+                  Add Sales Page for This Product
+                </button>
+              )}
             </div>
           </form>
         </div>

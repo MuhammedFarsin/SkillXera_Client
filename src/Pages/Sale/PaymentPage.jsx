@@ -40,7 +40,7 @@ const PaymentPage = () => {
         if (!response.data.data || !response.data.data.courseId) {
           throw new Error("Invalid checkout data structure");
         }
-        
+
         setCheckoutData({
           checkoutPage: response.data.data,
           course: response.data.data.courseId, // This is the populated course
@@ -89,19 +89,18 @@ const PaymentPage = () => {
 
   const handleCashfreePayment = async (amount) => {
     if (isSubmitting) return; // Early return if already submitting
-  setIsSubmitting(true);
+    setIsSubmitting(true);
     try {
       ReactPixel.track("InitiateCheckout", {
-        
         content_name: checkoutData.course.title,
         content_ids: [checkoutData.course._id],
         value: amount,
         currency: "INR",
       });
 
-      const cashfree = await load({ mode: "sandbox" }); 
+      const cashfree = await load({ mode: "sandbox" });
 
-      const rawPhone = formData.phone.replace(/\D/g, '');
+      const rawPhone = formData.phone.replace(/\D/g, "");
 
       const response = await axiosInstance.post(
         "/sale/salespage/create-cashfree-order",
@@ -113,7 +112,7 @@ const PaymentPage = () => {
             customer_name: formData.username, // Changed from username
             customer_email: formData.email,
             customer_phone: rawPhone, // Unformatted numbers only
-          }
+          },
         }
       );
 
@@ -131,7 +130,11 @@ const PaymentPage = () => {
 
       cashfree.checkout({
         paymentSessionId: response.data.payment_session_id,
-        return_url: `${import.meta.env.VITE_FRONTEND_URL}/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${response.data.courseId}&gateway=cashfree`,
+        return_url: `${
+          import.meta.env.VITE_FRONTEND_URL
+        }/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${
+          response.data.courseId
+        }&gateway=cashfree`,
       });
     } catch (error) {
       toast.error("Cashfree Payment failed");
@@ -203,8 +206,8 @@ const PaymentPage = () => {
   if (checkoutData.loading) {
     return (
       <div className="flex justify-center items-center h-40">
-    <Spinner />
-  </div>
+        <Spinner />
+      </div>
     );
   }
 
@@ -319,7 +322,9 @@ const PaymentPage = () => {
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
             >
-               {isSubmitting ? 'Processing...' : `Pay Now ₹${checkoutData.course?.salesPrice}`}
+              {isSubmitting
+                ? "Processing..."
+                : `Pay Now ₹${checkoutData.course?.salesPrice}`}
             </button>
           </form>
         </div>

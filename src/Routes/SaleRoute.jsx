@@ -16,17 +16,15 @@ function SaleRoute() {
     <Suspense
       fallback={
         <div>
-          <Spinner />
+          {" "}
+          <Spinner />{" "}
         </div>
       }
     >
       <Routes>
+        <Route path="/sales-page/:type/:id" element={<SaleCourse_Page />} />
         <Route
-          path="/sales-page/course/:courseId"
-          element={<SaleCourse_Page />}
-        />
-        <Route
-          path="/checkout-page/course/payment/:courseId"
+          path="/checkout-page/:type/:id"
           element={<CoursePayment_Page />}
         />
         <Route path="/payment-success" element={<Success_Page />} />

@@ -93,7 +93,6 @@ const CourseTable = () => {
   const handleShare = (courseId) => {
     const fullLink = `${fullBuyingCourseRoute}/${courseId}`;
     setBuyLink(fullLink);
-    console.log(fullLink);
     setOpenShareModal(true);
   };
   const handleShareClose = () => {
