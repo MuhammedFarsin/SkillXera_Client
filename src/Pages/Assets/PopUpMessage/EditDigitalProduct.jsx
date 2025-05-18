@@ -150,11 +150,6 @@ function EditDigitalProduct() {
         formData.append('externalUrl', product.externalUrl);
       }
   
-      // Debug: Log FormData contents
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-  
       const response = await axiosInstance.put(
         `/admin/assets/file/update-digital-product/${id}`,
         formData,

@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import Spinner from "../Pages/Common/spinner";
+import Spinner from "../Pages/Common/Spinner";
 // import ProtectedRoute from "./ProtectSaleRoute";
 
 const SaleCourse_Page = React.lazy(() =>

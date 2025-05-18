@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import ToastHot from "../../Common/ToasterHot";
 
 function EditSalesPage() {
-  const { id } = useParams();
+  const { type, id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -16,7 +16,7 @@ function EditSalesPage() {
     mainImagePreview: "",
     bonusImages: [],
     existingBonusImages: [],
-    // bonusTitles: [],
+    bonusTitles: [],
     lines: [],
     section5Lines: [],
     embedCode: "",
@@ -42,9 +42,9 @@ function EditSalesPage() {
     const fetchSalesPageDetails = async () => {
       try {
         const response = await axiosInstance.get(
-          `/admin/assets/get-sales-page/digital-product/${id}`
+          `/admin/assets/get-sales-page/${type}/${id}`
         );
-  
+
         if (response.status === 200) {
           const data = response.data;
           setFormData({
@@ -52,66 +52,76 @@ function EditSalesPage() {
             mainImagePreview: data.mainImage
               ? `${baseURL}/uploads/${data.mainImage}`
               : "",
-          
-            existingBonusImages: data.bonusImages?.map((img) => ({
-              image: img.image,
-              title: img.title || "",
-              price: img.price || "",
-            })) || [],
-          
+
+            existingBonusImages:
+              data.bonusImages?.map((img) => ({
+                image: img.image,
+                title: img.title || "",
+                price: img.price || "",
+              })) || [],
+
             bonusImages: [],
-          
+
             lines: Array.isArray(data.lines) ? data.lines : [],
-            section5Lines: Array.isArray(data.section5Lines) ? data.section5Lines : [],
+            section5Lines: Array.isArray(data.section5Lines)
+              ? data.section5Lines
+              : [],
             embedCode: data.embedCode || "",
             smallBoxContent: data.smallBoxContent || "",
             buttonContent: data.buttonContent || "",
             checkBoxHeading: data.checkBoxHeading || "",
-          
-            FirstCheckBox: Array.isArray(data.FirstCheckBox) && data.FirstCheckBox.length
-              ? data.FirstCheckBox
-              : [{ description: "" }],
-          
+
+            FirstCheckBox:
+              Array.isArray(data.FirstCheckBox) && data.FirstCheckBox.length
+                ? data.FirstCheckBox
+                : [{ description: "" }],
+
             secondCheckBoxHeading: data.secondCheckBoxHeading || "",
-            SecondCheckBox: Array.isArray(data.SecondCheckBox) && data.SecondCheckBox.length
-              ? data.SecondCheckBox
-              : [{ description: "" }],
-          
+            SecondCheckBox:
+              Array.isArray(data.SecondCheckBox) && data.SecondCheckBox.length
+                ? data.SecondCheckBox
+                : [{ description: "" }],
+
             Topic: data.Topic || "",
             ThirdSectionSubHeading: data.ThirdSectionSubHeading || "",
-            ThirdSectionDescription: Array.isArray(data.ThirdSectionDescription) && data.ThirdSectionDescription.length
-              ? data.ThirdSectionDescription
-              : [""],
-          
-            AfterButtonPoints: data.AfterButtonPoints?.description && Array.isArray(data.AfterButtonPoints.description)
-              ? data.AfterButtonPoints
-              : { description: [""] },
-          
+            ThirdSectionDescription:
+              Array.isArray(data.ThirdSectionDescription) &&
+              data.ThirdSectionDescription.length
+                ? data.ThirdSectionDescription
+                : [""],
+
+            AfterButtonPoints:
+              data.AfterButtonPoints?.description &&
+              Array.isArray(data.AfterButtonPoints.description)
+                ? data.AfterButtonPoints
+                : { description: [""] },
+
             offerContent: data.offerContent || "",
             offerLimitingContent: data.offerLimitingContent || "",
             SecondCheckBoxConcluding: data.SecondCheckBoxConcluding || "",
             lastPartHeading: data.lastPartHeading || "",
             lastPartContent: data.lastPartContent || "",
-          
-            faq: Array.isArray(data.faq) && data.faq.length
-              ? data.faq
-              : [{ question: "", answer: "" }],
+
+            faq:
+              Array.isArray(data.faq) && data.faq.length
+                ? data.faq
+                : [{ question: "", answer: "" }],
           });
         }
       } catch (error) {
         if (error.response?.status === 404) {
-          // Handle case where sales page doesn't exist yet
+          toast.error(error.response.data.message);
           return;
         }
         console.error("Failed to fetch sales page details:", error);
         toast.error("Failed to load sales page data");
       }
     };
-  
+
     if (id) {
       fetchSalesPageDetails();
     }
-  }, [id, baseURL]);
+  }, [id, baseURL, type]);
 
   // Handler functions (similar to AddSales_page but adjusted for edit functionality)
   const handleLineChange = (index, value) => {
@@ -140,38 +150,38 @@ function EditSalesPage() {
     updated[index].title = value;
     setFormData({ ...formData, existingBonusImages: updated });
   };
-  
+
   const handleExistingBonusPriceChange = (index, value) => {
     const updated = [...formData.existingBonusImages];
     updated[index].price = value;
     setFormData({ ...formData, existingBonusImages: updated });
   };
-  
+
   const handleNewBonusTitleChange = (index, value) => {
     const updated = [...formData.bonusImages];
     updated[index].title = value;
     setFormData({ ...formData, bonusImages: updated });
   };
-  
+
   const handleNewBonusPriceChange = (index, value) => {
     const updated = [...formData.bonusImages];
     updated[index].price = value;
     setFormData({ ...formData, bonusImages: updated });
   };
-  
- // Update your remove functions to simply modify the state
-const removeExistingBonusImage = (index) => {
-  const updated = [...formData.existingBonusImages];
-  updated.splice(index, 1);
-  setFormData({ ...formData, existingBonusImages: updated });
-};
 
-const removeNewBonusImage = (index) => {
-  const updated = [...formData.bonusImages];
-  updated.splice(index, 1);
-  setFormData({ ...formData, bonusImages: updated });
-};
-  
+  // Update your remove functions to simply modify the state
+  const removeExistingBonusImage = (index) => {
+    const updated = [...formData.existingBonusImages];
+    updated.splice(index, 1);
+    setFormData({ ...formData, existingBonusImages: updated });
+  };
+
+  const removeNewBonusImage = (index) => {
+    const updated = [...formData.bonusImages];
+    updated.splice(index, 1);
+    setFormData({ ...formData, bonusImages: updated });
+  };
+
   // Already you might have this:
   const handleBonusImagesChange = (e, index) => {
     const file = e.target.files[0];
@@ -181,14 +191,16 @@ const removeNewBonusImage = (index) => {
       setFormData({ ...formData, bonusImages: updated });
     }
   };
-  
+
   const handleAddBonusImage = () => {
     setFormData({
       ...formData,
-      bonusImages: [...formData.bonusImages, { title: "", price: "", file: null }],
+      bonusImages: [
+        ...formData.bonusImages,
+        { title: "", price: "", file: null },
+      ],
     });
   };
-  
 
   const handleSection5LineChange = (index, value) => {
     const updatedLines = [...formData.section5Lines];
@@ -305,10 +317,16 @@ const removeNewBonusImage = (index) => {
 
       // Handle bonus images and titles
       formData.existingBonusImages.forEach((bonus, index) => {
-        submissionData.append(`existingBonusTitles[${index}]`, bonus.title || "");
-        submissionData.append(`existingBonusPrices[${index}]`, bonus.price || "");
+        submissionData.append(
+          `existingBonusTitles[${index}]`,
+          bonus.title || ""
+        );
+        submissionData.append(
+          `existingBonusPrices[${index}]`,
+          bonus.price || ""
+        );
       });
-  
+
       // Then handle new bonus images
       formData.bonusImages.forEach((bonus, index) => {
         if (bonus.file) {
@@ -380,7 +398,7 @@ const removeNewBonusImage = (index) => {
       submissionData.append("section5Lines", stringifiedFields.section5Lines);
 
       const response = await axiosInstance.put(
-        `/admin/assets/course/update-sales-page/${id}`,
+        `/admin/assets/update-sales-page/${type}/${id}`,
         submissionData,
         {
           headers: {
@@ -392,13 +410,17 @@ const removeNewBonusImage = (index) => {
       if (response.status === 200) {
         toast.success("Sales page updated successfully.");
         setTimeout(() => {
-          navigate("/admin/assets/courses");
+          const redirectPath =
+            type === "digital-product"
+              ? "/admin/assets/files"
+              : "/admin/assets/courses";
+          navigate(redirectPath);
         }, 2000);
         setIsUpdated(true);
       }
     } catch (error) {
       console.error("Update error:", error);
-      toast.error("Failed to update sales page.");
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -407,8 +429,6 @@ const removeNewBonusImage = (index) => {
   const handleCancel = () => {
     navigate(-1);
   };
-
-  console.log("Current smallBoxContent:", formData.smallBoxContent);
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-6">
@@ -670,129 +690,132 @@ const removeNewBonusImage = (index) => {
 
           {/* Replace the duplicate bonus images section with this single version */}
           <div className="space-y-6">
-  <label className="block text-gray-300">Bonus Items</label>
+            <label className="block text-gray-300">Bonus Items</label>
 
-  {/* Existing Bonus Images */}
-  {formData.existingBonusImages.map((bonus, index) => (
-    <div
-      key={`existing-${index}`}
-      className="space-y-2 relative border border-gray-700 p-4 rounded-lg mb-4"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-gray-300 mb-1">
-            Image {index + 1}
-          </label>
-          <img
-            src={`${baseURL}/uploads/${bonus.image}`}
-            alt={`Bonus ${index + 1}`}
-            className="rounded-md max-w-xs border border-gray-700"
-          />
-        </div>
-        <div className="space-y-2">
-          <div>
-            <label className="block text-gray-300 mb-1">Title</label>
-            <input
-              type="text"
-              value={bonus.title || ""}
-              onChange={(e) =>
-                handleExistingBonusTitleChange(index, e.target.value)
-              }
-              className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-300 mb-1">Worth Price</label>
-            <input
-              type="text"
-              value={bonus.price || ""}
-              onChange={(e) =>
-                handleExistingBonusPriceChange(index, e.target.value)
-              }
-              className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-            />
-          </div>
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={() => removeExistingBonusImage(index)}
-        className="absolute top-2 right-2 text-red-400 hover:text-red-500"
-      >
-        Remove
-      </button>
-    </div>
-  ))}
+            {/* Existing Bonus Images */}
+            {formData.existingBonusImages.map((bonus, index) => (
+              <div
+                key={`existing-${index}`}
+                className="space-y-2 relative border border-gray-700 p-4 rounded-lg mb-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-300 mb-1">
+                      Image {index + 1}
+                    </label>
+                    <img
+                      src={`${baseURL}/uploads/${bonus.image}`}
+                      alt={`Bonus ${index + 1}`}
+                      className="rounded-md max-w-xs border border-gray-700"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-gray-300 mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={bonus.title || ""}
+                        onChange={(e) =>
+                          handleExistingBonusTitleChange(index, e.target.value)
+                        }
+                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 mb-1">
+                        Worth Price
+                      </label>
+                      <input
+                        type="text"
+                        value={bonus.price || ""}
+                        onChange={(e) =>
+                          handleExistingBonusPriceChange(index, e.target.value)
+                        }
+                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeExistingBonusImage(index)}
+                  className="absolute top-2 right-2 text-red-400 hover:text-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
 
-  {/* New Bonus Images */}
-  {formData.bonusImages.map((bonus, index) => (
-    <div
-      key={`new-${index}`}
-      className="space-y-2 relative border border-gray-700 p-4 rounded-lg mb-4"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-gray-300 mb-1">
-            New Image {index + 1}
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleBonusImagesChange(e, index)}
-            className="text-white block w-full"
-          />
-          {bonus.file && (
-            <img
-              src={URL.createObjectURL(bonus.file)}
-              alt={`Preview ${index + 1}`}
-              className="mt-2 rounded-md max-w-xs border border-gray-700"
-            />
-          )}
-        </div>
-        <div className="space-y-2">
-          <div>
-            <label className="block text-gray-300 mb-1">Title</label>
-            <input
-              type="text"
-              value={bonus.title || ""}
-              onChange={(e) =>
-                handleNewBonusTitleChange(index, e.target.value)
-              }
-              className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-300 mb-1">Worth Price</label>
-            <input
-              type="text"
-              value={bonus.price || ""}
-              onChange={(e) =>
-                handleNewBonusPriceChange(index, e.target.value)
-              }
-              className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
-            />
-          </div>
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={() => removeNewBonusImage(index)}
-        className="absolute top-2 right-2 text-red-400 hover:text-red-500"
-      >
-        Remove
-      </button>
-    </div>
-  ))}
+            {/* New Bonus Images */}
+            {formData.bonusImages.map((bonus, index) => (
+              <div
+                key={`new-${index}`}
+                className="space-y-2 relative border border-gray-700 p-4 rounded-lg mb-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-300 mb-1">
+                      New Image {index + 1}
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleBonusImagesChange(e, index)}
+                      className="text-white block w-full"
+                    />
+                    {bonus.file && (
+                      <img
+                        src={URL.createObjectURL(bonus.file)}
+                        alt={`Preview ${index + 1}`}
+                        className="mt-2 rounded-md max-w-xs border border-gray-700"
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-gray-300 mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={bonus.title || ""}
+                        onChange={(e) =>
+                          handleNewBonusTitleChange(index, e.target.value)
+                        }
+                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 mb-1">
+                        Worth Price
+                      </label>
+                      <input
+                        type="text"
+                        value={bonus.price || ""}
+                        onChange={(e) =>
+                          handleNewBonusPriceChange(index, e.target.value)
+                        }
+                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeNewBonusImage(index)}
+                  className="absolute top-2 right-2 text-red-400 hover:text-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
 
-  <button
-    type="button"
-    onClick={handleAddBonusImage}
-    className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
-  >
-    Add Bonus Item
-  </button>
-</div>
-
+            <button
+              type="button"
+              onClick={handleAddBonusImage}
+              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+            >
+              Add Bonus Item
+            </button>
+          </div>
 
           {formData.section5Lines.map((line, index) => (
             <div key={index}>

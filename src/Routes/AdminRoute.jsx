@@ -13,7 +13,10 @@ import EditCourse from "../Components/Admin/EditCourse";
 import EditSalesPage from "../Components/Admin/EditSalesPage";
 import AddDigitalProduct from "../Components/Admin/AddDigitalProductPage";
 import AddCheckout from "../Components/Admin/AddCheckout";
+import EditCheckout from "../Components/Admin/EditCheckoutPage";
 import EditDigitalProduct from "../Components/Admin/EditDigitalProductPage";
+import AddThankyou_Page from "../Components/Admin/AddThankyouPage";
+import EditThankyou_Page from "../Components/Admin/EditThankyouPage";
 const Files_Page = React.lazy(() => import("../Components/Admin/Files"));
 const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() =>
@@ -84,10 +87,34 @@ function AdminRoute() {
         }
       />
       <Route
-        path="/assets/add-checkoutPage/:type/:id"
+        path="/assets/create-checkout-page/:type/:id"
         element={
           <ProtectedRoute>
             <AddCheckout />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/edit-checkout-page/:type/:id"
+        element={
+          <ProtectedRoute>
+            <EditCheckout />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/create-thankyou-page/:type/:id"
+        element={
+          <ProtectedRoute>
+            <AddThankyou_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/edit-thankyou-page/:type/:id"
+        element={
+          <ProtectedRoute>
+            <EditThankyou_Page />
           </ProtectedRoute>
         }
       />

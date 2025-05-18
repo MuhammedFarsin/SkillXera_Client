@@ -4,38 +4,69 @@ import axiosInstance from "../../../Connection/Axios";
 import TiptapEditor from "../../../Utils/TiptapEditor";
 import { toast } from "sonner";
 import ToasterHot from "../../Common/ToasterHot";
+import LoadingSpinner from "../../Common/Spinner";
 
-function AddCheckout_page() {
+function EditCheckout_page() {
   const { type, id } = useParams();
   const navigate = useNavigate();
   const [topHeading, setTopHeading] = useState("");
   const [subHeading, setSubHeading] = useState("");
   const [checkoutImage, setCheckoutImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [existingImage, setExistingImage] = useState("");
   const [lines, setLines] = useState([""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderBumps, setOrderBumps] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+//   const [orderBumps, setOrderBumps] = useState([]);
   const [selectedOrderBump, setSelectedOrderBump] = useState("");
-  const [thankYouPages, setThankYouPages] = useState([]);
+//   const [thankYouPages, setThankYouPages] = useState([]);
   const [selectedThankYouPage, setSelectedThankYouPage] = useState("");
 
   useEffect(() => {
-    const fetchAdditionalData = async () => {
+    const fetchData = async () => {
       try {
-        const [bumpsRes, pagesRes] = await Promise.all([
-          axiosInstance.get("/admin/assets/products?type=orderBump"),
-          axiosInstance.get("/admin/assets/thank-you-pages"),
-        ]);
-        setOrderBumps(bumpsRes.data.data);
-        setThankYouPages(pagesRes.data.data);
+        setIsLoading(true);
+        
+        const checkoutRes = await axiosInstance.get(
+          `/admin/assets/get-checkout-page/${type}/${id}`
+        );
+        
+        const { 
+          topHeading, 
+          subHeading, 
+          checkoutImage, 
+          lines, 
+        //   orderBump, 
+        //   thankYouPage 
+        } = checkoutRes.data.data;
+
+        setTopHeading(topHeading);
+        setSubHeading(subHeading);
+        setExistingImage(checkoutImage);
+        setLines(lines || [""]);
+        // setSelectedOrderBump(orderBump?._id || "");
+        // setSelectedThankYouPage(thankYouPage?._id || "");
+
+        // Fetch additional data
+        // const [bumpsRes, pagesRes] = await Promise.all([
+        //   axiosInstance.get("/admin/assets/products?type=orderBump"),
+        //   axiosInstance.get("/admin/assets/thank-you-pages"),
+        // ]);
+        
+        // setOrderBumps(bumpsRes.data.data);
+        // setThankYouPages(pagesRes.data.data);
+        
       } catch (error) {
-        console.error("Error fetching additional data:", error);
-        toast.error("Failed to load additional data");
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load checkout page data");
+        navigate(-1);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchAdditionalData();
-  }, []);
+    fetchData();
+  }, [type, id, navigate]);
 
   const handleLineChange = (index, value) => {
     const updatedLines = [...lines];
@@ -69,72 +100,75 @@ function AddCheckout_page() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    if (!topHeading.trim() || !subHeading.trim() || !checkoutImage) {
-      throw new Error("Top heading, sub heading, and image are required");
-    }
+    try {
+      if (!topHeading.trim() || !subHeading.trim()) {
+        throw new Error("Top heading and sub heading are required");
+      }
 
-    const validLines = lines.filter((line) => line.trim() !== "");
-    if (validLines.length === 0) {
-      throw new Error("At least one content line is required");
-    }
+      const validLines = lines.filter((line) => line.trim() !== "");
+      if (validLines.length === 0) {
+        throw new Error("At least one content line is required");
+      }
 
-    if (!type) {
-      throw new Error("Invalid product type");
-    }
+      const formData = new FormData();
+      formData.append("topHeading", topHeading);
+      formData.append("subHeading", subHeading);
+      
+      // Only append new image if one was selected
+      if (checkoutImage) {
+        formData.append("checkoutImage", checkoutImage);
+      }
+      
+      validLines.forEach((line) => {
+        formData.append("lines[]", line);
+      });
 
-    // Normalize the type to match backend expectations
-    const normalizedType = type.toLowerCase();
+      if (selectedOrderBump) formData.append("orderBump", selectedOrderBump);
+      if (selectedThankYouPage) formData.append("thankYouPage", selectedThankYouPage);
 
-    const formData = new FormData();
-    formData.append("topHeading", topHeading);
-    formData.append("subHeading", subHeading);
-    formData.append("checkoutImage", checkoutImage);
-    validLines.forEach((line) => {
-      formData.append("lines[]", line);
-    });
-
-    if (selectedOrderBump) formData.append("orderBump", selectedOrderBump);
-    if (selectedThankYouPage) formData.append("thankYouPage", selectedThankYouPage);
-
-    const response = await axiosInstance.post(
-      `/admin/assets/create-checkout-page/${normalizedType}/${id}`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    toast.success(response.data.message);
-    setTimeout(() => {
-      navigate(
-        normalizedType === "digital-product"
-          ? "/admin/assets/files"
-          : "/admin/assets/courses"
+      const response = await axiosInstance.put(
+        `/admin/assets/update-checkout-page/${type}/${id}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-    }, 1500);
-  } catch (error) {
-    console.error("Form submission failed:", error);
-    const errorMessage =
-      error.response?.data?.message ||
-      error.response?.data?.errors?.join(", ") ||
-      error.message ||
-      "Failed to create checkout page";
-    toast.error(errorMessage);
 
-    if (error.response?.data?.code === "DUPLICATE_CHECKOUT") {
-      navigate(`/admin/assets/files`);
+      toast.success(response.data.message);
+      setTimeout(() => {
+        navigate(
+          type === "digital-product"
+            ? "/admin/assets/files"
+            : "/admin/assets/courses"
+        );
+      }, 1500);
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.join(", ") ||
+        error.message ||
+        "Failed to update checkout page";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
-  } finally {
-    setIsSubmitting(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
-};
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
         <h2 className="text-2xl font-bold text-white mb-6">
-          Create Checkout Page for {type}: {id}
+          Edit Checkout Page for {type}: {id}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -171,26 +205,25 @@ function AddCheckout_page() {
           {/* Checkout Image */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-300">
-              Checkout Image <span className="text-red-400">*</span>
+              Checkout Image
             </label>
             <div className="flex items-center gap-4">
               <label className="flex-1 cursor-pointer">
                 <div className="w-full p-2 rounded border border-gray-600 text-gray-300 hover:border-indigo-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-indigo-600 file:text-white hover:file:bg-indigo-700">
-                  Choose Image
+                  {checkoutImage ? "Change Image" : "Upload New Image"}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
                     className="hidden"
-                    required
                   />
                 </div>
               </label>
-              {previewImage && (
+              {(previewImage || existingImage) && (
                 <div className="flex-shrink-0">
                   <p className="text-xs text-gray-400 mb-1">Preview:</p>
                   <img
-                    src={previewImage}
+                    src={previewImage || `${axiosInstance.defaults.baseURL}/uploads/${existingImage}`}
                     alt="Preview"
                     className="w-16 h-16 object-cover border border-gray-600 rounded"
                   />
@@ -268,11 +301,11 @@ function AddCheckout_page() {
               <option value="" className="bg-gray-800">
                 Select an order bump product
               </option>
-              {orderBumps.map((bump) => (
+              {/* {orderBumps.map((bump) => (
                 <option key={bump._id} value={bump._id} className="bg-gray-800">
                   {bump.name} (${bump.price})
                 </option>
-              ))}
+              ))} */}
             </select>
           </div>
 
@@ -289,11 +322,11 @@ function AddCheckout_page() {
               <option value="" className="bg-gray-800">
                 Select a thank you page
               </option>
-              {thankYouPages.map((page) => (
+              {/* {thankYouPages.map((page) => (
                 <option key={page._id} value={page._id} className="bg-gray-800">
                   {page.title}
                 </option>
-              ))}
+              ))} */}
             </select>
           </div>
 
@@ -326,10 +359,10 @@ function AddCheckout_page() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creating...
+                  Updating...
                 </>
               ) : (
-                "Create Checkout Page"
+                "Update Checkout Page"
               )}
             </button>
           </div>
@@ -340,4 +373,4 @@ function AddCheckout_page() {
   );
 }
 
-export default AddCheckout_page;
+export default EditCheckout_page;
