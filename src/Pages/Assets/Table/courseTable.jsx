@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import ShareLinkModal from "../PopUpMessage/BuyingCourseLinkModal";
 import { frontendRoute } from "../../../Utils/utils";
 import Admin_Navbar from "../../Common/AdminNavbar";
-import Spinner from "../../Common/spinner";
+import Spinner from "../../Common/Spinner";
 
 const CourseTable = () => {
   const menuRef = useRef(null);

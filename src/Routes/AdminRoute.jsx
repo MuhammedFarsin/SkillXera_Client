@@ -7,6 +7,9 @@ const Dashboard_Page = React.lazy(() =>
 );
 const Contact_Page = React.lazy(() => import("../Components/Admin/Contact"));
 const Courses_Page = React.lazy(() => import("../Components/Admin/Courses"));
+const Order_Bumb_Page = React.lazy(() => import("../Components/Admin/OrderBumb"));
+const AddOrderBump_Page = React.lazy(() => import("../Components/Admin/AddOrderBump"));
+const EditOrderBump_Page = React.lazy(() => import("../Components/Admin/EditOrderBumb"));
 import AddCourse from "../Components/Admin/AddCourse";
 import AddSalesPage from "../Components/Admin/SalesPage";
 import EditCourse from "../Components/Admin/EditCourse";
@@ -164,6 +167,30 @@ function AdminRoute() {
         element={
           <ProtectedRoute>
             <EditDigitalProduct />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/order-bumps"
+        element={
+          <ProtectedRoute>
+            <Order_Bumb_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/add-order-bump"
+        element={
+          <ProtectedRoute>
+            <AddOrderBump_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets/edit-order-bump/:id"
+        element={
+          <ProtectedRoute>
+            <EditOrderBump_Page />
           </ProtectedRoute>
         }
       />
