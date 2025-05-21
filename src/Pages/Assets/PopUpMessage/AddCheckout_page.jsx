@@ -18,16 +18,31 @@ function AddCheckout_page() {
   const [selectedOrderBump, setSelectedOrderBump] = useState("");
   const [thankYouPages, setThankYouPages] = useState([]);
   const [selectedThankYouPage, setSelectedThankYouPage] = useState("");
+  const [targetProduct, setTargetProduct] = useState(null);
 
   useEffect(() => {
     const fetchAdditionalData = async () => {
       try {
-        const [bumpsRes, pagesRes] = await Promise.all([
-          axiosInstance.get("/admin/assets/products?type=orderBump"),
-          axiosInstance.get("/admin/assets/thank-you-pages"),
-        ]);
-        setOrderBumps(bumpsRes.data.data);
-        setThankYouPages(pagesRes.data.data);
+        // Fetch target product details
+        const productResponse = await axiosInstance.get(
+          type === 'course' 
+            ? `/admin/assets/get-course/${id}`
+            : `/admin/assets/file/get-digital-product/${id}`
+        );
+        setTargetProduct(productResponse.data);
+
+        // Fetch order bumps available for this product
+        const bumpsRes = await axiosInstance.get(
+          `/admin/assets/order-bumps?targetProduct=${id}&targetProductModel=${type === 'course' ? 'Course' : 'DigitalProduct'}`
+        );
+
+        console.log(bumpsRes)
+        
+        // Fetch thank you pages
+        const pagesRes = await axiosInstance.get("/admin/assets/thank-you-pages");
+        
+        setOrderBumps(bumpsRes.data.data || []);
+        setThankYouPages(pagesRes.data.data || []);
       } catch (error) {
         console.error("Error fetching additional data:", error);
         toast.error("Failed to load additional data");
@@ -35,7 +50,7 @@ function AddCheckout_page() {
     };
 
     fetchAdditionalData();
-  }, []);
+  }, [type, id]);
 
   const handleLineChange = (index, value) => {
     const updatedLines = [...lines];
@@ -69,73 +84,99 @@ function AddCheckout_page() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    if (!topHeading.trim() || !subHeading.trim() || !checkoutImage) {
-      throw new Error("Top heading, sub heading, and image are required");
-    }
+    try {
+      if (!topHeading.trim() || !subHeading.trim() || !checkoutImage) {
+        throw new Error("Top heading, sub heading, and image are required");
+      }
 
-    const validLines = lines.filter((line) => line.trim() !== "");
-    if (validLines.length === 0) {
-      throw new Error("At least one content line is required");
-    }
+      const validLines = lines.filter((line) => line.trim() !== "");
+      if (validLines.length === 0) {
+        throw new Error("At least one content line is required");
+      }
 
-    if (!type) {
-      throw new Error("Invalid product type");
-    }
+      if (!type || !id) {
+        throw new Error("Invalid product type or ID");
+      }
 
-    // Normalize the type to match backend expectations
-    const normalizedType = type.toLowerCase();
+      const formData = new FormData();
+      formData.append("topHeading", topHeading);
+      formData.append("subHeading", subHeading);
+      formData.append("checkoutImage", checkoutImage);
+      validLines.forEach((line) => {
+        formData.append("lines[]", line);
+      });
 
-    const formData = new FormData();
-    formData.append("topHeading", topHeading);
-    formData.append("subHeading", subHeading);
-    formData.append("checkoutImage", checkoutImage);
-    validLines.forEach((line) => {
-      formData.append("lines[]", line);
-    });
+      // Include product details
+      if (targetProduct) {
+        formData.append("productName", targetProduct.title || targetProduct.name);
+        formData.append("productPrice", 
+          targetProduct.salesPrice || targetProduct.salePrice || 0);
+      }
 
-    if (selectedOrderBump) formData.append("orderBump", selectedOrderBump);
-    if (selectedThankYouPage) formData.append("thankYouPage", selectedThankYouPage);
+      // Include order bump if selected
+      if (selectedOrderBump) {
+        formData.append("orderBump", selectedOrderBump);
+      }
 
-    const response = await axiosInstance.post(
-      `/admin/assets/create-checkout-page/${normalizedType}/${id}`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+      // Include thank you page if selected
+      if (selectedThankYouPage) {
+        formData.append("thankYouPage", selectedThankYouPage);
+      }
 
-    toast.success(response.data.message);
-    setTimeout(() => {
-      navigate(
-        normalizedType === "digital-product"
-          ? "/admin/assets/files"
-          : "/admin/assets/courses"
+      const response = await axiosInstance.post(
+        `/admin/assets/create-checkout-page/${type}/${id}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-    }, 1500);
-  } catch (error) {
-    console.error("Form submission failed:", error);
-    const errorMessage =
-      error.response?.data?.message ||
-      error.response?.data?.errors?.join(", ") ||
-      error.message ||
-      "Failed to create checkout page";
-    toast.error(errorMessage);
 
-    if (error.response?.data?.code === "DUPLICATE_CHECKOUT") {
-      navigate(`/admin/assets/files`);
+      toast.success(response.data.message);
+      setTimeout(() => {
+        navigate(
+          type === "course"
+            ? "/admin/assets/courses"
+            : "/admin/assets/files"
+        );
+      }, 1500);
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.join(", ") ||
+        error.message ||
+        "Failed to create checkout page";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
         <h2 className="text-2xl font-bold text-white mb-6">
-          Create Checkout Page for {type}: {id}
+          Create Checkout Page for {type === 'course' ? 'Course' : 'Digital Product'}: {targetProduct?.title || targetProduct?.name || id}
         </h2>
+
+        {targetProduct && (
+          <div className="mb-6 p-4 bg-gray-750 rounded-lg border border-gray-700">
+            <h3 className="font-medium text-lg mb-2">Product Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-gray-400">Name:</p>
+                <p className="text-white">{targetProduct.title || targetProduct.name}</p>
+              </div>
+              <div>
+                <p className="text-gray-400">Price:</p>
+                <p className="text-white">
+                  ${targetProduct.salesPrice || targetProduct.salePrice || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Top Heading */}
@@ -255,28 +296,55 @@ function AddCheckout_page() {
             </div>
           </div>
 
-          {/* Optional Order Bump */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-300">
-              Order Bump (Optional)
-            </label>
-            <select
-              value={selectedOrderBump}
-              onChange={(e) => setSelectedOrderBump(e.target.value)}
-              className="w-full p-2 rounded border border-gray-600 bg-gray-700 text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="" className="bg-gray-800">
-                Select an order bump product
-              </option>
-              {orderBumps.map((bump) => (
-                <option key={bump._id} value={bump._id} className="bg-gray-800">
-                  {bump.name} (${bump.price})
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Order Bumps Section */}
+          {orderBumps.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-lg font-medium mb-3">Available Order Bumps</h3>
+              <div className="space-y-4">
+                {orderBumps.map((bump) => (
+                  <div
+                    key={bump._id}
+                    className={`p-4 rounded-lg border ${
+                      selectedOrderBump === bump._id
+                        ? "border-indigo-500 bg-gray-750"
+                        : "border-gray-700 bg-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-medium">{bump.displayName}</h4>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {bump.description}
+                        </p>
+                        <p className="text-indigo-400 mt-2">
+                          +${bump.bumpPrice}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedOrderBump(
+                            selectedOrderBump === bump._id ? "" : bump._id
+                          )
+                        }
+                        className={`px-4 py-2 rounded-md text-sm ${
+                          selectedOrderBump === bump._id
+                            ? "bg-indigo-600 hover:bg-indigo-700"
+                            : "bg-gray-700 hover:bg-gray-600"
+                        }`}
+                      >
+                        {selectedOrderBump === bump._id
+                          ? "Selected"
+                          : "Select"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-          {/* Optional Thank You Page */}
+          {/* Thank You Page Selection */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-300">
               Thank You Page (Optional)
@@ -286,11 +354,9 @@ function AddCheckout_page() {
               onChange={(e) => setSelectedThankYouPage(e.target.value)}
               className="w-full p-2 rounded border border-gray-600 bg-gray-700 text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
             >
-              <option value="" className="bg-gray-800">
-                Select a thank you page
-              </option>
+              <option value="">Select a thank you page</option>
               {thankYouPages.map((page) => (
-                <option key={page._id} value={page._id} className="bg-gray-800">
+                <option key={page._id} value={page._id}>
                   {page.title}
                 </option>
               ))}

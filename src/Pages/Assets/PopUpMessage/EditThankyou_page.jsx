@@ -83,8 +83,12 @@ function EditThankyou_page() {
       if (response.status === 200 && response.data.success) {
         toast.success("Thank You Page updated successfully!");
         setTimeout(() => {
-          navigate("/admin/assets/files");
-        }, 1500);
+          const redirectPath =
+            type === "digital-product"
+              ? "/admin/assets/files"
+              : "/admin/assets/courses";
+          navigate(redirectPath);
+        }, 2000);
       } else {
         toast.error(response.data.message || "Failed to update Thank You Page");
       }

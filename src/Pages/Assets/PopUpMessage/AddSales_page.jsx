@@ -10,7 +10,7 @@ function AddSales_page() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     mainImage: null,
-    bonusImages: [{ file: null, title: "", price : "" }],
+    bonusImages: [{ file: null, title: "", price: "" }],
     lines: ["", "", "", ""],
     section5Lines: [""],
     embedCode: "",
@@ -265,7 +265,6 @@ function AddSales_page() {
         submissionData.append(`bonusPrices[${i}]`, bonus.price || ""); // Add price to form data
       });
 
-
       formData.lines.forEach((line, i) => {
         submissionData.append(`lines[${i}]`, line);
       });
@@ -331,7 +330,13 @@ function AddSales_page() {
         toast.success("Sales page added successfully...");
         setTimeout(() => {
           setIsSubmitted(true);
-        }, 500);
+
+          if (type === "course") {
+            navigate("/admin/assets/courses");
+          } else if (type === "digital-product") {
+            navigate("/admin/assets/files");
+          }
+        }, 1500);
       } else {
         console.warn("SalesPage ID not returned in response.");
       }
@@ -607,78 +612,83 @@ function AddSales_page() {
           </button>
 
           <div className="space-y-6 p-4 border border-gray-700 rounded-lg bg-gray-900 mb-8">
-        <h2 className="text-xl text-white font-semibold mb-4">Bonus Items</h2>
-        
-        {formData.bonusImages.map((bonus, index) => (
-          <div key={index} className="space-y-4 p-4 bg-gray-800 rounded-lg mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  Bonus Image {index + 1}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleBonusImagesChange(e, index)}
-                  className="text-white block w-full"
-                />
-                {bonus.file && (
-                  <img
-                    src={URL.createObjectURL(bonus.file)}
-                    alt={`Bonus Preview ${index + 1}`}
-                    className="mt-2 rounded-md max-w-xs border border-gray-700"
-                  />
-                )}
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-gray-300 mb-2">Title</label>
-                  <input
-                    type="text"
-                    placeholder={`Title for bonus ${index + 1}`}
-                    value={bonus.title}
-                    onChange={(e) =>
-                      handleBonusTitleChange(index, e.target.value)
-                    }
-                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  />
+            <h2 className="text-xl text-white font-semibold mb-4">
+              Bonus Items
+            </h2>
+
+            {formData.bonusImages.map((bonus, index) => (
+              <div
+                key={index}
+                className="space-y-4 p-4 bg-gray-800 rounded-lg mb-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-300 mb-2">
+                      Bonus Image {index + 1}
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleBonusImagesChange(e, index)}
+                      className="text-white block w-full"
+                    />
+                    {bonus.file && (
+                      <img
+                        src={URL.createObjectURL(bonus.file)}
+                        alt={`Bonus Preview ${index + 1}`}
+                        className="mt-2 rounded-md max-w-xs border border-gray-700"
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-gray-300 mb-2">Title</label>
+                      <input
+                        type="text"
+                        placeholder={`Title for bonus ${index + 1}`}
+                        value={bonus.title}
+                        onChange={(e) =>
+                          handleBonusTitleChange(index, e.target.value)
+                        }
+                        className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 mb-2">Price</label>
+                      <input
+                        type="text"
+                        placeholder={`Price (e.g., ₹999)`}
+                        value={bonus.price}
+                        onChange={(e) =>
+                          handleBonusPriceChange(index, e.target.value)
+                        }
+                        className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-gray-300 mb-2">Price</label>
-                  <input
-                    type="text"
-                    placeholder={`Price (e.g., ₹999)`}
-                    value={bonus.price}
-                    onChange={(e) =>
-                      handleBonusPriceChange(index, e.target.value)
-                    }
-                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  />
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = [...formData.bonusImages];
+                    updated.splice(index, 1);
+                    setFormData({ ...formData, bonusImages: updated });
+                  }}
+                  className="text-red-400 hover:text-red-500 text-sm"
+                >
+                  Remove Bonus
+                </button>
               </div>
-            </div>
+            ))}
+
             <button
               type="button"
-              onClick={() => {
-                const updated = [...formData.bonusImages];
-                updated.splice(index, 1);
-                setFormData({ ...formData, bonusImages: updated });
-              }}
-              className="text-red-400 hover:text-red-500 text-sm"
+              onClick={handleAddBonusImage}
+              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
             >
-              Remove Bonus
+              + Add Bonus Item
             </button>
           </div>
-        ))}
-
-        <button
-          type="button"
-          onClick={handleAddBonusImage}
-          className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
-        >
-          + Add Bonus Item
-        </button>
-      </div>
 
           {formData.section5Lines.map((line, index) => (
             <div key={index}>

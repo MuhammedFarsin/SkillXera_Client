@@ -54,9 +54,14 @@ function AddThankyou_Page() {
       );
       if (response.status === 200) {
         toast.success("Thank You Page added successfully!");
-        setTimeout(() => {
-          navigate("/admin/assets/files");
-        }, 1500);
+       setTimeout(() => {
+      if (type === "course") {
+        navigate("/admin/assets/courses");
+      } else if(type === "digital-product") {
+        navigate("/admin/assets/files");
+      }
+    }, 1500);
+
       }
     } catch (error) {
       console.error("Error:", error);
