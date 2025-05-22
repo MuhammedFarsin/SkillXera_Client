@@ -17,10 +17,6 @@ function EditCheckout_page() {
   const [lines, setLines] = useState([""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-//   const [orderBumps, setOrderBumps] = useState([]);
-  const [selectedOrderBump, setSelectedOrderBump] = useState("");
-//   const [thankYouPages, setThankYouPages] = useState([]);
-  const [selectedThankYouPage, setSelectedThankYouPage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,25 +32,12 @@ function EditCheckout_page() {
           subHeading, 
           checkoutImage, 
           lines, 
-        //   orderBump, 
-        //   thankYouPage 
         } = checkoutRes.data.data;
 
         setTopHeading(topHeading);
         setSubHeading(subHeading);
         setExistingImage(checkoutImage);
         setLines(lines || [""]);
-        // setSelectedOrderBump(orderBump?._id || "");
-        // setSelectedThankYouPage(thankYouPage?._id || "");
-
-        // Fetch additional data
-        // const [bumpsRes, pagesRes] = await Promise.all([
-        //   axiosInstance.get("/admin/assets/products?type=orderBump"),
-        //   axiosInstance.get("/admin/assets/thank-you-pages"),
-        // ]);
-        
-        // setOrderBumps(bumpsRes.data.data);
-        // setThankYouPages(pagesRes.data.data);
         
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -105,18 +88,18 @@ function EditCheckout_page() {
 
     try {
       if (!topHeading.trim() || !subHeading.trim()) {
-        throw new Error("Top heading and sub heading are required");
+        toast.error("Top heading and sub heading are required");
       }
 
       const validLines = lines.filter((line) => line.trim() !== "");
       if (validLines.length === 0) {
-        throw new Error("At least one content line is required");
+        toast.error("At least one content line is required");
       }
 
       const formData = new FormData();
       formData.append("topHeading", topHeading);
       formData.append("subHeading", subHeading);
-      
+      formData.append("existingImage", existingImage); 
       // Only append new image if one was selected
       if (checkoutImage) {
         formData.append("checkoutImage", checkoutImage);
@@ -125,9 +108,6 @@ function EditCheckout_page() {
       validLines.forEach((line) => {
         formData.append("lines[]", line);
       });
-
-      if (selectedOrderBump) formData.append("orderBump", selectedOrderBump);
-      if (selectedThankYouPage) formData.append("thankYouPage", selectedThankYouPage);
 
       const response = await axiosInstance.put(
         `/admin/assets/update-checkout-page/${type}/${id}`,
@@ -286,48 +266,6 @@ function EditCheckout_page() {
                 Add another line
               </button>
             </div>
-          </div>
-
-          {/* Optional Order Bump */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-300">
-              Order Bump (Optional)
-            </label>
-            <select
-              value={selectedOrderBump}
-              onChange={(e) => setSelectedOrderBump(e.target.value)}
-              className="w-full p-2 rounded border border-gray-600 bg-gray-700 text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="" className="bg-gray-800">
-                Select an order bump product
-              </option>
-              {/* {orderBumps.map((bump) => (
-                <option key={bump._id} value={bump._id} className="bg-gray-800">
-                  {bump.name} (${bump.price})
-                </option>
-              ))} */}
-            </select>
-          </div>
-
-          {/* Optional Thank You Page */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-300">
-              Thank You Page (Optional)
-            </label>
-            <select
-              value={selectedThankYouPage}
-              onChange={(e) => setSelectedThankYouPage(e.target.value)}
-              className="w-full p-2 rounded border border-gray-600 bg-gray-700 text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="" className="bg-gray-800">
-                Select a thank you page
-              </option>
-              {/* {thankYouPages.map((page) => (
-                <option key={page._id} value={page._id} className="bg-gray-800">
-                  {page.title}
-                </option>
-              ))} */}
-            </select>
           </div>
 
           {/* Submit Button */}

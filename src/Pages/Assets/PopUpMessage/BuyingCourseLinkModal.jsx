@@ -60,4 +60,5 @@ function BuyingCourseLinkModal({ isOpen, onClose, buyLink }) {
   );
 }
 
+
 export default BuyingCourseLinkModal;

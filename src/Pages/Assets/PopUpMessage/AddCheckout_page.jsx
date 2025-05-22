@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../../Connection/Axios";
 import TiptapEditor from "../../../Utils/TiptapEditor";
@@ -14,49 +14,13 @@ function AddCheckout_page() {
   const [previewImage, setPreviewImage] = useState(null);
   const [lines, setLines] = useState([""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderBumps, setOrderBumps] = useState([]);
-  const [selectedOrderBump, setSelectedOrderBump] = useState("");
-  const [thankYouPages, setThankYouPages] = useState([]);
-  const [selectedThankYouPage, setSelectedThankYouPage] = useState("");
-  const [targetProduct, setTargetProduct] = useState(null);
-
-  useEffect(() => {
-    const fetchAdditionalData = async () => {
-      try {
-        // Fetch target product details
-        const productResponse = await axiosInstance.get(
-          type === 'course' 
-            ? `/admin/assets/get-course/${id}`
-            : `/admin/assets/file/get-digital-product/${id}`
-        );
-        setTargetProduct(productResponse.data);
-
-        // Fetch order bumps available for this product
-        const bumpsRes = await axiosInstance.get(
-          `/admin/assets/order-bumps?targetProduct=${id}&targetProductModel=${type === 'course' ? 'Course' : 'DigitalProduct'}`
-        );
-
-        console.log(bumpsRes)
-        
-        // Fetch thank you pages
-        const pagesRes = await axiosInstance.get("/admin/assets/thank-you-pages");
-        
-        setOrderBumps(bumpsRes.data.data || []);
-        setThankYouPages(pagesRes.data.data || []);
-      } catch (error) {
-        console.error("Error fetching additional data:", error);
-        toast.error("Failed to load additional data");
-      }
-    };
-
-    fetchAdditionalData();
-  }, [type, id]);
 
   const handleLineChange = (index, value) => {
     const updatedLines = [...lines];
     updatedLines[index] = value;
     setLines(updatedLines);
   };
+  
 
   const addNewLine = () => {
     setLines([...lines, ""]);
@@ -109,23 +73,6 @@ function AddCheckout_page() {
         formData.append("lines[]", line);
       });
 
-      // Include product details
-      if (targetProduct) {
-        formData.append("productName", targetProduct.title || targetProduct.name);
-        formData.append("productPrice", 
-          targetProduct.salesPrice || targetProduct.salePrice || 0);
-      }
-
-      // Include order bump if selected
-      if (selectedOrderBump) {
-        formData.append("orderBump", selectedOrderBump);
-      }
-
-      // Include thank you page if selected
-      if (selectedThankYouPage) {
-        formData.append("thankYouPage", selectedThankYouPage);
-      }
-
       const response = await axiosInstance.post(
         `/admin/assets/create-checkout-page/${type}/${id}`,
         formData,
@@ -135,9 +82,7 @@ function AddCheckout_page() {
       toast.success(response.data.message);
       setTimeout(() => {
         navigate(
-          type === "course"
-            ? "/admin/assets/courses"
-            : "/admin/assets/files"
+          type === "course" ? "/admin/assets/courses" : "/admin/assets/files"
         );
       }, 1500);
     } catch (error) {
@@ -157,26 +102,9 @@ function AddCheckout_page() {
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
         <h2 className="text-2xl font-bold text-white mb-6">
-          Create Checkout Page for {type === 'course' ? 'Course' : 'Digital Product'}: {targetProduct?.title || targetProduct?.name || id}
+          Create Checkout Page for{" "}
+          {type === "course" ? "Course" : "Digital Product"}
         </h2>
-
-        {targetProduct && (
-          <div className="mb-6 p-4 bg-gray-750 rounded-lg border border-gray-700">
-            <h3 className="font-medium text-lg mb-2">Product Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-400">Name:</p>
-                <p className="text-white">{targetProduct.title || targetProduct.name}</p>
-              </div>
-              <div>
-                <p className="text-gray-400">Price:</p>
-                <p className="text-white">
-                  ${targetProduct.salesPrice || targetProduct.salePrice || 0}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Top Heading */}
@@ -294,73 +222,6 @@ function AddCheckout_page() {
                 Add another line
               </button>
             </div>
-          </div>
-
-          {/* Order Bumps Section */}
-          {orderBumps.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-lg font-medium mb-3">Available Order Bumps</h3>
-              <div className="space-y-4">
-                {orderBumps.map((bump) => (
-                  <div
-                    key={bump._id}
-                    className={`p-4 rounded-lg border ${
-                      selectedOrderBump === bump._id
-                        ? "border-indigo-500 bg-gray-750"
-                        : "border-gray-700 bg-gray-800"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">{bump.displayName}</h4>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {bump.description}
-                        </p>
-                        <p className="text-indigo-400 mt-2">
-                          +${bump.bumpPrice}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedOrderBump(
-                            selectedOrderBump === bump._id ? "" : bump._id
-                          )
-                        }
-                        className={`px-4 py-2 rounded-md text-sm ${
-                          selectedOrderBump === bump._id
-                            ? "bg-indigo-600 hover:bg-indigo-700"
-                            : "bg-gray-700 hover:bg-gray-600"
-                        }`}
-                      >
-                        {selectedOrderBump === bump._id
-                          ? "Selected"
-                          : "Select"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Thank You Page Selection */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-300">
-              Thank You Page (Optional)
-            </label>
-            <select
-              value={selectedThankYouPage}
-              onChange={(e) => setSelectedThankYouPage(e.target.value)}
-              className="w-full p-2 rounded border border-gray-600 bg-gray-700 text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="">Select a thank you page</option>
-              {thankYouPages.map((page) => (
-                <option key={page._id} value={page._id}>
-                  {page.title}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* Submit Button */}
