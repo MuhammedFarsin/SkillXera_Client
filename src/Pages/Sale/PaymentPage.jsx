@@ -11,12 +11,13 @@ import "react-phone-number-input/style.css";
 import Spinner from "../Common/spinner";
 
 const PaymentPage = () => {
-  const { courseId } = useParams();
+  const { type, id } = useParams();
   const BASE_URL = axiosInstance.defaults.baseURL;
 
   const [checkoutData, setCheckoutData] = useState({
     checkoutPage: null,
-    course: null,
+    product: null,
+    orderBumps: [],
     loading: true,
     error: null,
   });
@@ -27,43 +28,101 @@ const PaymentPage = () => {
     phone: "",
   });
 
+  const [selectedBumps, setSelectedBumps] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("cashfree");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCheckoutData = async () => {
       try {
         const response = await axiosInstance.get(
-          `/sale/buy-course/course/${courseId}`
+          `/sale/get-checkout-page-details/${type}/${id}`
         );
 
-        if (!response.data.data || !response.data.data.courseId) {
-          throw new Error("Invalid checkout data structure");
-        }
+        const { checkoutPage, product, orderBumps } = response.data.data;
 
         setCheckoutData({
-          checkoutPage: response.data.data,
-          course: response.data.data.courseId, // This is the populated course
+          checkoutPage,
+          product,
+          orderBumps,
           loading: false,
           error: null,
         });
       } catch (error) {
+        console.error("Error fetching checkout data:", error);
         setCheckoutData((prev) => ({
           ...prev,
           loading: false,
-          error: error.message,
+          error: "Failed to fetch checkout data",
         }));
         toast.error("Failed to fetch checkout data");
-        console.error(error);
       }
     };
+
     fetchCheckoutData();
-  }, [courseId]);
+  }, [type, id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const toggleOrderBump = (bump) => {
+    setSelectedBumps((prev) =>
+      prev.some((b) => b._id === bump._id)
+        ? prev.filter((b) => b._id !== bump._id)
+        : [...prev, bump]
+    );
+  };
+
+  const calculateTotal = () => {
+    const productPrice = checkoutData.product?.salesPrice || 0;
+    const bumpsTotal = selectedBumps.reduce(
+      (sum, bump) => sum + bump.bumpPrice,
+      0
+    );
+    return productPrice + bumpsTotal;
+  };
+
+  const verifyRazorpayPayment = async (paymentData) => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post(
+        "/sale/salespage/verify-razorpay-payment",
+        paymentData,
+        type
+      );
+
+      if (response.data.success) {
+        const verificationData = {
+          verified: true,
+          payment: response.data.payment,
+          user: response.data.user,
+          resetLink: response.data.resetLink || "",
+          timestamp: Date.now(),
+        };
+
+        ReactPixel.track("Purchase", {
+          value: response.data.payment.amount,
+          currency: "INR",
+        });
+
+        localStorage.setItem(
+          `paymentVerification_${paymentData.razorpay_order_id}`,
+          JSON.stringify(verificationData)
+        );
+
+        window.location.href = `/sale/payment-success?order_id=${paymentData.razorpay_order_id}&verified=true&type=${paymentData.type}&productId=${paymentData.productId}&gateway=razorpay&payment_id=${paymentData.razorpay_payment_id}`;
+      } else {
+        toast.error("Payment verification failed");
+      }
+    } catch (error) {
+      toast.error("Error verifying payment");
+      console.error("Verification Error:", error);
+    } finally {
+      setLoading(false); // stop loading no matter what
+    }
+  };
   const handlePayment = async (e) => {
     e.preventDefault();
 
@@ -71,13 +130,15 @@ const PaymentPage = () => {
     setIsSubmitting(true);
 
     if (checkoutData.loading) return;
-    if (!checkoutData.course || !checkoutData.course.salesPrice) {
-      return toast.error("Invalid course price");
+    if (!checkoutData.product || !checkoutData.product.salesPrice) {
+      setIsSubmitting(false);
+      return toast.error("Invalid product price");
     }
 
-    const amount = Number(checkoutData.course.salesPrice);
+    const amount = calculateTotal();
     if (isNaN(amount) || amount <= 0) {
-      return toast.error("Invalid course pricing");
+      setIsSubmitting(false);
+      return toast.error("Invalid pricing");
     }
 
     if (paymentMethod === "cashfree") {
@@ -88,12 +149,13 @@ const PaymentPage = () => {
   };
 
   const handleCashfreePayment = async (amount) => {
-    if (isSubmitting) return; // Early return if already submitting
-    setIsSubmitting(true);
     try {
       ReactPixel.track("InitiateCheckout", {
-        content_name: checkoutData.course.title,
-        content_ids: [checkoutData.course._id],
+        content_name: checkoutData.product.title,
+        content_ids: [
+          checkoutData.product._id,
+          ...selectedBumps.map((b) => b.bumpProduct._id),
+        ],
         value: amount,
         currency: "INR",
       });
@@ -107,11 +169,18 @@ const PaymentPage = () => {
         {
           amount: amount,
           currency: "INR",
-          courseId: checkoutData.course._id,
+          productId: checkoutData.product._id,
+
+          orderBumps: selectedBumps.map((bump) => ({
+            productId: bump.bumpProduct._id,
+            price: bump.bumpPrice,
+            name: bump.displayName,
+            description: bump.description,
+          })),
           customer_details: {
-            customer_name: formData.username, // Changed from username
+            customer_name: formData.username,
             customer_email: formData.email,
-            customer_phone: rawPhone, // Unformatted numbers only
+            customer_phone: rawPhone,
           },
         }
       );
@@ -120,25 +189,23 @@ const PaymentPage = () => {
         throw new Error("Invalid Payment Session ID");
       }
 
-      ReactPixel.track("AddPaymentInfo", {
-        content_name: checkoutData.course.title,
-        content_ids: [checkoutData.course._id],
-        value: amount,
-        currency: "INR",
-        payment_method: "Cashfree",
-      });
-
       cashfree.checkout({
         paymentSessionId: response.data.payment_session_id,
         return_url: `${
           import.meta.env.VITE_FRONTEND_URL
-        }/sale/payment-success?order_id=${response.data.cf_order_id}&courseId=${
-          response.data.courseId
-        }&gateway=cashfree`,
+        }/sale/payment-success?order_id=${
+          response.data.cf_order_id
+        }&productId=${
+          checkoutData.product._id
+        }&gateway=cashfree&amount=${amount}`,
       });
     } catch (error) {
-      toast.error("Cashfree Payment failed");
-      console.error(error);
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Payment failed. Please try again.");
+      }
+      console.error("Payment Error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -152,12 +219,16 @@ const PaymentPage = () => {
         return;
       }
 
+      const amountInPaise = Math.round(amount * 100);
+
       const response = await axiosInstance.post(
         "/sale/salespage/create-razorpay-order",
         {
-          amount: amount,
+          amount: amountInPaise,
           currency: "INR",
-          courseId: checkoutData.course._id,
+          productId: checkoutData.product._id,
+          type, // Include type parameter
+          orderBumps: selectedBumps.map((bump) => bump._id), // Send just the IDs
           customer_details: {
             username: formData.username,
             email: formData.email,
@@ -168,19 +239,39 @@ const PaymentPage = () => {
 
       const { id: order_id, currency } = response.data.data || {};
 
-      if (!order_id || !currency) {
-        toast.error("Invalid Razorpay response: Order ID or Currency missing");
+      if (!order_id) {
+        throw new Error("Invalid Razorpay response: Missing order ID");
       }
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: amount,
-        currency: "INR",
+        amount: amountInPaise,
+        currency: currency || "INR",
         order_id: order_id,
         name: import.meta.env.VITE_SKILLXERA_COMPANY_NAME,
-        description: checkoutData.course.title,
+        description: `${checkoutData.product.title}${
+          selectedBumps.length > 0
+            ? ` with ${selectedBumps.length} order bump${
+                selectedBumps.length > 1 ? "s" : ""
+              }`
+            : ""
+        }`,
+        notes: {
+          // Add important details to notes
+          type,
+          productId: checkoutData.product._id,
+          username: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+        },
         handler: function (response) {
-          window.location.href = `/sale/payment-success?order_id=${order_id}&courseId=${courseId}&gateway=razorpay&razorpay_order_id=${response.razorpay_order_id}&razorpay_payment_id=${response.razorpay_payment_id}&razorpay_signature=${response.razorpay_signature}`;
+          verifyRazorpayPayment({
+            razorpay_order_id: order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            productId: checkoutData.product._id,
+            type: type,
+          });
         },
         prefill: {
           name: formData.username,
@@ -193,12 +284,17 @@ const PaymentPage = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      toast.error("Razorpay Payment failed");
-      console.error("Razorpay Error:", error);
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Payment failed. Please try again.");
+      }
+      console.error("Payment Error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Function to render HTML content safely
   const renderHTML = (htmlString) => {
     return { __html: htmlString };
   };
@@ -215,6 +311,14 @@ const PaymentPage = () => {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         Error: {checkoutData.error}
+      </div>
+    );
+  }
+  {
+    loading && (
+      <div className="loading-overlay">
+        <div className="loading-spinner"></div>
+        <p>Verifying payment, please wait...</p>
       </div>
     );
   }
@@ -293,6 +397,72 @@ const PaymentPage = () => {
               required
             />
 
+            {/* Order Bumps Section */}
+            {checkoutData.orderBumps?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-yellow-400 text-lg font-semibold mb-3">
+                  Special Offers
+                </h3>
+                <div className="space-y-3">
+                  {checkoutData.orderBumps.map((bump) => (
+                    <div
+                      key={bump._id}
+                      className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                        selectedBumps.some((b) => b._id === bump._id)
+                          ? "border-yellow-400 bg-gray-700"
+                          : "border-gray-600 hover:border-gray-500"
+                      }`}
+                      onClick={() => toggleOrderBump(bump)}
+                    >
+                      <div className="flex items-start gap-3">
+                        {bump.checkoutImage && (
+                          <img
+                            src={`${BASE_URL}/uploads/${bump.checkoutImage}`}
+                            alt={bump.displayName}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        )}
+                        <div className="flex-1">
+                          <div className="flex justify-between">
+                            <h4 className="font-medium">{bump.displayName}</h4>
+                            <span className="text-yellow-400">
+                              +₹{bump.bumpPrice}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300 mt-1">
+                            {bump.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Order Summary */}
+            <div className="mt-6 border-t border-gray-700 pt-4">
+              <div className="flex justify-between mb-2">
+                <span>Product:</span>
+                <span>₹{checkoutData.product?.salesPrice || 0}</span>
+              </div>
+
+              {selectedBumps.map((bump) => (
+                <div
+                  key={bump._id}
+                  className="flex justify-between text-sm text-gray-300"
+                >
+                  <span>{bump.displayName}:</span>
+                  <span>+₹{bump.bumpPrice}</span>
+                </div>
+              ))}
+
+              <div className="flex justify-between font-bold text-lg mt-3 pt-2 border-t border-gray-700">
+                <span>Total:</span>
+                <span>₹{calculateTotal()}</span>
+              </div>
+            </div>
+
             <div className="flex gap-4 mt-4">
               <label className="flex items-center gap-2">
                 <input
@@ -321,10 +491,9 @@ const PaymentPage = () => {
             <button
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
+              disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Processing..."
-                : `Pay Now ₹${checkoutData.course?.salesPrice}`}
+              {isSubmitting ? "Processing..." : `Pay Now ₹${calculateTotal()}`}
             </button>
           </form>
         </div>

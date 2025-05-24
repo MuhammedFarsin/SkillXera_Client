@@ -5,7 +5,7 @@ import ReactPixel from "react-facebook-pixel";
 import { Check } from "lucide-react";
 import VideoEmbed from "../../Utils/EmbeddedVideo";
 import Timer from "../../Utils/Timer";
-import Spinner from "../Common/spinner";
+import Spinner from "../Common/Spinner";
 
 function SalesPage() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function SalesPage() {
           `/sale/get-sales-page/${type}/${id}` 
         );
         setSalesPage(response.data);
-        setLinkedItem(response.data.linkedTo.item); 
+        setCourse(response.data.linkedTo.item); 
       } catch (error) {
         setError("Failed to fetch sales page details");
         console.log(error);
@@ -33,13 +33,13 @@ function SalesPage() {
     };
   
     fetchSalesPage();
-  }, [type, id]); // Added type as dependency
+  }, [type, id]);
 
   const handleNavigate = () => {
     if (!id) return;
     
     ReactPixel.track("PageView", {
-      value: salesPage?.price, // Changed from course?.salesPrice
+      value: course?.salesPrice,
       currency: "INR",
       content_name: "SkillXera",
       content_category: type === 'course' ? "Online Course" : "Digital Product",
@@ -47,7 +47,7 @@ function SalesPage() {
       content_type: "product",
     });
   
-    navigate(`/sale/checkout-page/${type}/payment/${id}`); // Updated route
+    navigate(`/sale/checkout-page/${type}/${id}`);
   };
 
   const CourseCTAButton = course?.salesPrice ? (
@@ -130,7 +130,6 @@ function SalesPage() {
                 key={index}
                 className="p-3 lg:p-6 border-2 border-yellow-500 rounded-3xl bg-black text-white relative flex items-start gap-3"
               >
-                {/* Check Icon */}
                 <div className="w-4 h-4 flex items-center justify-center bg-yellow-500 rounded-full mt-2">
                   <Check size={16} color="black" strokeWidth={3} />
                 </div>
@@ -164,7 +163,6 @@ function SalesPage() {
         </div>
 
         <div className="mt-8">
-          {/* Second Checkbox Heading */}
           <div
             className="text-white mb-6"
             dangerouslySetInnerHTML={{
@@ -172,7 +170,6 @@ function SalesPage() {
             }}
           />
 
-          {/* Second Checkbox Items Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {salesPage?.SecondCheckBox?.map((item, index) => (
               <div
@@ -212,9 +209,6 @@ function SalesPage() {
           <div dangerouslySetInnerHTML={{ __html: salesPage?.offerContent }} />
         </p>
 
-        {/* New Content Below */}
-
-        {/* <div className="mt-5 text-center text-white "> */}
         <div
           className="text-2xl font-bold lg:text-[42px] lg:mt-20"
           dangerouslySetInnerHTML={{
@@ -236,7 +230,6 @@ function SalesPage() {
           <div dangerouslySetInnerHTML={{ __html: salesPage.Topic }} />
         </p>
 
-        {/* Image Section */}
         <div className="flex justify-center mt-6 bg-white rounded-2xl lg:rounded">
           <img
             src={`${BASE_URL}/uploads/${salesPage?.mainImage}`}
@@ -251,7 +244,6 @@ function SalesPage() {
             <div className="grid gap-6 text-white lg:text-[20px] grid-cols-1 md:grid-cols-2">
               {salesPage?.AfterButtonPoints?.description?.map(
                 (point, index) => {
-                  // If there's an odd number of points, make the last one span full width
                   const isLastOdd =
                     salesPage?.AfterButtonPoints?.description?.length % 2 !==
                       0 &&
@@ -282,7 +274,6 @@ function SalesPage() {
       </div>
       <h1 className="mt-6 font-bold text-white text-[22px]">BONUSES</h1>
       <div className="mt-10 px-4">
-        {/* Container with dynamic sizing */}
         <div
           className={`flex flex-wrap justify-center gap-6 mx-auto ${
             salesPage?.bonusImages?.length === 1
@@ -297,20 +288,18 @@ function SalesPage() {
               key={bonus._id}
               className={`bg-white text-white rounded-3xl shadow-lg border border-gray-200 flex flex-col ${
                 salesPage?.bonusImages?.length === 1
-                  ? "w-full md:w-96" // Fixed width for single item
+                  ? "w-full md:w-96"
                   : salesPage?.bonusImages?.length === 2
-                  ? "w-full sm:w-80" // Fixed width for two items
-                  : "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]" // Flexible for 3+ items
+                  ? "w-full sm:w-80"
+                  : "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
               }`}
             >
-              {/* Bonus Header */}
               <div className="relative flex justify-center pt-4">
                 <div className="bg-[#4A4A4A] text-yellow-400 py-2 px-6 rounded-full text-center font-bold text-lg shadow-md">
                   🎁 Bonus #{index + 1}
                 </div>
               </div>
 
-              {/* Image Section */}
               <div className="flex justify-center bg-white p-6">
                 <img
                   src={`${BASE_URL}/uploads/${bonus.image}`}
@@ -319,14 +308,11 @@ function SalesPage() {
                 />
               </div>
 
-              {/* Content Section */}
               <div className="px-6 pb-6 flex-grow">
-                {/* Title */}
                 <h3 className="text-center font-bold text-lg text-[#34495E] mb-3">
                   {bonus.title}
                 </h3>
 
-                {/* Price */}
                 <div className="text-center text-[#4A4A4A] font-bold">
                   {bonus.price}
                 </div>
@@ -418,8 +404,8 @@ function SalesPage() {
           <p className="text-[8px] lg:text-[10px]">
             This site is not affiliated with YouTube™, Google™, Meta™,
             Instagram™, or Facebook™, nor is it endorsed by them in any manner.
-            The term “YouTube™” is a trademark owned by Google™, Inc., and
-            “Facebook™” is a trademark owned by Meta Platforms, Inc. As required
+            The term &quot;YouTube™&quot; is a trademark owned by Google™, Inc., and
+            &quot;Facebook™&quot; is a trademark owned by Meta Platforms, Inc. As required
             by law, we cannot guarantee any specific results or earnings from
             the use of our automated SEO tools, strategies, or services
             presented through Fozato SEO. Our goal is to provide valuable
@@ -436,15 +422,15 @@ function SalesPage() {
           <p className="mt-4 text-[8px] lg:text-[10px]">
             Note: This service is provided as part of our automated system,
             offering real-time SEO support to optimize your YouTube videos. Once
-            you subscribe, you’ll be able to unlock all features for on-demand
+            you subscribe, you&apos;ll be able to unlock all features for on-demand
             SEO automation and enjoy a seamless experience.
           </p>
 
           <p className="mt-4 text-[8px] lg:text-[10px]">
             Fozato SEO specializes in YouTube SEO and optimization tools, not in
-            promoting “get rich quick” schemes or guaranteed income systems. We
+            promoting &quot;get rich quick&quot; schemes or guaranteed income systems. We
             believe that with the right tools and automation, individuals and
-            businesses can make informed decisions that improve their channel’s
+            businesses can make informed decisions that improve their channel&apos;s
             performance. However, we do not guarantee success or income results
             from our services. Fozato SEO does not make claims about specific
             earnings or outcomes and cannot guarantee that the app will generate

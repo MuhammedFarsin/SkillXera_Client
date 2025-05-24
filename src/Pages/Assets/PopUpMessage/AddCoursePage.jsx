@@ -115,7 +115,7 @@ const AddCoursePage = () => {
     }
   };
   const handleNavigate = () => {
-    navigate(`/admin/assets/course/add-salespage/${courseId}`);
+    navigate(`/admin/assets/create-sales-page/course/${courseId}`);
   };
 
   // Handle copying the link
