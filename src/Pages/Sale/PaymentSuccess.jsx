@@ -30,6 +30,7 @@ const PaymentSuccess = () => {
       setUserDetails(parsedData?.user || null);
       setResetLink(parsedData?.resetLink || "");
     }
+    console.log(resetLink)
 
     const fetchThankYouPage = async () => {
       try {

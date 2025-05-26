@@ -31,7 +31,7 @@ const PaymentPage = () => {
   const [selectedBumps, setSelectedBumps] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("cashfree");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     const fetchCheckoutData = async () => {
@@ -86,14 +86,20 @@ const PaymentPage = () => {
 
   const verifyRazorpayPayment = async (paymentData) => {
     try {
-      setLoading(true);
+      setIsVerifying(true);
+      
+      localStorage.setItem('pendingRazorpayPayment', JSON.stringify({
+        ...paymentData,
+        timestamp: new Date().getTime()
+      }));
+
       const response = await axiosInstance.post(
         "/sale/salespage/verify-razorpay-payment",
         paymentData,
         type
       );
 
-      if (response.data.success) {
+      if (response.status === 200) {
         const verificationData = {
           verified: true,
           payment: response.data.payment,
@@ -112,21 +118,24 @@ const PaymentPage = () => {
           JSON.stringify(verificationData)
         );
 
+        localStorage.removeItem('pendingRazorpayPayment');
+
         window.location.href = `/sale/payment-success?order_id=${paymentData.razorpay_order_id}&verified=true&type=${paymentData.type}&productId=${paymentData.productId}&gateway=razorpay&payment_id=${paymentData.razorpay_payment_id}`;
       } else {
         toast.error("Payment verification failed");
       }
     } catch (error) {
-      toast.error("Error verifying payment");
       console.error("Verification Error:", error);
+      toast.error("Error verifying payment. We've recorded your payment and will notify you shortly.");
     } finally {
-      setLoading(false); // stop loading no matter what
+      setIsVerifying(false);
     }
   };
+
   const handlePayment = async (e) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || isVerifying) return;
     setIsSubmitting(true);
 
     if (checkoutData.loading) return;
@@ -170,7 +179,6 @@ const PaymentPage = () => {
           amount: amount,
           currency: "INR",
           productId: checkoutData.product._id,
-
           orderBumps: selectedBumps.map((bump) => ({
             productId: bump.bumpProduct._id,
             price: bump.bumpPrice,
@@ -227,8 +235,8 @@ const PaymentPage = () => {
           amount: amountInPaise,
           currency: "INR",
           productId: checkoutData.product._id,
-          type, // Include type parameter
-          orderBumps: selectedBumps.map((bump) => bump._id), // Send just the IDs
+          type,
+          orderBumps: selectedBumps.map((bump) => bump._id),
           customer_details: {
             username: formData.username,
             email: formData.email,
@@ -257,7 +265,6 @@ const PaymentPage = () => {
             : ""
         }`,
         notes: {
-          // Add important details to notes
           type,
           productId: checkoutData.product._id,
           username: formData.username,
@@ -299,6 +306,26 @@ const PaymentPage = () => {
     return { __html: htmlString };
   };
 
+  useEffect(() => {
+    const checkPendingPayment = async () => {
+      const pendingPayment = localStorage.getItem('pendingRazorpayPayment');
+      if (pendingPayment) {
+        const paymentData = JSON.parse(pendingPayment);
+        const now = new Date().getTime();
+        const paymentTime = new Date(paymentData.timestamp).getTime();
+        
+        if (now - paymentTime < 300000) {
+          setIsVerifying(true);
+          await verifyRazorpayPayment(paymentData);
+        } else {
+          localStorage.removeItem('pendingRazorpayPayment');
+        }
+      }
+    };
+
+    checkPendingPayment();
+  }, []);
+
   if (checkoutData.loading) {
     return (
       <div className="flex justify-center items-center h-40">
@@ -314,17 +341,23 @@ const PaymentPage = () => {
       </div>
     );
   }
-  {
-    loading && (
-      <div className="loading-overlay">
-        <div className="loading-spinner"></div>
-        <p>Verifying payment, please wait...</p>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative">
+      {/* Verification Loading Overlay */}
+      {isVerifying && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col justify-center items-center">
+          <div className="text-center text-white">
+            <Spinner size="lg" />
+            <h3 className="text-2xl font-bold mt-4">Payment Successful!</h3>
+            <p className="mt-2 text-lg">Completing your purchase...</p>
+            <p className="mt-1 text-sm text-gray-300">
+              Please don&apos;t close this window
+            </p>
+          </div>
+        </div>
+      )}
+
       {checkoutData.checkoutPage && (
         <div className="bg-gray-800 text-center py-6">
           <h1
@@ -397,7 +430,6 @@ const PaymentPage = () => {
               required
             />
 
-            {/* Order Bumps Section */}
             {checkoutData.orderBumps?.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-yellow-400 text-lg font-semibold mb-3">
@@ -440,7 +472,6 @@ const PaymentPage = () => {
               </div>
             )}
 
-            {/* Order Summary */}
             <div className="mt-6 border-t border-gray-700 pt-4">
               <div className="flex justify-between mb-2">
                 <span>Product:</span>
@@ -491,7 +522,7 @@ const PaymentPage = () => {
             <button
               type="submit"
               className="w-full bg-yellow-400 text-black py-2 rounded-md font-bold mt-4"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isVerifying}
             >
               {isSubmitting ? "Processing..." : `Pay Now ₹${calculateTotal()}`}
             </button>
