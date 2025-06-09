@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import successAnimation from "../../assets/SuccessAnimation";
 import axiosInstance from "../../Connection/Axios";
-import { initFacebookPixel } from "../../utils/metaPixel";
 import ToasterHot from "../Common/ToasterHot";
 
 const PaymentSuccess = () => {
@@ -14,6 +13,7 @@ const PaymentSuccess = () => {
   const orderId = queryParams.get("order_id");
   const productId = queryParams.get("productId");
   const gateway = queryParams.get("gateway");
+  const type = queryParams.get("type");
 
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -21,22 +21,67 @@ const PaymentSuccess = () => {
   const [thankYouPage, setThankYouPage] = useState(null);
 
   useEffect(() => {
-    initFacebookPixel();
+    // 1. Find ALL keys that might contain payment data
+    const allKeys = Object.keys(localStorage);
+    console.log("All localStorage keys:", allKeys);
 
+    // 2. Find the key that contains this orderId
+    const paymentKey = allKeys.find((key) => {
+      try {
+        const item = localStorage.getItem(key);
+        if (!item) return false;
+
+        const data = JSON.parse(item);
+        return (
+          key.includes("verifiedPayment") || // matches any payment key
+          data?.orderId === orderId || // matches orderId in data
+          data?.payment?.orderId === orderId // matches nested orderId
+        );
+      } catch {
+        return false;
+      }
+    });
+
+    if (paymentKey) {
+      console.log("Found matching key:", paymentKey);
+      const storedData = localStorage.getItem(paymentKey);
+
+      try {
+        const parsedData = JSON.parse(storedData);
+        const paymentData = parsedData.payment || parsedData;
+        const userData = parsedData.user || paymentData.user || null;
+        const link = parsedData.resetLink || paymentData.resetLink || "";
+
+        setPaymentDetails(paymentData);
+        setUserDetails(userData);
+        setResetLink(link);
+      } catch (error) {
+        console.error("Error parsing payment data:", error);
+      }
+    } else {
+      console.error(`No payment data found for order ${orderId}`);
+      console.log("Available keys:", allKeys);
+      console.log("Sample data:", localStorage.getItem(allKeys[0]));
+    }
+  }, [orderId]);
+
+  useEffect(() => {
     const storedPayment = localStorage.getItem(`verifiedPayment_${orderId}`);
+    console.log(storedPayment);
     if (storedPayment) {
       const parsedData = JSON.parse(storedPayment);
-      setPaymentDetails(parsedData);
-      setUserDetails(parsedData?.user || null);
-      setResetLink(parsedData?.resetLink || "");
+
+      setPaymentDetails(parsedData); // Since payment data is at root
+      setUserDetails(parsedData.user);
+      setResetLink(parsedData.resetLink);
     }
-    console.log(resetLink)
+    console.log(resetLink);
 
     const fetchThankYouPage = async () => {
       try {
         if (productId) {
           const response = await axiosInstance.get(
-            `/sale/get-thank-you-page/${productId}`
+            `/sale/get-thank-you-page/${type}/${productId}`
           );
           setThankYouPage(response.data.data);
         }

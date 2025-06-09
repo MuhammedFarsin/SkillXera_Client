@@ -90,16 +90,27 @@ const PaymentPage = () => {
       
       localStorage.setItem('pendingRazorpayPayment', JSON.stringify({
         ...paymentData,
-        timestamp: new Date().getTime()
+        productName: checkoutData.product?.title,
+        amount: calculateTotal(),
+        timestamp: Date.now()
       }));
 
       const response = await axiosInstance.post(
         "/sale/salespage/verify-razorpay-payment",
-        paymentData,
-        type
+        paymentData
       );
 
-      if (response.status === 200) {
+      if (response.data.success) {
+        localStorage.removeItem('pendingRazorpayPayment');
+        
+        ReactPixel.track("Purchase", {
+          value: response.data.payment.amount,
+          currency: "INR",
+          content_ids: [checkoutData.product._id, ...selectedBumps.map(b => b._id)],
+          content_type: "product"
+        });
+
+        // Store verification data
         const verificationData = {
           verified: true,
           payment: response.data.payment,
@@ -108,29 +119,56 @@ const PaymentPage = () => {
           timestamp: Date.now(),
         };
 
-        ReactPixel.track("Purchase", {
-          value: response.data.payment.amount,
-          currency: "INR",
-        });
-
         localStorage.setItem(
           `paymentVerification_${paymentData.razorpay_order_id}`,
           JSON.stringify(verificationData)
         );
 
-        localStorage.removeItem('pendingRazorpayPayment');
-
-        window.location.href = `/sale/payment-success?order_id=${paymentData.razorpay_order_id}&verified=true&type=${paymentData.type}&productId=${paymentData.productId}&gateway=razorpay&payment_id=${paymentData.razorpay_payment_id}`;
+        window.location.href = `/sale/payment-success?order_id=${paymentData.razorpay_order_id}&verified=true&type=${type}&productId=${paymentData.productId}&gateway=razorpay&payment_id=${paymentData.razorpay_payment_id}`;
       } else {
-        toast.error("Payment verification failed");
+        toast.success(
+          "Payment received! Your order is processing. " +
+          "You'll receive confirmation shortly. Reference: " + 
+          paymentData.razorpay_order_id
+        );
       }
     } catch (error) {
       console.error("Verification Error:", error);
-      toast.error("Error verifying payment. We've recorded your payment and will notify you shortly.");
+      // Network error - payment may have succeeded
+      toast.success(
+        "Payment received but verification pending. " +
+        "We'll notify you when processing completes. Reference: " +
+        paymentData.razorpay_order_id
+      );
     } finally {
       setIsVerifying(false);
     }
   };
+
+  useEffect(() => {
+    const checkPendingPayments = async () => {
+      const pendingPayment = localStorage.getItem('pendingRazorpayPayment');
+      if (pendingPayment) {
+        const paymentData = JSON.parse(pendingPayment);
+        if (Date.now() - paymentData.timestamp < 3600000) {
+          setIsVerifying(true);
+          await verifyRazorpayPayment(paymentData);
+        } else {
+          localStorage.removeItem('pendingRazorpayPayment');
+        }
+      }
+
+      const pendingPayments = JSON.parse(localStorage.getItem('pendingRazorpayPayments') || '[]');
+      if (pendingPayments.length > 0) {
+        for (const paymentData of pendingPayments) {
+          await verifyRazorpayPayment(paymentData);
+        }
+        localStorage.removeItem('pendingRazorpayPayments');
+      }
+    };
+
+    checkPendingPayments();
+  }, []);
 
   const handlePayment = async (e) => {
     e.preventDefault();

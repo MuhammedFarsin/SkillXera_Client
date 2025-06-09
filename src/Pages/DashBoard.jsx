@@ -14,7 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import axiosInstance from "../Connection/Axios";
-import socket from "../socket"; // Import the socket instance
+import socket from "../socket";
 
 function DashBoard() {
   const [dateRange, setDateRange] = useState({
@@ -52,7 +52,7 @@ function DashBoard() {
         recentLeads,
         totalRevenue,
       } = response.data;
-  
+
       setSalesData(ordersGraphData);
       setLeadsData(leadsGraphData);
       setTotalLeads(totalLeads);

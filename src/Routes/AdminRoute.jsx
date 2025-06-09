@@ -7,9 +7,15 @@ const Dashboard_Page = React.lazy(() =>
 );
 const Contact_Page = React.lazy(() => import("../Components/Admin/Contact"));
 const Courses_Page = React.lazy(() => import("../Components/Admin/Courses"));
-const Order_Bumb_Page = React.lazy(() => import("../Components/Admin/OrderBumb"));
-const AddOrderBump_Page = React.lazy(() => import("../Components/Admin/AddOrderBump"));
-const EditOrderBump_Page = React.lazy(() => import("../Components/Admin/EditOrderBumb"));
+const Order_Bumb_Page = React.lazy(() =>
+  import("../Components/Admin/OrderBumb")
+);
+const AddOrderBump_Page = React.lazy(() =>
+  import("../Components/Admin/AddOrderBump")
+);
+const EditOrderBump_Page = React.lazy(() =>
+  import("../Components/Admin/EditOrderBumb")
+);
 import AddCourse from "../Components/Admin/AddCourse";
 import AddSalesPage from "../Components/Admin/SalesPage";
 import EditCourse from "../Components/Admin/EditCourse";
@@ -25,6 +31,7 @@ const Tag_Page = React.lazy(() => import("../Components/Admin/Tag"));
 const Transaction_Page = React.lazy(() =>
   import("../Components/Admin/Transactions")
 );
+import PaymentManagement_Page from "../Components/Admin/PaymentManagement";
 const UserProfile_Page = React.lazy(() =>
   import("../Components/Admin/UserProfile")
 );
@@ -199,6 +206,14 @@ function AdminRoute() {
         element={
           <ProtectedRoute>
             <Transaction_Page />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sales/payment-management"
+        element={
+          <ProtectedRoute>
+            <PaymentManagement_Page />
           </ProtectedRoute>
         }
       />

@@ -103,6 +103,25 @@ function Admin_Sales_Transaction() {
     }
   };
 
+  const getStatusColor = (status) => {
+  switch (status.toLowerCase()) {
+    case "success":
+      return "text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800";
+    case "failed":
+      return "text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800";
+    case "pending":
+      return "text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800";
+    case "refunded":
+      return "text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800";
+    case "processing":
+      return "text-violet-600 dark:text-violet-300 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-800";
+    case "cancelled":
+      return "text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800";
+    default:
+      return "text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800";
+  }
+};
+
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
       const matchesEmail = payment.email.toLowerCase().includes(searchFilter.toLowerCase());
@@ -149,6 +168,9 @@ function Admin_Sales_Transaction() {
               <option value="">Select Status</option>
               <option value="success">Success</option>
               <option value="failed">Failed</option>
+              <option value="pending">Pending</option>
+              <option value="refunded">Refunded</option>
+              <option value="processing">Processing</option>
             </select>
             <select
               value={paymentFilter}
@@ -215,11 +237,7 @@ function Admin_Sales_Transaction() {
                       </div>
                       <div className="col-span-2">₹{payment.amount}</div>
                       <div
-                        className={`col-span-2 font-bold ${
-                          payment.status === "Success"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
+                        className={`col-span-2 font-semibold px-2 py-1 rounded-full ${getStatusColor(payment.status)}`}
                       >
                         {payment.status}
                       </div>

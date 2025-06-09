@@ -143,6 +143,9 @@ function Admin_Navbar() {
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 className={dropdownClass}
               >
+                <Link to="/admin/sales/payment-management" className={linkClass}>
+                  Manage
+                </Link>
                 <Link to="/admin/sales/transactions" className={linkClass}>
                   Transactions
                 </Link>

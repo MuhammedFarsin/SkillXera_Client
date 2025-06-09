@@ -72,9 +72,9 @@ function HomePage() {
         </h2>
 
         {loading ? (
-           <div className="flex justify-center items-center h-40">
-           <Spinner />
-         </div>
+          <div className="flex justify-center items-center h-40">
+            <Spinner />
+          </div>
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {courses.map((course) => (
@@ -100,7 +100,12 @@ function HomePage() {
 
                   {course.course.modules?.length > 0 ? (
                     <Link
-                      to={`/learn/${course.course.courseId}/module/${course.course.modules[0]._id}/lectures/0`}
+                      to="/learn"
+                      state={{
+                        courseData: course.course,
+                        initialModule: course.course.modules[0],
+                        purchaseDate: course.purchaseDate,
+                      }}
                     >
                       <motion.button
                         className="mt-3 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"

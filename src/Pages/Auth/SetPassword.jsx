@@ -41,7 +41,6 @@ function SetPassword() {
         email,
         token,
       });
-      console.log(newPassword);
 
       if (response.status === 200) {
         console.log(
@@ -57,11 +56,9 @@ function SetPassword() {
           dispatch(login());
           dispatch(setUser(response.data.user));
         }, 2000);
-      } else {
-        toast.error(response.data.message || "Something went wrong.");
       }
     } catch (error) {
-      toast.error("Internal Server Error.");
+      toast.error(error.response.data.message);
       console.log(error);
     }
   };

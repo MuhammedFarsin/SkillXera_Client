@@ -1,56 +1,45 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../Connection/Axios";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import Navbar from "./Common/Navbar";
 import { IoMenu } from "react-icons/io5";
 import VideoEmbed from "../Utils/EmbeddedVideo";
 import Spinner from "./Common/spinner";
 
 function Learning_page() {
-  const BASE_URL = axiosInstance.defaults.baseURL;
-  const { courseId, moduleId, lectureIndex } = useParams();
+  const { moduleId, lectureIndex } = useParams();
   const navigate = useNavigate();
+  const { state } = useLocation();
 
   const [currentLectureIndex, setCurrentLectureIndex] = useState(
     parseInt(lectureIndex) || 0
   );
   const [currentLecture, setCurrentLecture] = useState(null);
   const [moduleLectures, setModuleLectures] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const courseData = state?.courseData;
+  const purchaseDate = state?.purchaseDate;
+
   useEffect(() => {
-    const fetchCourseData = async () => {
-      try {
-        const response = await axiosInstance.get(`/learn/${courseId}`);
-        console.log("Filtered Course Data:", response.data);
+    if (!courseData) {
+      // Handle invalid entry (e.g., user accessed directly without state)
+      navigate("/");
+      return;
+    }
 
-        if (response.status === 200 && response.data.modules.length > 0) {
-          const modules = response.data.modules;
-          const selectedModule =
-            modules.find((m) => m._id === moduleId) || modules[0];
+    const selectedModule =
+      courseData.modules.find((m) => m._id === moduleId) || courseData.modules[0];
 
-          setModuleLectures(selectedModule.lectures || []);
+    setModuleLectures(selectedModule.lectures || []);
 
-          // Redirect to first module/lecture if none is provided
-          if (!moduleId || !lectureIndex) {
-            navigate(
-              `/learn/${courseId}/module/${selectedModule._id}/lecture/0`
-            );
-            return;
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch course:", error);
-        setError("Failed to load course data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourseData();
-  }, [courseId, moduleId, navigate]);
+    if (!moduleId || !lectureIndex) {
+      navigate(
+        `/learn/${courseData._id}/module/${selectedModule._id}/lectures/0`,
+        { state }
+      );
+      return;
+    }
+  }, [courseData, moduleId, lectureIndex, navigate]);
 
   useEffect(() => {
     const index = parseInt(lectureIndex);
@@ -67,9 +56,10 @@ function Learning_page() {
   const handleNext = () => {
     if (currentLectureIndex < moduleLectures.length - 1) {
       navigate(
-        `/learn/${courseId}/module/${moduleId}/lectures/${
+        `/learn/${courseData._id}/module/${moduleId}/lectures/${
           currentLectureIndex + 1
-        }`
+        }`,
+        { state }
       );
     }
   };
@@ -77,23 +67,21 @@ function Learning_page() {
   const handlePrev = () => {
     if (currentLectureIndex > 0) {
       navigate(
-        `/learn/${courseId}/module/${moduleId}/lectures/${
+        `/learn/${courseData._id}/module/${moduleId}/lectures/${
           currentLectureIndex - 1
-        }`
+        }`,
+        { state }
       );
     }
   };
 
-  if (loading)
+  if (!courseData || !courseData.modules) {
     return (
       <div className="flex justify-center items-center h-40">
-    <Spinner />
-  </div>
+        <Spinner />
+      </div>
     );
-  if (error)
-    return (
-      <p className="text-center text-red-600 font-semibold">Error: {error}</p>
-    );
+  }
 
   return (
     <div className="relative">
@@ -119,16 +107,17 @@ function Learning_page() {
             <ul>
               {moduleLectures.length > 0 ? (
                 moduleLectures.map((lecture, index) => (
-                  <li key={lecture._id} className="mb-2">
+                  <li key={lecture._id || index} className="mb-2">
                     <Link
-                      to={`/learn/${courseId}/module/${moduleId}/lectures/${index}`}
+                      to={`/learn/${courseData._id}/module/${moduleId}/lectures/${index}`}
+                      state={state}
                       className={`block px-4 py-2 rounded-lg ${
                         currentLectureIndex === index
                           ? "bg-blue-500 text-white"
                           : "bg-gray-200"
                       } hover:bg-blue-600 transition`}
                     >
-                      {lecture.title}
+                      {lecture.title || `Lecture ${index + 1}`}
                     </Link>
                   </li>
                 ))
@@ -166,7 +155,6 @@ function Learning_page() {
               </button>
             </div>
 
-            {/* Lecture Title */}
             <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
               {currentLecture?.title || "Untitled Lecture"}
             </h2>
@@ -174,26 +162,28 @@ function Learning_page() {
             {/* Video */}
             <div className="flex justify-center w-full">
               {currentLecture?.contentType === "embed" ? (
-                <VideoEmbed embedCode={currentLecture?.embedCode} />
-              ) : (
+                <VideoEmbed embedCode={currentLecture.embedCode} />
+              ) : currentLecture?.videoUrl ? (
                 <video controls className="w-3/4 shadow-lg rounded-lg">
                   <source
-                    src={`${BASE_URL}${currentLecture?.videoUrl}`}
+                    src={currentLecture.videoUrl}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
                 </video>
+              ) : (
+                <p>No video available</p>
               )}
             </div>
 
-            {/* Lecture Description */}
+            {/* Description */}
             <div className="mt-6 bg-white p-4 shadow-md rounded-lg w-full max-w-xl text-center">
               <h3 className="text-lg font-semibold">Lecture Description</h3>
               <p className="text-gray-700">
                 {currentLecture?.description || "No description available."}
               </p>
             </div>
-          </div>
+          </div>  
         </div>
       </div>
     </div>
