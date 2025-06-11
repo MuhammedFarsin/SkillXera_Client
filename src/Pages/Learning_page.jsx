@@ -17,18 +17,16 @@ function Learning_page() {
   const [moduleLectures, setModuleLectures] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const courseData = state?.courseData;
-  const purchaseDate = state?.purchaseDate;
-
+  const courseData = state?.courseData.course;
   useEffect(() => {
-    if (!courseData) {
-      // Handle invalid entry (e.g., user accessed directly without state)
-      navigate("/");
-      return;
-    }
+  if (!courseData || !courseData.modules) {
+    navigate("/");
+    return;
+  }
 
-    const selectedModule =
-      courseData.modules.find((m) => m._id === moduleId) || courseData.modules[0];
+  const selectedModule =
+    courseData.modules.find((m) => m._id === moduleId) || courseData.modules[0];
+
 
     setModuleLectures(selectedModule.lectures || []);
 
@@ -56,7 +54,7 @@ function Learning_page() {
   const handleNext = () => {
     if (currentLectureIndex < moduleLectures.length - 1) {
       navigate(
-        `/learn/${courseData._id}/module/${moduleId}/lectures/${
+        `/learn/${courseData.Id}/module/${moduleId}/lectures/${
           currentLectureIndex + 1
         }`,
         { state }
@@ -67,7 +65,7 @@ function Learning_page() {
   const handlePrev = () => {
     if (currentLectureIndex > 0) {
       navigate(
-        `/learn/${courseData._id}/module/${moduleId}/lectures/${
+        `/learn/${courseData.Id}/module/${moduleId}/lectures/${
           currentLectureIndex - 1
         }`,
         { state }
@@ -82,6 +80,7 @@ function Learning_page() {
       </div>
     );
   }
+   
 
   return (
     <div className="relative">
@@ -158,7 +157,7 @@ function Learning_page() {
             <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">
               {currentLecture?.title || "Untitled Lecture"}
             </h2>
-
+                  
             {/* Video */}
             <div className="flex justify-center w-full">
               {currentLecture?.contentType === "embed" ? (
