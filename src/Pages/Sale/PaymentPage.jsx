@@ -87,13 +87,16 @@ const PaymentPage = () => {
   const verifyRazorpayPayment = async (paymentData) => {
     try {
       setIsVerifying(true);
-      
-      localStorage.setItem('pendingRazorpayPayment', JSON.stringify({
-        ...paymentData,
-        productName: checkoutData.product?.title,
-        amount: calculateTotal(),
-        timestamp: Date.now()
-      }));
+
+      localStorage.setItem(
+        "pendingRazorpayPayment",
+        JSON.stringify({
+          ...paymentData,
+          productName: checkoutData.product?.title,
+          amount: calculateTotal(),
+          timestamp: Date.now(),
+        })
+      );
 
       const response = await axiosInstance.post(
         "/sale/salespage/verify-razorpay-payment",
@@ -101,13 +104,16 @@ const PaymentPage = () => {
       );
 
       if (response.data.success) {
-        localStorage.removeItem('pendingRazorpayPayment');
-        
+        localStorage.removeItem("pendingRazorpayPayment");
+
         ReactPixel.track("Purchase", {
           value: response.data.payment.amount,
           currency: "INR",
-          content_ids: [checkoutData.product._id, ...selectedBumps.map(b => b._id)],
-          content_type: "product"
+          content_ids: [
+            checkoutData.product._id,
+            ...selectedBumps.map((b) => b._id),
+          ],
+          content_type: "product",
         });
 
         // Store verification data
@@ -128,8 +134,8 @@ const PaymentPage = () => {
       } else {
         toast.success(
           "Payment received! Your order is processing. " +
-          "You'll receive confirmation shortly. Reference: " + 
-          paymentData.razorpay_order_id
+            "You'll receive confirmation shortly. Reference: " +
+            paymentData.razorpay_order_id
         );
       }
     } catch (error) {
@@ -137,8 +143,8 @@ const PaymentPage = () => {
       // Network error - payment may have succeeded
       toast.success(
         "Payment received but verification pending. " +
-        "We'll notify you when processing completes. Reference: " +
-        paymentData.razorpay_order_id
+          "We'll notify you when processing completes. Reference: " +
+          paymentData.razorpay_order_id
       );
     } finally {
       setIsVerifying(false);
@@ -147,23 +153,25 @@ const PaymentPage = () => {
 
   useEffect(() => {
     const checkPendingPayments = async () => {
-      const pendingPayment = localStorage.getItem('pendingRazorpayPayment');
+      const pendingPayment = localStorage.getItem("pendingRazorpayPayment");
       if (pendingPayment) {
         const paymentData = JSON.parse(pendingPayment);
         if (Date.now() - paymentData.timestamp < 3600000) {
           setIsVerifying(true);
           await verifyRazorpayPayment(paymentData);
         } else {
-          localStorage.removeItem('pendingRazorpayPayment');
+          localStorage.removeItem("pendingRazorpayPayment");
         }
       }
 
-      const pendingPayments = JSON.parse(localStorage.getItem('pendingRazorpayPayments') || '[]');
+      const pendingPayments = JSON.parse(
+        localStorage.getItem("pendingRazorpayPayments") || "[]"
+      );
       if (pendingPayments.length > 0) {
         for (const paymentData of pendingPayments) {
           await verifyRazorpayPayment(paymentData);
         }
-        localStorage.removeItem('pendingRazorpayPayments');
+        localStorage.removeItem("pendingRazorpayPayments");
       }
     };
 
@@ -194,68 +202,141 @@ const PaymentPage = () => {
       handleRazorpayPayment(amount);
     }
   };
+const handleCashfreePayment = async (amount) => {
+  try {
+    setIsSubmitting(true);
+    
+    // Track checkout initiation
+    ReactPixel.track("InitiateCheckout", {
+      content_name: checkoutData.product.title,
+      content_ids: [checkoutData.product._id, ...selectedBumps.map(b => b.bumpProduct._id)],
+      value: amount,
+      currency: "INR",
+    });
 
-  const handleCashfreePayment = async (amount) => {
-    try {
-      ReactPixel.track("InitiateCheckout", {
-        content_name: checkoutData.product.title,
-        content_ids: [
-          checkoutData.product._id,
-          ...selectedBumps.map((b) => b.bumpProduct._id),
-        ],
-        value: amount,
-        currency: "INR",
-      });
+    // Initialize Cashfree
+    const cashfree = await load({ mode: "sandbox" });
 
-      const cashfree = await load({ mode: "sandbox" });
+    // Create order
+    const response = await axiosInstance.post("/sale/salespage/create-cashfree-order", {
+      amount,
+      currency: "INR",
+      productId: checkoutData.product._id,
+      type,
+      orderBumps: selectedBumps.map(bump => ({
+        productId: bump.bumpProduct._id,
+        price: bump.bumpPrice,
+        name: bump.displayName,
+        description: bump.description,
+      })),
+      customer_details: {
+        customer_name: formData.username,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+      },
+      // Add return URL that points back to this page
+      return_url: `${window.location.origin}${window.location.pathname}`
+    });
 
-      const rawPhone = formData.phone.replace(/\D/g, "");
+    const { id: order_id, payment_session_id } = response.data.data || {};
+    if (!payment_session_id) throw new Error("Invalid Payment Session ID");
 
-      const response = await axiosInstance.post(
-        "/sale/salespage/create-cashfree-order",
-        {
-          amount: amount,
-          currency: "INR",
-          productId: checkoutData.product._id,
-          orderBumps: selectedBumps.map((bump) => ({
-            productId: bump.bumpProduct._id,
-            price: bump.bumpPrice,
-            name: bump.displayName,
-            description: bump.description,
-          })),
-          customer_details: {
-            customer_name: formData.username,
-            customer_email: formData.email,
-            customer_phone: rawPhone,
-          },
-        }
+    const paymentData = {
+      order_id,
+      productId: checkoutData.product._id,
+      type,
+      amount,
+      timestamp: Date.now(),
+      verificationAttempts: 0,
+      maxVerificationAttempts: 5,
+      verificationInterval: 3000 // 3 seconds
+    };
+    localStorage.setItem('pendingCashfreePayment', JSON.stringify(paymentData));
+
+    // Start verification polling when page loads
+    localStorage.setItem('shouldVerifyPayment', 'true');
+
+    // Initialize payment
+    cashfree.checkout({
+      paymentSessionId: payment_session_id,
+      redirectTarget: "_self", // Stay in same tab
+      components: ["order-details", "card", "netbanking", "wallet", "upi", "paylater"]
+    });
+  } catch (error) {
+    console.error("Payment Error:", error);
+    toast.error(error.response?.data?.error || "Payment failed. Please try again.");
+    setIsSubmitting(false);
+  }
+};
+ useEffect(() => {
+  let verificationTimeout;
+  let isMounted = true; // Flag to track component mount state
+
+  const verifyPaymentInBackground = async () => {
+  try {
+    const pendingPayment = localStorage.getItem('pendingCashfreePayment');
+    if (!pendingPayment) return;
+
+    const paymentData = JSON.parse(pendingPayment);
+    
+    setIsVerifying(true);
+    
+    const verificationResponse = await axiosInstance.post(
+      "/sale/salespage/verify-cashfree-payment",
+      { 
+        order_id: paymentData.order_id, 
+        productId: paymentData.productId, 
+        type: paymentData.type,
+        amount: paymentData.amount
+      }
+    );
+
+    if (verificationResponse.data.success) {
+      // Store verification data
+      const verificationData = {
+        verified: true,
+        payment: verificationResponse.data.payment,
+        user: verificationResponse.data.user,
+        resetLink: verificationResponse.data.resetLink || "",
+        timestamp: Date.now(),
+      };
+      
+      localStorage.setItem(
+        `paymentVerification_${paymentData.order_id}`,
+        JSON.stringify(verificationData)
       );
 
-      if (!response.data.payment_session_id) {
-        throw new Error("Invalid Payment Session ID");
-      }
-
-      cashfree.checkout({
-        paymentSessionId: response.data.payment_session_id,
-        return_url: `${
-          import.meta.env.VITE_FRONTEND_URL
-        }/sale/payment-success?order_id=${
-          response.data.cf_order_id
-        }&productId=${
-          checkoutData.product._id
-        }&gateway=cashfree&amount=${amount}`,
-      });
-    } catch (error) {
-      if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("Payment failed. Please try again.");
-      }
-      console.error("Payment Error:", error);
-    } finally {
-      setIsSubmitting(false);
+      // Redirect to success page
+      window.location.href = `/sale/payment-success?order_id=${paymentData.order_id}&verified=true&type=${paymentData.type}&productId=${paymentData.productId}&gateway=cashfree`;
+    } else {
+      toast.error("Payment verification failed. Please contact support.");
     }
+  } catch (error) {
+    console.error("Verification error:", error);
+    toast.error("Payment verification failed. Please try again later.");
+  } finally {
+    // Clean up regardless of success/failure
+    localStorage.removeItem('pendingCashfreePayment');
+    localStorage.removeItem('shouldVerifyPayment');
+    setIsVerifying(false);
+  }
+};
+
+  // Start verification when component mounts if needed
+  const shouldVerify = localStorage.getItem('shouldVerifyPayment') === 'true';
+  if (shouldVerify) {
+    verifyPaymentInBackground();
+  }
+
+  // Cleanup function
+  return () => {
+    isMounted = false;
+    if (verificationTimeout) {
+      clearTimeout(verificationTimeout);
+    }
+    setIsVerifying(false);
   };
+}, []);
 
   const handleRazorpayPayment = async (amount) => {
     try {
@@ -346,17 +427,17 @@ const PaymentPage = () => {
 
   useEffect(() => {
     const checkPendingPayment = async () => {
-      const pendingPayment = localStorage.getItem('pendingRazorpayPayment');
+      const pendingPayment = localStorage.getItem("pendingRazorpayPayment");
       if (pendingPayment) {
         const paymentData = JSON.parse(pendingPayment);
         const now = new Date().getTime();
         const paymentTime = new Date(paymentData.timestamp).getTime();
-        
+
         if (now - paymentTime < 300000) {
           setIsVerifying(true);
           await verifyRazorpayPayment(paymentData);
         } else {
-          localStorage.removeItem('pendingRazorpayPayment');
+          localStorage.removeItem("pendingRazorpayPayment");
         }
       }
     };
