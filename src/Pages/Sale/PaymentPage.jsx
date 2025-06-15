@@ -292,7 +292,6 @@ const handleCashfreePayment = async (amount) => {
     );
 
     if (verificationResponse.data.success) {
-      // Store verification data
       const verificationData = {
         verified: true,
         payment: verificationResponse.data.payment,
@@ -306,8 +305,7 @@ const handleCashfreePayment = async (amount) => {
         JSON.stringify(verificationData)
       );
 
-      // Redirect to success page
-      window.location.href = `/sale/payment-success?order_id=${paymentData.order_id}&verified=true&type=${paymentData.type}&productId=${paymentData.productId}&gateway=cashfree`;
+       window.location.href = `/sale/payment-success?order_id=${paymentData.order_id}&verified=true&type=${paymentData.type}&productId=${paymentData.productId}&gateway=cashfree`;
     } else {
       toast.error("Payment verification failed. Please contact support.");
     }
