@@ -32,7 +32,7 @@ function Payment_Management_page() {
     try {
       const response = await axiosInstance.get("/admin/payments/failed");
       console.log(response.data);
-      setPayments(response?.data?.data || []);
+      setPayments(response.data.data || []);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to fetch payments");
     } finally {
@@ -93,9 +93,9 @@ function Payment_Management_page() {
       ),
     },
     {
-      title: "Customer",
-      dataIndex: "email",
+      title: "Customer Email",
       key: "email",
+      render: (record) => record.customer?.email || "N/A",
     },
     {
       title: "Amount",
@@ -107,7 +107,7 @@ function Payment_Management_page() {
       title: "Status",
       key: "status",
       render: (record) => {
-        const status = record.paymentData?.status || "Unknown";
+        const status = record.status || "Unknown";
         return (
           <Tag color={status === "Failed" ? "red" : "orange"}>
             {status.toUpperCase()}
